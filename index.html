@@ -11,7 +11,7 @@
 
     body {
       font-family: 'Roboto', 'Segoe UI', sans-serif;
-      background-color: transparent; /* Fundo transparente para o iframe */
+      background-color: transparent;
       color: #FFFFFF;
       margin: 0;
       padding: 15px;
@@ -24,7 +24,7 @@
 
     /* --- Container Principal --- */
     .container {
-      background: #1a1a1a; /* Cinza Profundo */
+      background: #1a1a1a;
       padding: 30px;
       border-radius: 16px;
       width: 100%;
@@ -42,9 +42,9 @@
       font-size: 1.4rem;
     }
 
-    /* --- Box de Informação (UX) --- */
+    /* --- Box de Informação --- */
     .info-box {
-      background-color: rgba(255, 109, 0, 0.05); /* Laranja muito suave */
+      background-color: rgba(255, 109, 0, 0.05);
       border-left: 3px solid #FF6D00;
       padding: 12px 15px;
       border-radius: 0 4px 4px 0;
@@ -93,15 +93,6 @@
       border-color: #FF6D00;
       background-color: #151515;
       box-shadow: 0 0 0 3px rgba(255, 109, 0, 0.2);
-    }
-
-    /* Texto de ajuda abaixo do input */
-    .input-helper {
-      display: block;
-      margin-top: 6px;
-      font-size: 0.75rem;
-      color: #888;
-      font-style: italic;
     }
 
     /* --- Área de Upload (Dropzone) --- */
@@ -207,7 +198,7 @@
     }
   </style>
 
-  <!-- TUS Library -->
+  <!-- Biblioteca TUS -->
   <script src="https://cdn.jsdelivr.net/npm/tus-js-client@2.3.0/dist/tus.min.js"></script>
 </head>
 
@@ -230,9 +221,8 @@
       </div>
 
       <div class="form-group">
-        <label for="studentEmail">Seu Melhor E-mail</label>
+        <label for="studentEmail">E-mail de login na Hotmart</label>
         <input type="email" id="studentEmail" class="form-input" placeholder="Ex: joao@email.com">
-        <span class="input-helper">ℹ️ Utilize o e-mail usado na compra do curso.</span>
       </div>
 
       <label id="dropzone" for="fileInput">
@@ -269,7 +259,6 @@
     // --- CONFIGURAÇÃO ---
     const TUS_ENDPOINT = "https://tus-upload-server-1019908552664.southamerica-east1.run.app/files/";
 
-    // Elementos
     const uploadScreen = document.getElementById("uploadScreen");
     const successScreen = document.getElementById("success");
     const dropzone = document.getElementById("dropzone");
@@ -279,21 +268,19 @@
     const percentageText = document.getElementById("percentageText");
     const errorMsg = document.getElementById("error");
     
-    // Inputs
     const inputName = document.getElementById("studentName");
     const inputEmail = document.getElementById("studentEmail");
 
-    // Variável para a Aula (via URL)
     let lessonName = "Aula Geral";
 
-    // Captura parâmetro da URL ao carregar
+    // Captura parâmetro da URL
     window.addEventListener('DOMContentLoaded', () => {
       const params = new URLSearchParams(window.location.search);
       const urlLesson = params.get('aula') || params.get('lesson');
       if (urlLesson) lessonName = urlLesson;
     });
 
-    // UX: Eventos de Drag & Drop
+    // Drag & Drop Visual
     dropzone.addEventListener("dragover", (e) => {
       e.preventDefault();
       if (!dropzone.classList.contains("disabled")) {
@@ -321,7 +308,6 @@
       if (file) validateAndStart(file);
     });
 
-    // Validação
     function validateAndStart(file) {
       const name = inputName.value.trim();
       const email = inputEmail.value.trim();
@@ -336,21 +322,18 @@
       startUpload(file, name, email);
     }
 
-    // Upload
     function startUpload(file, name, email) {
-      // Prepara UI
       errorMsg.classList.add("hidden");
       progressContainer.classList.remove("hidden");
       dropzone.classList.add("disabled");
       dropzone.innerHTML = "<strong>Aguarde...</strong>";
       
-      // Bloqueia edição
       inputName.disabled = true;
       inputEmail.disabled = true;
 
       const upload = new tus.Upload(file, {
         endpoint: TUS_ENDPOINT,
-        chunkSize: 10485760, // 10MB
+        chunkSize: 10485760,
         retryDelays: [0, 1000, 3000, 5000],
         metadata: {
           filename: file.name,
@@ -366,7 +349,6 @@
           errorMsg.innerHTML = "❌ <strong>Falha no envio:</strong><br>Verifique sua conexão e tente novamente.";
           errorMsg.classList.remove("hidden");
           
-          // Restaura para tentar de novo
           dropzone.classList.remove("disabled");
           dropzone.innerHTML = "<strong>Selecionar Vídeo</strong>";
           fileInput.value = "";
@@ -383,7 +365,6 @@
         onSuccess: function() {
           uploadScreen.classList.add("hidden");
           successScreen.classList.remove("hidden");
-          console.log("Upload OK:", upload.url);
         }
       });
 
