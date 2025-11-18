@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Clube do Ukulele - Envio de Tarefa</title>
+  <title>Clube do Ukulele - Envio v2</title>
 
   <style>
     /* --- Reset e Base --- */
@@ -79,61 +79,51 @@
       transition: all 0.2s ease; 
     }
     
-    /* Estilo quando o nome vem automático (Travado) */
+    /* Estilo Travado */
     .form-input:read-only {
-      background-color: #151515; /* Mais escuro */
+      background-color: #111; 
       border-color: #333;
-      color: #888; /* Texto cinza */
+      color: #999;
       cursor: not-allowed;
     }
     
-    .form-input::placeholder { color: #777; }
     .form-input:focus { 
       outline: none; 
       border-color: #FF6D00; 
       background-color: #333; 
-      box-shadow: 0 0 0 2px rgba(255, 109, 0, 0.2); 
     }
 
-    /* --- Área de Upload --- */
+    /* --- Upload --- */
     #dropzone { 
-      display: flex; 
-      flex-direction: column; 
-      align-items: center; 
-      justify-content: center; 
-      border: 2px dashed #555; 
-      border-radius: 12px; 
-      padding: 35px 20px; 
-      cursor: pointer; 
-      background-color: #111; 
-      color: #bbb; 
-      transition: all 0.2s ease; 
-      margin-top: 10px; 
-      min-height: 130px; 
+      display: flex; flex-direction: column; align-items: center; justify-content: center; 
+      border: 2px dashed #555; border-radius: 12px; padding: 35px 20px; 
+      cursor: pointer; background-color: #111; color: #bbb; transition: all 0.2s ease; 
+      margin-top: 10px; min-height: 130px; 
     }
     #dropzone strong { color: #FF6D00; font-size: 1.1rem; margin-bottom: 5px; text-transform: uppercase; }
-    #dropzone span { font-size: 0.9rem; }
     #dropzone:hover { background-color: #1f1f1f; border-color: #FF6D00; transform: translateY(-2px); }
     #dropzone.disabled { pointer-events: none; opacity: 0.5; filter: grayscale(100%); border-style: solid; }
 
-    /* Utilitários */
     .visually-hidden { position: absolute; height: 1px; width: 1px; overflow: hidden; clip: rect(1px, 1px, 1px, 1px); opacity: 0; }
     .hidden { display: none !important; }
 
-    /* --- Barra de Progresso --- */
+    /* --- Progresso e Mensagens --- */
     .progress-wrapper { margin-top: 25px; text-align: left; }
     .progress-info { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem; color: #FF6D00; font-weight: bold; }
     progress { width: 100%; height: 10px; border-radius: 5px; overflow: hidden; background-color: #333; appearance: none; border: none; }
     progress::-webkit-progress-bar { background-color: #333; border-radius: 5px; }
     progress::-webkit-progress-value { background-color: #FF6D00; border-radius: 5px; transition: width 0.3s ease; }
 
-    /* --- Mensagens Finais --- */
     #success { padding: 40px 20px; animation: fadeIn 0.5s ease; }
     .success-icon { font-size: 4rem; margin-bottom: 20px; display: block; }
     #error { background-color: #2a0a0a; color: #ff6b6b; padding: 15px; border-radius: 8px; border: 1px solid #ff3333; margin-top: 20px; text-align: left; font-size: 0.9rem; }
 
+    /* Rodapé de Versão (Para Debug) */
+    .version-tag {
+        margin-top: 20px; font-size: 0.7rem; color: #444;
+    }
+
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    @media (max-width: 480px) { .container { padding: 20px; border: none; background: transparent; box-shadow: none; } body { padding: 0; } }
   </style>
   
   <script src="https://cdn.jsdelivr.net/npm/tus-js-client@2.3.0/dist/tus.min.js"></script>
@@ -144,7 +134,6 @@
     <div id="uploadScreen">
       <h2>Enviar Tarefa</h2>
       
-      <!-- Mensagem ajustável -->
       <div class="info-box" id="infoBox">
         <strong>Por que pedimos seus dados?</strong>
         Usamos seu nome e e-mail para identificar o envio e garantir que você receba o feedback.
@@ -175,14 +164,18 @@
         <progress id="progressBar" value="0" max="100"></progress>
       </div>
       <div id="error" class="hidden"></div>
+      
+      <!-- TAG DE DEBUG (Para sabermos se chegou) -->
+      <div class="version-tag">
+        System v2.1 | <span id="debug-msg">Aguardando dados...</span>
+      </div>
     </div>
 
     <div id="success" class="hidden">
       <span class="success-icon">✅</span>
       <h2 style="color: #4caf50; margin-bottom: 15px;">Vídeo Enviado!</h2>
       <p style="color: #ccc; font-size: 1rem; line-height: 1.5;">
-        Recebemos sua tarefa com sucesso.<br>
-        Agora é só aguardar a nossa análise.
+        Recebemos sua tarefa com sucesso.
       </p>
     </div>
   </div>
@@ -190,6 +183,12 @@
   <script>
     const TUS_ENDPOINT = "https://tus-upload-server-1019908552664.southamerica-east1.run.app/files/";
     
+    const inputName = document.getElementById("studentName");
+    const inputEmail = document.getElementById("studentEmail");
+    const infoBox = document.getElementById("infoBox");
+    const debugMsg = document.getElementById("debug-msg");
+    
+    // Elementos UI
     const uploadScreen = document.getElementById("uploadScreen");
     const successScreen = document.getElementById("success");
     const dropzone = document.getElementById("dropzone");
@@ -198,38 +197,55 @@
     const progressBar = document.getElementById("progressBar");
     const percentageText = document.getElementById("percentageText");
     const errorMsg = document.getElementById("error");
-    const inputName = document.getElementById("studentName");
-    const inputEmail = document.getElementById("studentEmail");
-    const infoBox = document.getElementById("infoBox");
-    
+
     let lessonName = "Aula Geral";
 
-    // --- O CÉREBRO: LÊ A URL E PREENCHE O NOME ---
+    // --- LÓGICA INTELIGENTE DE CAPTURA ---
     window.addEventListener('DOMContentLoaded', () => {
       const params = new URLSearchParams(window.location.search);
       
-      // 1. Pega a Aula
+      // 1. Captura Aula
       const urlLesson = params.get('aula') || params.get('lesson');
       if (urlLesson) lessonName = urlLesson;
 
-      // 2. Pega o Nome (vindo do botão da Hotmart)
-      const urlName = params.get('nome') || params.get('name');
+      // 2. Captura Nome (Forçando decodificação de espaços)
+      let urlName = params.get('nome') || params.get('name');
       
-      // Se tiver nome válido (que não seja o código *|NAME|* cru)
+      // Debug Visual: Mostra o que chegou
+      if (urlName) {
+          debugMsg.textContent = "Recebido: " + urlName.substring(0, 15) + "...";
+      } else {
+          debugMsg.textContent = "Nenhum nome na URL.";
+      }
+
+      // Se chegou algo que não seja o código puro '*|NAME|*'
       if (urlName && urlName.indexOf('*|') === -1) {
-        inputName.value = urlName;       // Preenche
-        inputName.readOnly = true;       // Trava edição
-        inputName.style.opacity = "0.7"; // Visual de travado
+        inputName.value = urlName;        // Preenche o campo
+        inputName.readOnly = true;        // Trava
+        inputName.style.opacity = "0.7";  // Visual cinza
         
-        // Muda a mensagem para focar só no e-mail
-        infoBox.innerHTML = "<strong>Olá, " + urlName.split(' ')[1] + "!</strong><br>Por favor, confirme seu e-mail abaixo para enviar.";
+        // Tenta ser simpático e pegar só o primeiro nome real (pula os números do ID)
+        // Ex: "44.164 MARCO NANKRAN" -> Tenta pegar "MARCO"
+        let friendlyName = "Aluno";
+        const parts = urlName.split(' ');
         
-        // Foca no campo de email automaticamente
+        // Procura a primeira parte que não seja número/ponto
+        for(let part of parts) {
+            if(part.length > 2 && !part.includes('.')) {
+                friendlyName = part;
+                break;
+            }
+        }
+
+        // Atualiza a caixa de info
+        infoBox.innerHTML = "<strong>Olá, " + friendlyName + "!</strong><br>Confirme seu e-mail abaixo para liberar o envio.";
+        
+        // Foca no email automaticamente
         setTimeout(() => inputEmail.focus(), 500);
       }
     });
 
-    // --- Funções de Upload (Padrão) ---
+    // --- UPLOAD ---
     dropzone.addEventListener("dragover", (e) => { e.preventDefault(); if (!dropzone.classList.contains("disabled")) { dropzone.style.backgroundColor = "#222"; dropzone.style.borderColor = "#FF9100"; } });
     dropzone.addEventListener("dragleave", () => { if (!dropzone.classList.contains("disabled")) { dropzone.style.backgroundColor = "#111"; dropzone.style.borderColor = "#555"; } });
     dropzone.addEventListener("drop", (e) => { e.preventDefault(); dropzone.style.backgroundColor = "#111"; dropzone.style.borderColor = "#555"; if (dropzone.classList.contains("disabled")) return; const file = e.dataTransfer.files[0]; if (file) validateAndStart(file); });
@@ -240,9 +256,9 @@
       const email = inputEmail.value.trim();
 
       if (!name || !email) {
-        alert("⚠️ Atenção:\n\nPor favor, preencha o E-MAIL antes de selecionar o vídeo.");
+        alert("Por favor, preencha o E-MAIL para continuar.");
         fileInput.value = ""; 
-        if(!name) inputName.focus();
+        if(!name && !inputName.readOnly) inputName.focus();
         else inputEmail.focus();
         return;
       }
@@ -254,7 +270,9 @@
       progressContainer.classList.remove("hidden");
       dropzone.classList.add("disabled");
       dropzone.innerHTML = "<strong>Aguarde...</strong><span>Enviando arquivo...</span>";
-      inputName.disabled = true;
+      
+      // Trava tudo
+      if(!inputName.readOnly) inputName.disabled = true;
       inputEmail.disabled = true;
 
       const upload = new tus.Upload(file, {
@@ -264,20 +282,19 @@
         metadata: {
           filename: file.name,
           filetype: file.type,
-          student_name: name,
+          student_name: name, // É AQUI QUE VAI PRO STORAGE
           student_email: email,
           lesson: lessonName,
           upload_date: new Date().toISOString()
         },
         onError: function(error) {
           console.error("Erro:", error);
-          errorMsg.innerHTML = "❌ <strong>Falha no envio:</strong><br>Verifique sua conexão e tente novamente.";
+          errorMsg.innerHTML = "❌ Erro no envio. Tente novamente.";
           errorMsg.classList.remove("hidden");
           dropzone.classList.remove("disabled");
-          dropzone.innerHTML = "<strong>Selecionar Vídeo</strong><span>Clique ou arraste o arquivo</span>";
+          dropzone.innerHTML = "<strong>Selecionar Vídeo</strong>";
           fileInput.value = "";
-          // Se não estava travado, libera de novo
-          if (!inputName.readOnly) inputName.disabled = false;
+          if(!inputName.readOnly) inputName.disabled = false;
           inputEmail.disabled = false;
         },
         onProgress: function(bytesUploaded, bytesTotal) {
