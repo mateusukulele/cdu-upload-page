@@ -11,10 +11,10 @@
 
     body {
       font-family: 'Roboto', 'Segoe UI', sans-serif;
-      background-color: transparent; /* Fundo transparente para mesclar com iframe se necessário */
+      background-color: transparent; /* Fundo transparente para o iframe */
       color: #FFFFFF;
       margin: 0;
-      padding: 20px;
+      padding: 15px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -28,7 +28,7 @@
       padding: 30px;
       border-radius: 16px;
       width: 100%;
-      max-width: 420px; /* Largura ideal para leitura */
+      max-width: 420px;
       border: 1px solid #333;
       box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
       text-align: center;
@@ -37,27 +37,39 @@
 
     h2 {
       color: #FFFFFF;
-      margin: 0 0 10px 0;
+      margin: 0 0 15px 0;
       font-weight: 700;
-      font-size: 1.5rem;
+      font-size: 1.4rem;
     }
 
-    p.description {
-      color: #bbb;
+    /* --- Box de Informação (UX) --- */
+    .info-box {
+      background-color: rgba(255, 109, 0, 0.05); /* Laranja muito suave */
+      border-left: 3px solid #FF6D00;
+      padding: 12px 15px;
+      border-radius: 0 4px 4px 0;
       margin-bottom: 25px;
-      font-size: 0.9rem;
-      line-height: 1.5;
+      text-align: left;
+      font-size: 0.85rem;
+      color: #ccc;
+      line-height: 1.4;
     }
 
-    /* --- Campos de Texto (Nome/Email) --- */
+    .info-box strong {
+      color: #FF6D00;
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    /* --- Campos de Texto --- */
     .form-group {
-      margin-bottom: 15px;
+      margin-bottom: 20px;
       text-align: left;
     }
 
     .form-group label {
       display: block;
-      color: #FF6D00; /* Laranja Marca */
+      color: #FF6D00;
       font-size: 0.8rem;
       margin-bottom: 6px;
       font-weight: 700;
@@ -81,6 +93,15 @@
       border-color: #FF6D00;
       background-color: #151515;
       box-shadow: 0 0 0 3px rgba(255, 109, 0, 0.2);
+    }
+
+    /* Texto de ajuda abaixo do input */
+    .input-helper {
+      display: block;
+      margin-top: 6px;
+      font-size: 0.75rem;
+      color: #888;
+      font-style: italic;
     }
 
     /* --- Área de Upload (Dropzone) --- */
@@ -115,7 +136,6 @@
       transform: translateY(-2px);
     }
 
-    /* Estados do Dropzone */
     #dropzone.disabled {
       pointer-events: none;
       opacity: 0.5;
@@ -123,7 +143,7 @@
       border-style: solid;
     }
 
-    /* Utilitários de Visibilidade */
+    /* Utilitários */
     .visually-hidden { position: absolute; height: 1px; width: 1px; overflow: hidden; clip: rect(1px, 1px, 1px, 1px); opacity: 0; }
     .hidden { display: none !important; }
 
@@ -158,7 +178,7 @@
     }
     
     .success-icon {
-      font-size: 3rem;
+      font-size: 3.5rem;
       margin-bottom: 15px;
       display: block;
     }
@@ -182,10 +202,12 @@
     /* Ajuste Mobile */
     @media (max-width: 480px) {
       .container { padding: 20px; border: none; background: transparent; box-shadow: none; }
-      body { padding: 10px; align-items: flex-start; }
+      body { padding: 5px; }
+      h2 { font-size: 1.2rem; }
     }
   </style>
 
+  <!-- TUS Library -->
   <script src="https://cdn.jsdelivr.net/npm/tus-js-client@2.3.0/dist/tus.min.js"></script>
 </head>
 
@@ -195,16 +217,22 @@
     <!-- TELA DE UPLOAD E FORMULÁRIO -->
     <div id="uploadScreen">
       <h2>Enviar Tarefa</h2>
-      <p class="description">Preencha seus dados para identificarmos seu vídeo.</p>
-
-      <div class="form-group">
-        <label for="studentName">Nome Completo</label>
-        <input type="text" id="studentName" class="form-input" placeholder="Digite seu nome">
+      
+      <!-- Box Explicativo -->
+      <div class="info-box">
+        <strong>Por que pedimos seus dados?</strong>
+        Usamos seu nome e e-mail para identificar o envio e garantir que você receba o feedback da sua análise.
       </div>
 
       <div class="form-group">
-        <label for="studentEmail">E-mail de Aluno</label>
-        <input type="email" id="studentEmail" class="form-input" placeholder="seu@email.com">
+        <label for="studentName">Nome Completo</label>
+        <input type="text" id="studentName" class="form-input" placeholder="Ex: João da Silva">
+      </div>
+
+      <div class="form-group">
+        <label for="studentEmail">Seu Melhor E-mail</label>
+        <input type="email" id="studentEmail" class="form-input" placeholder="Ex: joao@email.com">
+        <span class="input-helper">ℹ️ Utilize o e-mail usado na compra do curso.</span>
       </div>
 
       <label id="dropzone" for="fileInput">
@@ -225,11 +253,14 @@
       <div id="error" class="hidden"></div>
     </div>
 
-    <!-- TELA DE SUCESSO (Inicialmente oculta) -->
+    <!-- TELA DE SUCESSO -->
     <div id="success" class="hidden">
       <span class="success-icon">✅</span>
-      <h2 style="color: #4caf50;">Sucesso!</h2>
-      <p style="color: #ddd; margin-top: 10px;">Seu vídeo foi enviado corretamente.<br>Nossa equipe irá avaliar em breve.</p>
+      <h2 style="color: #4caf50; margin-bottom: 10px;">Vídeo Enviado!</h2>
+      <p style="color: #ccc; font-size: 0.95rem; line-height: 1.5;">
+        Recebemos sua tarefa com sucesso.<br>
+        Agora é só aguardar a nossa análise.
+      </p>
     </div>
 
   </div>
@@ -246,7 +277,6 @@
     const progressContainer = document.getElementById("progressContainer");
     const progressBar = document.getElementById("progressBar");
     const percentageText = document.getElementById("percentageText");
-    const statusText = document.getElementById("statusText");
     const errorMsg = document.getElementById("error");
     
     // Inputs
@@ -256,14 +286,14 @@
     // Variável para a Aula (via URL)
     let lessonName = "Aula Geral";
 
-    // Captura parâmetro da URL ao carregar (?aula=X)
+    // Captura parâmetro da URL ao carregar
     window.addEventListener('DOMContentLoaded', () => {
       const params = new URLSearchParams(window.location.search);
       const urlLesson = params.get('aula') || params.get('lesson');
       if (urlLesson) lessonName = urlLesson;
     });
 
-    // Eventos de Drag & Drop (UX Visual)
+    // UX: Eventos de Drag & Drop
     dropzone.addEventListener("dragover", (e) => {
       e.preventDefault();
       if (!dropzone.classList.contains("disabled")) {
@@ -291,15 +321,14 @@
       if (file) validateAndStart(file);
     });
 
-    // Validação antes do envio
+    // Validação
     function validateAndStart(file) {
       const name = inputName.value.trim();
       const email = inputEmail.value.trim();
 
       if (!name || !email) {
-        alert("⚠️ Por favor, preencha seu NOME e E-MAIL antes de selecionar o vídeo.");
-        fileInput.value = ""; // Limpa seleção
-        // Foca no campo vazio
+        alert("⚠️ Atenção:\n\nPrecisamos do seu NOME e E-MAIL para identificar o vídeo.\nPor favor, preencha os campos antes de enviar.");
+        fileInput.value = ""; 
         if(!name) inputName.focus();
         else inputEmail.focus();
         return;
@@ -307,15 +336,15 @@
       startUpload(file, name, email);
     }
 
-    // Processo de Upload
+    // Upload
     function startUpload(file, name, email) {
-      // UI de Carregamento
+      // Prepara UI
       errorMsg.classList.add("hidden");
       progressContainer.classList.remove("hidden");
       dropzone.classList.add("disabled");
       dropzone.innerHTML = "<strong>Aguarde...</strong>";
       
-      // Trava inputs
+      // Bloqueia edição
       inputName.disabled = true;
       inputEmail.disabled = true;
 
@@ -334,10 +363,10 @@
 
         onError: function(error) {
           console.error("Erro:", error);
-          errorMsg.innerHTML = "❌ Falha no envio. Tente novamente ou verifique sua conexão.";
+          errorMsg.innerHTML = "❌ <strong>Falha no envio:</strong><br>Verifique sua conexão e tente novamente.";
           errorMsg.classList.remove("hidden");
           
-          // Restaura UI para tentar de novo
+          // Restaura para tentar de novo
           dropzone.classList.remove("disabled");
           dropzone.innerHTML = "<strong>Selecionar Vídeo</strong>";
           fileInput.value = "";
@@ -352,10 +381,9 @@
         },
 
         onSuccess: function() {
-          // Troca a tela inteira pela mensagem de sucesso
-          uploadScreen.classList.add("hidden"); // Esconde formulário
-          successScreen.classList.remove("hidden"); // Mostra sucesso
-          console.log("Upload concluído:", upload.url);
+          uploadScreen.classList.add("hidden");
+          successScreen.classList.remove("hidden");
+          console.log("Upload OK:", upload.url);
         }
       });
 
