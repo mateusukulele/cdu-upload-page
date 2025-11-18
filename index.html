@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Clube do Ukulele - Envio Dark</title>
+  <title>Clube do Ukulele - Envio Laranja</title>
 
   <style>
-    /* --- Estilo Google Dark Mode --- */
+    /* --- Estilo Dark Mode Contrastado --- */
     body {
       font-family: 'Roboto', 'Segoe UI', sans-serif;
-      background-color: #131314;
-      color: #E3E3E3;
+      background-color: #000000; /* Preto Absoluto */
+      color: #FFFFFF;
       margin: 0;
       display: flex;
       justify-content: center;
@@ -19,66 +19,70 @@
     }
 
     .container {
-      background: #1E1F20;
+      background: #1a1a1a; /* Cinza bem escuro */
       padding: 40px;
       border-radius: 16px;
       width: 90%;
       max-width: 500px;
-      border: 1px solid #444746;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+      border: 1px solid #333;
+      box-shadow: 0 0 50px rgba(255, 109, 0, 0.1); /* Brilho Laranja sutil */
       text-align: center;
-      position: relative;
     }
 
     h2 {
       color: #FFFFFF;
       margin-top: 0;
-      margin-bottom: 12px;
-      font-weight: 500;
+      margin-bottom: 15px;
+      font-weight: 600;
     }
 
     p {
-      color: #C4C7C5;
+      color: #CCCCCC;
       margin-bottom: 30px;
-      font-size: 0.95rem;
-      line-height: 1.5;
+      font-size: 1rem;
     }
 
-    /* Área de arrastar e soltar */
+    /* --- A ÁREA DE CLIQUE (Mudou de DIV para LABEL) --- */
     #dropzone {
-      border: 2px dashed #444746;
+      display: block; /* Importante para funcionar como caixa */
+      border: 2px dashed #FF6D00; /* LARANJA DESTAQUE */
       border-radius: 12px;
       padding: 60px 20px;
       cursor: pointer;
-      background-color: #131314;
-      color: #C4C7C5;
+      background-color: #111;
+      color: #FF6D00; /* Texto Laranja */
       transition: all 0.2s ease;
-      position: relative; /* Importante para o clique */
+      margin-bottom: 20px;
     }
 
     #dropzone strong {
-      color: #A8C7FA;
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       display: block;
-      margin-bottom: 5px;
-      pointer-events: none; /* Garante que o clique vá para a div pai */
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
     
     #dropzone span {
-      pointer-events: none;
+      color: #999; /* Cor secundária */
+      font-size: 0.9rem;
     }
 
     #dropzone:hover {
-      border-color: #A8C7FA;
-      background-color: #1F1F29;
+      background-color: #251000; /* Fundo laranja bem escuro no hover */
+      border-color: #FF9100;
+      transform: scale(1.01);
     }
 
+    /* Quando desativado (durante upload) */
     #dropzone.disabled {
-      pointer-events: none;
-      opacity: 0.5;
+      pointer-events: none; /* Trava clique */
+      opacity: 0.4;
+      border-color: #555;
+      filter: grayscale(100%);
     }
 
-    /* O segredo para o input funcionar sempre: não usar display:none */
+    /* Esconde o input original mas mantendo acessibilidade */
     .visually-hidden {
       position: absolute !important;
       height: 1px;
@@ -95,7 +99,7 @@
 
     /* Barra de Progresso */
     .progress-wrapper {
-      margin-top: 30px;
+      margin-top: 20px;
       text-align: left;
     }
 
@@ -104,78 +108,69 @@
       justify-content: space-between;
       margin-bottom: 8px;
       font-size: 14px;
-      color: #A8C7FA;
+      color: #FF6D00; /* Laranja */
       font-weight: bold;
     }
 
     progress {
       width: 100%;
-      height: 8px;
-      border-radius: 4px;
+      height: 10px;
+      border-radius: 5px;
       overflow: hidden;
-      background-color: #444746;
+      background-color: #333;
       appearance: none;
       border: none;
     }
     
     progress::-webkit-progress-bar {
-      background-color: #444746;
-      border-radius: 4px;
+      background-color: #333;
+      border-radius: 5px;
     }
 
     progress::-webkit-progress-value {
-      background-color: #A8C7FA;
-      border-radius: 4px;
+      background-color: #FF6D00; /* Barra Laranja */
+      border-radius: 5px;
       transition: width 0.3s ease;
-    }
-
-    progress::-moz-progress-bar {
-      background-color: #A8C7FA;
-      border-radius: 4px;
     }
 
     /* Mensagens */
     #success {
-      background-color: #0F291E;
-      color: #6DD58C;
+      background-color: #0a1a0a; 
+      color: #4caf50;
       padding: 20px;
       border-radius: 12px;
-      margin-top: 25px;
-      border: 1px solid #146c2e;
-      text-align: center;
+      border: 1px solid #4caf50;
+      margin-top: 20px;
     }
 
     #error {
-      background-color: #311110;
-      color: #F2B8B5;
+      background-color: #1a0a0a;
+      color: #ff5252;
       padding: 20px;
       border-radius: 12px;
-      margin-top: 25px;
-      border: 1px solid #8C1D18;
+      border: 1px solid #ff5252;
+      margin-top: 20px;
       word-break: break-word;
-      font-size: 0.9rem;
     }
 
-    /* Botão */
+    /* Botão Reiniciar */
     .btn-reset {
       margin-top: 15px;
-      background-color: #A8C7FA;
-      color: #062E6F;
+      background-color: #FF6D00;
+      color: #000;
       border: none;
-      padding: 10px 24px;
-      border-radius: 24px;
+      padding: 12px 30px;
+      border-radius: 30px;
       cursor: pointer;
-      font-weight: 600;
+      font-weight: 800;
       font-size: 14px;
-      transition: background 0.2s, transform 0.1s;
+      text-transform: uppercase;
+      transition: background 0.2s;
     }
 
     .btn-reset:hover {
-      background-color: #D2E3FC;
-    }
-    
-    .btn-reset:active {
-      transform: scale(0.98);
+      background-color: #FF9100;
+      box-shadow: 0 0 15px rgba(255, 109, 0, 0.4);
     }
   </style>
 
@@ -187,31 +182,29 @@
   <div class="container">
 
     <h2>Enviar Vídeo</h2>
-    <p>Arraste seu arquivo para a área abaixo<br>ou clique para selecionar.</p>
+    <p>Selecione seu arquivo abaixo.</p>
 
-    <!-- Área de clique -->
-    <div id="dropzone">
+    <!-- A MÁGICA: Usar LABEL em vez de DIV faz o clique funcionar nativamente -->
+    <label id="dropzone" for="fileInput">
       <strong>Clique para Selecionar</strong>
-      <span style="font-size: 0.9rem;">ou solte o arquivo aqui</span>
-    </div>
+      <span>ou arraste o arquivo aqui</span>
+    </label>
 
-    <!-- Input Escondido (mas clicável via JS) -->
+    <!-- Input escondido ligado ao Label acima -->
     <input id="fileInput" type="file" accept="video/*" class="visually-hidden" />
 
     <div class="progress-wrapper hidden" id="progressContainer">
       <div class="progress-info">
-        <span>Enviando...</span>
+        <span>Carregando...</span>
         <span id="percentageText">0%</span>
       </div>
       <progress id="progressBar" value="0" max="100"></progress>
     </div>
 
     <div id="success" class="hidden">
-      <div style="font-size: 1.5rem; margin-bottom: 10px;">🎉</div>
+      <div style="font-size: 2rem; margin-bottom: 10px;">✅</div>
       <strong>Upload Concluído!</strong><br>
-      <span style="font-size: 0.9rem; opacity: 0.8;">Seu vídeo foi enviado com sucesso.</span>
-      <br><br>
-      <button class="btn-reset" onclick="resetUpload()">Enviar outro vídeo</button>
+      <button class="btn-reset" onclick="resetUpload()">Enviar Outro</button>
     </div>
 
     <div id="error" class="hidden"></div>
@@ -222,7 +215,6 @@
     // --- CONFIGURAÇÃO ---
     const TUS_ENDPOINT = "https://tus-upload-server-1019908552664.southamerica-east1.run.app/files/";
 
-    // Seleção de Elementos
     const dropzone = document.getElementById("dropzone");
     const fileInput = document.getElementById("fileInput");
     const progressContainer = document.getElementById("progressContainer");
@@ -231,62 +223,50 @@
     const successMsg = document.getElementById("success");
     const errorMsg = document.getElementById("error");
 
-    // --- EVENTOS ---
+    // --- EVENTOS DRAG & DROP (Visual apenas, pois o Label cuida do clique) ---
 
-    // Clique na caixa dispara o clique no input
-    dropzone.addEventListener("click", (e) => {
-      // Evita loop infinito se o clique vier do próprio input
-      if (e.target === fileInput) return;
-      
-      if (!dropzone.classList.contains("disabled")) {
-        console.log("Abrindo seletor de arquivos...");
-        fileInput.click();
-      }
-    });
-
-    // Efeitos visuais de arrastar (Drag & Drop)
     dropzone.addEventListener("dragover", (e) => {
       e.preventDefault();
       if (!dropzone.classList.contains("disabled")) {
-        dropzone.style.borderColor = "#A8C7FA";
-        dropzone.style.backgroundColor = "#1F1F29";
+        dropzone.style.backgroundColor = "#251000";
+        dropzone.style.borderColor = "#FF9100";
       }
     });
 
     dropzone.addEventListener("dragleave", () => {
       if (!dropzone.classList.contains("disabled")) {
-        dropzone.style.borderColor = "#444746";
-        dropzone.style.backgroundColor = "#131314";
+        dropzone.style.backgroundColor = "#111";
+        dropzone.style.borderColor = "#FF6D00";
       }
     });
 
     dropzone.addEventListener("drop", (e) => {
-      e.preventDefault();
-      // Reseta estilo
-      dropzone.style.borderColor = "#444746";
-      dropzone.style.backgroundColor = "#131314";
+      e.preventDefault(); // Impede o navegador de abrir o arquivo na aba
+      
+      // Reseta visual
+      dropzone.style.backgroundColor = "#111";
+      dropzone.style.borderColor = "#FF6D00";
       
       if (dropzone.classList.contains("disabled")) return;
 
+      // Pega o arquivo arrastado
       const file = e.dataTransfer.files[0];
       if (file) startUpload(file);
     });
 
-    // Quando o usuário seleciona o arquivo na janelinha
+    // Detecta quando o usuário escolheu o arquivo pelo clique normal
     fileInput.addEventListener("change", () => {
       const file = fileInput.files[0];
       if (file) startUpload(file);
     });
 
-    // --- LÓGICA DE UPLOAD ---
+    // --- FUNÇÃO DE UPLOAD ---
 
     function startUpload(file) {
       resetUI(true);
       
       const upload = new tus.Upload(file, {
         endpoint: TUS_ENDPOINT,
-        
-        // Configurações Seguras
         chunkSize: 10485760, // 10MB
         retryDelays: [0, 1000, 3000, 5000],
         metadata: {
@@ -295,10 +275,11 @@
         },
 
         onError: function(error) {
-          console.error("Erro TUS:", error);
-          errorMsg.innerHTML = "❌ <strong>Ocorreu um erro:</strong><br>" + error + 
+          console.error("Erro:", error);
+          errorMsg.innerHTML = "❌ <strong>Erro:</strong><br>" + error + 
                                "<br><br><button class='btn-reset' onclick='resetUpload()'>Tentar Novamente</button>";
           errorMsg.classList.remove("hidden");
+          // Reabilita o dropzone em caso de erro
           dropzone.classList.remove("disabled");
         },
 
@@ -309,7 +290,7 @@
         },
 
         onSuccess: function() {
-          console.log("Sucesso! URL:", upload.url);
+          console.log("Sucesso:", upload.url);
           progressContainer.classList.add("hidden");
           successMsg.classList.remove("hidden");
         }
@@ -318,7 +299,7 @@
       upload.start();
     }
 
-    // --- FUNÇÕES VISUAIS ---
+    // --- CONTROLE VISUAL ---
 
     function resetUI(isUploading) {
       if (isUploading) {
@@ -326,9 +307,9 @@
         errorMsg.classList.add("hidden");
         progressContainer.classList.remove("hidden");
         
+        // Trava o label visualmente
         dropzone.classList.add("disabled");
-        dropzone.innerHTML = "<strong>Enviando...</strong><br><span style='font-size:0.9rem'>Por favor, aguarde.</span>";
-        dropzone.style.opacity = "0.7";
+        dropzone.innerHTML = "<strong>Enviando...</strong><span>Por favor, aguarde.</span>";
         
         progressBar.value = 0;
         percentageText.textContent = "0%";
@@ -336,17 +317,13 @@
     }
 
     function resetUpload() {
-      fileInput.value = ""; // Limpa seleção anterior
+      fileInput.value = "";
       successMsg.classList.add("hidden");
       errorMsg.classList.add("hidden");
       progressContainer.classList.add("hidden");
       
       dropzone.classList.remove("disabled");
-      dropzone.style.opacity = "1";
-      dropzone.innerHTML = "<strong>Clique para Selecionar</strong><span style='font-size: 0.9rem;'>ou solte o arquivo aqui</span>";
-      
-      dropzone.style.borderColor = "#444746";
-      dropzone.style.backgroundColor = "#131314";
+      dropzone.innerHTML = "<strong>Clique para Selecionar</strong><span>ou arraste o arquivo aqui</span>";
     }
   </script>
 </body>
