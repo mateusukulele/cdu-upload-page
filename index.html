@@ -71,6 +71,7 @@
     }
   </style>
 
+  <!-- Biblioteca TUS -->
   <script src="https://cdn.jsdelivr.net/npm/tus-js-client@2.3.0/dist/tus.min.js"></script>
 </head>
 
@@ -101,7 +102,8 @@
     const successMsg = document.getElementById("success");
     const errorMsg = document.getElementById("error");
 
-    const TUS_ENDPOINT = "https://tus-upload-server-1019908552664.southamerica-east1.run.app/files";
+    // Endpoint do seu servidor no Google Cloud Run
+    const TUS_ENDPOINT = "https://tus-upload-server-1019908552664.southamerica-east1.run.app/files/";
 
     dropzone.addEventListener("click", () => fileInput.click());
 
@@ -132,8 +134,16 @@
       progressContainer.classList.remove("hidden");
       progressBar.value = 0;
 
+      // Configuração do Upload
       const upload = new tus.Upload(file, {
         endpoint: TUS_ENDPOINT,
+        
+        // --- CORREÇÃO DO ERRO 413 ---
+        // Define o tamanho do pedaço (chunk) para 5MB (5 * 1024 * 1024 bytes).
+        // Isso evita que o Cloud Run bloqueie uploads grandes.
+        chunkSize: 5242880, 
+        // -----------------------------
+
         retryDelays: [0, 1000, 3000, 5000],
         metadata: {
           filename: file.name,
@@ -141,6 +151,7 @@
         },
 
         onError: function(error) {
+          console.error("Erro detalhado:", error);
           errorMsg.textContent = "Erro ao enviar: " + error;
           errorMsg.classList.remove("hidden");
         },
@@ -151,11 +162,13 @@
         },
 
         onSuccess: function() {
-          successMsg.textContent = "Envio concluído!";
+          console.log("Upload concluído:", upload.url);
+          successMsg.textContent = "Envio concluído com sucesso!";
           successMsg.classList.remove("hidden");
         }
       });
 
+      // Inicia o envio
       upload.start();
     }
   </script>
