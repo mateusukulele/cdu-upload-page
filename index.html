@@ -206,13 +206,8 @@
         endpoint: TUS_ENDPOINT,
         
         // --- ACELERADORES ---
-        
-        // Aumentado para 10MB (Menos requisições HTTP)
-        chunkSize: 10485760, 
-
-        // Envia 2 pedaços simultaneamente (Usa mais banda)
-        parallelUploads: 2,
-
+        chunkSize: 10485760, // 10MB
+        parallelUploads: 2,  // Envio paralelo
         // --------------------
         
         retryDelays: [0, 1000, 3000, 5000],
@@ -224,4 +219,47 @@
         onError: function(error) {
           console.error("Erro:", error);
           errorMsg.innerHTML = "❌ <strong>Erro:</strong> " + error + 
-                               "<br><button class='btn-reset' onclick='resetUploa
+                               "<br><button class='btn-reset' onclick='resetUpload()'>Tentar Novamente</button>";
+          errorMsg.classList.remove("hidden");
+          dropzone.classList.remove("disabled");
+        },
+
+        onProgress: function(bytesUploaded, bytesTotal) {
+          const percentage = ((bytesUploaded / bytesTotal) * 100).toFixed(0);
+          progressBar.value = percentage;
+          percentageText.textContent = percentage + "%";
+        },
+
+        onSuccess: function() {
+          console.log("Upload concluído:", upload.url);
+          progressContainer.classList.add("hidden");
+          successMsg.classList.remove("hidden");
+        }
+      });
+
+      upload.start();
+    }
+
+    function resetUI(isUploading) {
+      if (isUploading) {
+        successMsg.classList.add("hidden");
+        errorMsg.classList.add("hidden");
+        progressContainer.classList.remove("hidden");
+        dropzone.classList.add("disabled");
+        dropzone.innerHTML = "Otimizando e enviando... Aguarde.";
+        progressBar.value = 0;
+        percentageText.textContent = "0%";
+      }
+    }
+
+    function resetUpload() {
+      fileInput.value = "";
+      successMsg.classList.add("hidden");
+      errorMsg.classList.add("hidden");
+      progressContainer.classList.add("hidden");
+      dropzone.classList.remove("disabled");
+      dropzone.innerHTML = "<strong>Clique aqui</strong> ou solte o arquivo.";
+    }
+  </script>
+</body>
+</html>
