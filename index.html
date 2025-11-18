@@ -1,176 +1,110 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Envio de Vídeo - Clube do Ukulele</title>
+  <title>Clube do Ukulele - Envio de Tarefa</title>
 
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #f2f2f2;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f7f6;
       margin: 0;
-      padding: 0;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
+      color: #333;
     }
 
     .container {
       background: white;
-      padding: 32px;
-      border-radius: 12px;
+      padding: 40px;
+      border-radius: 15px;
       width: 90%;
-      max-width: 480px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      max-width: 500px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
       text-align: center;
     }
 
     h2 {
-      margin-top: 0;
+      color: #2c3e50;
+      margin-bottom: 10px;
     }
 
+    p {
+      color: #7f8c8d;
+      margin-bottom: 30px;
+    }
+
+    /* Área de arrastar e soltar */
     #dropzone {
-      border: 2px dashed #999;
+      border: 2px dashed #bdc3c7;
       border-radius: 10px;
-      padding: 40px;
+      padding: 50px 20px;
       cursor: pointer;
-      color: #555;
-      transition: 0.2s;
+      background-color: #fafafa;
+      transition: all 0.3s ease;
     }
 
     #dropzone:hover {
-      border-color: #333;
-      color: #000;
+      border-color: #3498db;
+      background-color: #ecf0f1;
+      color: #2980b9;
+    }
+
+    #dropzone.disabled {
+      pointer-events: none;
+      opacity: 0.6;
+      background-color: #e0e0e0;
     }
 
     .hidden {
       display: none;
     }
 
-    .progress-container {
-      margin-top: 20px;
-      width: 100%;
+    /* Barra de Progresso */
+    .progress-wrapper {
+      margin-top: 25px;
+      text-align: left;
+    }
+
+    .progress-info {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+      font-size: 14px;
+      font-weight: bold;
     }
 
     progress {
       width: 100%;
-      height: 20px;
+      height: 25px;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    
+    progress::-webkit-progress-bar {
+      background-color: #eee;
+      border-radius: 5px;
     }
 
+    progress::-webkit-progress-value {
+      background-color: #3498db;
+      transition: width 0.3s ease;
+    }
+
+    /* Mensagens */
     #success {
-      color: green;
+      background-color: #d4edda;
+      color: #155724;
+      padding: 15px;
+      border-radius: 5px;
       margin-top: 20px;
-      font-weight: bold;
+      border: 1px solid #c3e6cb;
     }
 
     #error {
-      color: red;
-      margin-top: 20px;
-    }
-  </style>
-
-  <!-- Biblioteca TUS -->
-  <script src="https://cdn.jsdelivr.net/npm/tus-js-client@2.3.0/dist/tus.min.js"></script>
-</head>
-
-<body>
-  <div class="container">
-
-    <h2>Enviar tarefa em vídeo</h2>
-    <p>Selecione seu vídeo ou arraste para a área abaixo.</p>
-
-    <div id="dropzone">Clique aqui ou arraste seu vídeo.</div>
-
-    <input id="fileInput" type="file" accept="video/*" class="hidden" />
-
-    <div class="progress-container hidden" id="progressContainer">
-      <progress id="progressBar" value="0" max="100"></progress>
-    </div>
-
-    <div id="success" class="hidden"></div>
-    <div id="error" class="hidden"></div>
-
-  </div>
-
-  <script>
-    const dropzone = document.getElementById("dropzone");
-    const fileInput = document.getElementById("fileInput");
-    const progressContainer = document.getElementById("progressContainer");
-    const progressBar = document.getElementById("progressBar");
-    const successMsg = document.getElementById("success");
-    const errorMsg = document.getElementById("error");
-
-    // Endpoint do seu servidor no Google Cloud Run
-    const TUS_ENDPOINT = "https://tus-upload-server-1019908552664.southamerica-east1.run.app/files/";
-
-    dropzone.addEventListener("click", () => fileInput.click());
-
-    dropzone.addEventListener("dragover", e => {
-      e.preventDefault();
-      dropzone.style.borderColor = "#000";
-    });
-
-    dropzone.addEventListener("dragleave", e => {
-      dropzone.style.borderColor = "#999";
-    });
-
-    dropzone.addEventListener("drop", e => {
-      e.preventDefault();
-      dropzone.style.borderColor = "#999";
-      const file = e.dataTransfer.files[0];
-      if (file) uploadFile(file);
-    });
-
-    fileInput.addEventListener("change", () => {
-      const file = fileInput.files[0];
-      if (file) uploadFile(file);
-    });
-
-    function uploadFile(file) {
-      successMsg.classList.add("hidden");
-      errorMsg.classList.add("hidden");
-      progressContainer.classList.remove("hidden");
-      progressBar.value = 0;
-
-      // Configuração do Upload
-      const upload = new tus.Upload(file, {
-        endpoint: TUS_ENDPOINT,
-        
-        // --- CORREÇÃO DO ERRO 413 ---
-        // Define o tamanho do pedaço (chunk) para 5MB (5 * 1024 * 1024 bytes).
-        // Isso evita que o Cloud Run bloqueie uploads grandes.
-        chunkSize: 5242880, 
-        // -----------------------------
-
-        retryDelays: [0, 1000, 3000, 5000],
-        metadata: {
-          filename: file.name,
-          filetype: file.type
-        },
-
-        onError: function(error) {
-          console.error("Erro detalhado:", error);
-          errorMsg.textContent = "Erro ao enviar: " + error;
-          errorMsg.classList.remove("hidden");
-        },
-
-        onProgress: function(bytesUploaded, bytesTotal) {
-          const percentage = (bytesUploaded / bytesTotal) * 100;
-          progressBar.value = percentage;
-        },
-
-        onSuccess: function() {
-          console.log("Upload concluído:", upload.url);
-          successMsg.textContent = "Envio concluído com sucesso!";
-          successMsg.classList.remove("hidden");
-        }
-      });
-
-      // Inicia o envio
-      upload.start();
-    }
-  </script>
-</body>
-</html>
+      background-color: #f8d7da;
+      color: #721c24;
+      paddi
