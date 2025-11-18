@@ -3,65 +3,71 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Clube do Ukulele - Envio Rápido</title>
+  <title>Clube do Ukulele - Envio Dark</title>
 
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f4f7f6;
+      font-family: 'Roboto', 'Segoe UI', sans-serif;
+      background-color: #121212; /* Fundo Preto Google AI */
+      color: #e3e3e3;
       margin: 0;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      color: #333;
     }
 
     .container {
-      background: white;
+      background: #1e1e1e; /* Cinza Escuro */
       padding: 40px;
-      border-radius: 15px;
+      border-radius: 12px;
       width: 90%;
       max-width: 500px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      border: 1px solid #333;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
       text-align: center;
     }
 
     h2 {
-      color: #2c3e50;
+      color: #ffffff;
       margin-bottom: 10px;
+      font-weight: 400;
     }
 
     p {
-      color: #7f8c8d;
+      color: #a0a0a0;
       margin-bottom: 30px;
+      font-size: 0.9rem;
     }
 
+    /* Área de arrastar e soltar */
     #dropzone {
-      border: 2px dashed #bdc3c7;
-      border-radius: 10px;
+      border: 2px dashed #444;
+      border-radius: 8px;
       padding: 50px 20px;
       cursor: pointer;
-      background-color: #fafafa;
-      transition: all 0.3s ease;
+      background-color: #252525;
+      color: #888;
+      transition: all 0.2s ease;
     }
 
     #dropzone:hover {
-      border-color: #3498db;
-      background-color: #ecf0f1;
-      color: #2980b9;
+      border-color: #8ab4f8; /* Azul Google */
+      background-color: #2b2b2b;
+      color: #e3e3e3;
     }
 
     #dropzone.disabled {
       pointer-events: none;
-      opacity: 0.6;
-      background-color: #e0e0e0;
+      opacity: 0.5;
+      background-color: #1f1f1f;
     }
 
     .hidden {
       display: none;
     }
 
+    /* Barra de Progresso */
     .progress-wrapper {
       margin-top: 25px;
       text-align: left;
@@ -70,196 +76,36 @@
     .progress-info {
       display: flex;
       justify-content: space-between;
-      margin-bottom: 5px;
+      margin-bottom: 8px;
       font-size: 14px;
-      font-weight: bold;
+      color: #8ab4f8;
     }
 
     progress {
       width: 100%;
-      height: 25px;
-      border-radius: 5px;
+      height: 6px;
+      border-radius: 3px;
       overflow: hidden;
+      background-color: #333;
+      appearance: none;
     }
     
+    /* Estilo da barra para Chrome/Safari */
     progress::-webkit-progress-bar {
-      background-color: #eee;
-      border-radius: 5px;
+      background-color: #333;
+      border-radius: 3px;
     }
 
     progress::-webkit-progress-value {
-      background-color: #3498db;
+      background-color: #8ab4f8; /* Azul Google */
       transition: width 0.3s ease;
     }
 
+    /* Mensagens */
     #success {
-      background-color: #d4edda;
-      color: #155724;
+      background-color: #0f3518; /* Verde escuro */
+      color: #a3cfbb;
       padding: 15px;
-      border-radius: 5px;
+      border-radius: 8px;
       margin-top: 20px;
-      border: 1px solid #c3e6cb;
-    }
-
-    #error {
-      background-color: #f8d7da;
-      color: #721c24;
-      padding: 15px;
-      border-radius: 5px;
-      margin-top: 20px;
-      border: 1px solid #f5c6cb;
-      word-break: break-all;
-    }
-
-    .btn-reset {
-      margin-top: 20px;
-      background-color: #3498db;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 16px;
-      transition: background 0.3s;
-    }
-
-    .btn-reset:hover {
-      background-color: #2980b9;
-    }
-  </style>
-
-  <script src="https://cdn.jsdelivr.net/npm/tus-js-client@2.3.0/dist/tus.min.js"></script>
-</head>
-
-<body>
-  <div class="container">
-
-    <h2>Enviar Vídeo</h2>
-    <p>Arraste seu arquivo aqui ou clique para selecionar.</p>
-
-    <div id="dropzone">
-      <strong>Clique aqui</strong> ou solte o arquivo.
-    </div>
-
-    <input id="fileInput" type="file" accept="video/*" class="hidden" />
-
-    <div class="progress-wrapper hidden" id="progressContainer">
-      <div class="progress-info">
-        <span>Enviando rápido...</span>
-        <span id="percentageText">0%</span>
-      </div>
-      <progress id="progressBar" value="0" max="100"></progress>
-    </div>
-
-    <div id="success" class="hidden">
-      ✅ <strong>Sucesso!</strong> Seu vídeo foi enviado.
-      <br><br>
-      <button class="btn-reset" onclick="resetUpload()">Enviar outro vídeo</button>
-    </div>
-
-    <div id="error" class="hidden"></div>
-
-  </div>
-
-  <script>
-    const TUS_ENDPOINT = "https://tus-upload-server-1019908552664.southamerica-east1.run.app/files/";
-
-    const dropzone = document.getElementById("dropzone");
-    const fileInput = document.getElementById("fileInput");
-    const progressContainer = document.getElementById("progressContainer");
-    const progressBar = document.getElementById("progressBar");
-    const percentageText = document.getElementById("percentageText");
-    const successMsg = document.getElementById("success");
-    const errorMsg = document.getElementById("error");
-
-    dropzone.addEventListener("click", () => {
-      if (!dropzone.classList.contains("disabled")) fileInput.click();
-    });
-
-    dropzone.addEventListener("dragover", e => {
-      e.preventDefault();
-      if (!dropzone.classList.contains("disabled")) dropzone.style.borderColor = "#3498db";
-    });
-
-    dropzone.addEventListener("dragleave", () => {
-      dropzone.style.borderColor = "#bdc3c7";
-    });
-
-    dropzone.addEventListener("drop", e => {
-      e.preventDefault();
-      dropzone.style.borderColor = "#bdc3c7";
-      if (dropzone.classList.contains("disabled")) return;
-
-      const file = e.dataTransfer.files[0];
-      if (file) startUpload(file);
-    });
-
-    fileInput.addEventListener("change", () => {
-      const file = fileInput.files[0];
-      if (file) startUpload(file);
-    });
-
-    function startUpload(file) {
-      resetUI(true);
-      
-      const upload = new tus.Upload(file, {
-        endpoint: TUS_ENDPOINT,
-        
-        // --- ACELERADORES ---
-        chunkSize: 10485760, // 10MB
-        parallelUploads: 2,  // Envio paralelo
-        // --------------------
-        
-        retryDelays: [0, 1000, 3000, 5000],
-        metadata: {
-          filename: file.name,
-          filetype: file.type
-        },
-
-        onError: function(error) {
-          console.error("Erro:", error);
-          errorMsg.innerHTML = "❌ <strong>Erro:</strong> " + error + 
-                               "<br><button class='btn-reset' onclick='resetUpload()'>Tentar Novamente</button>";
-          errorMsg.classList.remove("hidden");
-          dropzone.classList.remove("disabled");
-        },
-
-        onProgress: function(bytesUploaded, bytesTotal) {
-          const percentage = ((bytesUploaded / bytesTotal) * 100).toFixed(0);
-          progressBar.value = percentage;
-          percentageText.textContent = percentage + "%";
-        },
-
-        onSuccess: function() {
-          console.log("Upload concluído:", upload.url);
-          progressContainer.classList.add("hidden");
-          successMsg.classList.remove("hidden");
-        }
-      });
-
-      upload.start();
-    }
-
-    function resetUI(isUploading) {
-      if (isUploading) {
-        successMsg.classList.add("hidden");
-        errorMsg.classList.add("hidden");
-        progressContainer.classList.remove("hidden");
-        dropzone.classList.add("disabled");
-        dropzone.innerHTML = "Otimizando e enviando... Aguarde.";
-        progressBar.value = 0;
-        percentageText.textContent = "0%";
-      }
-    }
-
-    function resetUpload() {
-      fileInput.value = "";
-      successMsg.classList.add("hidden");
-      errorMsg.classList.add("hidden");
-      progressContainer.classList.add("hidden");
-      dropzone.classList.remove("disabled");
-      dropzone.innerHTML = "<strong>Clique aqui</strong> ou solte o arquivo.";
-    }
-  </script>
-</body>
-</html>
+      border: 1px solid #184a25;
