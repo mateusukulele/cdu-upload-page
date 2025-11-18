@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Envio de Tarefa - Clube do Ukulele</title>
+  <title>Clube do Ukulele - Upload</title>
 
   <style>
     /* --- RESET & BASE --- */
@@ -11,7 +11,7 @@
 
     body {
       font-family: 'Segoe UI', Roboto, Helvetica, sans-serif;
-      background-color: transparent; /* Fundo transparente para o iframe */
+      background-color: transparent; /* Fundo transparente para mesclar com a Hotmart */
       color: #ffffff;
       margin: 0;
       padding: 15px;
@@ -23,48 +23,52 @@
 
     /* --- O CARTÃO PRINCIPAL --- */
     .card {
-      background: #121212; /* Cinza quase preto */
+      background: #121212; /* Corpo Escuro */
       width: 100%;
-      max-width: 480px; /* Largura ideal de leitura */
+      max-width: 480px;
       border-radius: 16px;
       border: 1px solid #333;
       box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-      overflow: hidden; /* Garante que o cabeçalho não vaze as bordas */
+      overflow: hidden;
       position: relative;
     }
 
-    /* --- CABEÇALHO DESTAQUE --- */
+    /* --- CABEÇALHO LARANJA (DESTAQUE) --- */
     .card-header {
-      background: linear-gradient(180deg, #1f1f1f 0%, #121212 100%);
-      padding: 35px 30px 25px 30px;
+      /* Gradiente Laranja Vibrante */
+      background: linear-gradient(135deg, #FF6D00 0%, #E65100 100%);
+      padding: 30px 25px;
       text-align: center;
-      border-bottom: 1px solid #2a2a2a;
+      color: #fff; /* Texto Branco no Laranja */
     }
 
     .header-icon {
-      font-size: 36px;
-      margin-bottom: 12px;
+      font-size: 40px;
+      margin-bottom: 10px;
       display: block;
+      text-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
 
     h2 {
-      margin: 0 0 10px 0;
-      color: #ffffff;
-      font-size: 1.5rem;
-      font-weight: 700;
-      letter-spacing: -0.5px;
+      margin: 0 0 8px 0;
+      font-size: 1.6rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      text-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
 
     p.instructions {
       margin: 0;
-      color: #999;
       font-size: 0.95rem;
-      line-height: 1.5;
+      line-height: 1.4;
+      opacity: 0.95;
+      font-weight: 500;
     }
 
     /* --- CORPO DO FORMULÁRIO --- */
     .card-body {
-      padding: 30px;
+      padding: 35px 30px;
     }
 
     .form-group {
@@ -74,7 +78,7 @@
 
     .form-group label {
       display: block;
-      color: #FF6D00; /* Laranja Marca */
+      color: #FF6D00; /* Laranja nos rótulos também */
       font-size: 0.75rem;
       font-weight: 800;
       text-transform: uppercase;
@@ -125,7 +129,7 @@
     }
 
     #dropzone span {
-      color: #666;
+      color: #777;
       font-size: 0.9rem;
     }
 
@@ -164,12 +168,12 @@
     progress::-webkit-progress-bar { background: #333; border-radius: 4px; }
     progress::-webkit-progress-value { background: #FF6D00; border-radius: 4px; transition: width 0.3s; }
 
-    /* --- FEEDBACK VISUAL --- */
+    /* --- TELAS DE ESTADO --- */
     .hidden { display: none !important; }
     .visually-hidden { position: absolute; width: 1px; opacity: 0; }
 
-    #success-view { padding: 50px 20px; text-align: center; }
-    .check-icon { font-size: 60px; margin-bottom: 20px; display: block; }
+    #success-view { padding: 60px 20px; text-align: center; }
+    .check-icon { font-size: 70px; margin-bottom: 20px; display: block; text-shadow: 0 0 20px rgba(76, 175, 80, 0.4); }
     
     #error-msg {
       margin-top: 20px;
@@ -193,16 +197,16 @@
     <!-- TELA 1: FORMULÁRIO -->
     <div id="uploadScreen">
       
-      <!-- Cabeçalho -->
+      <!-- Cabeçalho Laranja -->
       <div class="card-header">
         <span class="header-icon">📤</span>
         <h2>Envio de Tarefa</h2>
         <p class="instructions">
-          Preencha seus dados abaixo para identificarmos seu vídeo e garantirmos o seu feedback.
+          Preencha seus dados abaixo para identificarmos seu vídeo e garantirmos o feedback.
         </p>
       </div>
 
-      <!-- Corpo -->
+      <!-- Corpo Escuro -->
       <div class="card-body">
         <div class="form-group">
           <label for="studentName">Nome Completo</label>
@@ -275,11 +279,11 @@
       const name = inputName.value.trim();
       const email = inputEmail.value.trim();
 
-      // Validação: Garante que a automação do YouTube terá o nome
+      // Validação
       if (!name || !email) {
         alert("⚠️ Atenção:\n\nPor favor, preencha NOME e E-MAIL antes de selecionar o vídeo.");
         if(!name) inputName.focus(); else inputEmail.focus();
-        fileInput.value = ""; // Limpa seleção para obrigar preenchimento
+        fileInput.value = ""; 
         return;
       }
       
