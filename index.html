@@ -14,11 +14,11 @@
       background-color: transparent;
       color: #FFFFFF;
       margin: 0;
-      padding: 15px;
+      padding: 10px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start; /* Alinha ao topo para evitar cortes */
       min-height: 100vh;
     }
 
@@ -28,83 +28,85 @@
       padding: 30px;
       border-radius: 16px;
       width: 100%;
-      max-width: 420px;
+      max-width: 450px; /* Um pouco mais largo */
       border: 1px solid #333;
       box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
       text-align: center;
-      transition: transform 0.3s ease;
     }
 
     h2 {
       color: #FFFFFF;
-      margin: 0 0 15px 0;
+      margin: 0 0 20px 0;
       font-weight: 700;
-      font-size: 1.4rem;
+      font-size: 1.5rem;
     }
 
-    /* --- Box de Usuário Identificado (Automático Total) --- */
-    #user-identified-box {
-      background-color: rgba(76, 175, 80, 0.1);
-      border: 1px solid #2e7d32;
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      text-align: left;
-    }
-    
-    .user-greeting {
-      color: #81c784;
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-    
-    .user-data {
-      color: #fff;
-      font-size: 0.95rem;
-      font-weight: 500;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    /* --- Box de Informação (Manual) --- */
+    /* --- Box Informativo --- */
     .info-box {
-      background-color: rgba(255, 109, 0, 0.05);
+      background-color: rgba(255, 109, 0, 0.08);
       border-left: 3px solid #FF6D00;
-      padding: 12px 15px;
-      border-radius: 0 4px 4px 0;
+      padding: 15px;
+      border-radius: 4px;
       margin-bottom: 25px;
       text-align: left;
-      font-size: 0.85rem;
-      color: #ccc;
+      font-size: 0.9rem;
+      color: #ddd;
       line-height: 1.4;
     }
-    .info-box strong { color: #FF6D00; display: block; margin-bottom: 3px; }
+    .info-box strong { color: #FF6D00; display: block; margin-bottom: 4px; }
 
-    /* --- Campos de Texto --- */
+    /* --- Campos de Texto (Ajuste de Contraste) --- */
     .form-group { margin-bottom: 20px; text-align: left; }
     
-    .form-group label { display: block; color: #FF6D00; font-size: 0.8rem; margin-bottom: 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    .form-group label { 
+      display: block; 
+      color: #FF6D00; 
+      font-size: 0.85rem; 
+      margin-bottom: 8px; 
+      font-weight: 700; 
+      text-transform: uppercase; 
+      letter-spacing: 0.5px; 
+    }
     
-    .form-input { width: 100%; padding: 12px; background-color: #0d0d0d; border: 1px solid #333; border-radius: 8px; color: #FFF; font-size: 1rem; transition: all 0.2s ease; }
+    .form-input { 
+      width: 100%; 
+      padding: 14px; 
+      /* Fundo mais claro para destacar do fundo preto da Hotmart */
+      background-color: #262626; 
+      border: 1px solid #444; 
+      border-radius: 8px; 
+      color: #FFF; 
+      font-size: 1rem; 
+      transition: all 0.2s ease; 
+    }
     
-    .form-input:focus { outline: none; border-color: #FF6D00; background-color: #151515; box-shadow: 0 0 0 3px rgba(255, 109, 0, 0.2); }
+    .form-input::placeholder { color: #777; }
 
-    /* Estilo para campo travado (quando o nome vem da Hotmart) */
-    .form-input:read-only {
-        background-color: #1a1a1a;
-        border-color: #444;
-        color: #888;
-        cursor: not-allowed;
-        font-style: italic;
+    .form-input:focus { 
+      outline: none; 
+      border-color: #FF6D00; 
+      background-color: #333; 
+      box-shadow: 0 0 0 2px rgba(255, 109, 0, 0.2); 
     }
 
     /* --- Área de Upload (Dropzone) --- */
-    #dropzone { display: flex; flex-direction: column; align-items: center; justify-content: center; border: 2px dashed #444; border-radius: 12px; padding: 30px 20px; cursor: pointer; background-color: #111; color: #bbb; transition: all 0.2s ease; margin-top: 10px; min-height: 120px; }
-    #dropzone strong { color: #FF6D00; font-size: 1rem; margin-bottom: 5px; text-transform: uppercase; }
-    #dropzone span { font-size: 0.85rem; }
+    #dropzone { 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      justify-content: center; 
+      border: 2px dashed #555; 
+      border-radius: 12px; 
+      padding: 35px 20px; 
+      cursor: pointer; 
+      background-color: #111; 
+      color: #bbb; 
+      transition: all 0.2s ease; 
+      margin-top: 10px; 
+      min-height: 130px; 
+    }
+    #dropzone strong { color: #FF6D00; font-size: 1.1rem; margin-bottom: 5px; text-transform: uppercase; }
+    #dropzone span { font-size: 0.9rem; }
     #dropzone:hover { background-color: #1f1f1f; border-color: #FF6D00; transform: translateY(-2px); }
     #dropzone.disabled { pointer-events: none; opacity: 0.5; filter: grayscale(100%); border-style: solid; }
 
@@ -113,20 +115,21 @@
     .hidden { display: none !important; }
 
     /* --- Barra de Progresso --- */
-    .progress-wrapper { margin-top: 20px; text-align: left; }
-    .progress-info { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.85rem; color: #FF6D00; font-weight: bold; }
-    progress { width: 100%; height: 8px; border-radius: 4px; overflow: hidden; background-color: #333; appearance: none; border: none; }
-    progress::-webkit-progress-bar { background-color: #333; border-radius: 4px; }
-    progress::-webkit-progress-value { background-color: #FF6D00; border-radius: 4px; transition: width 0.3s ease; }
+    .progress-wrapper { margin-top: 25px; text-align: left; }
+    .progress-info { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem; color: #FF6D00; font-weight: bold; }
+    progress { width: 100%; height: 10px; border-radius: 5px; overflow: hidden; background-color: #333; appearance: none; border: none; }
+    progress::-webkit-progress-bar { background-color: #333; border-radius: 5px; }
+    progress::-webkit-progress-value { background-color: #FF6D00; border-radius: 5px; transition: width 0.3s ease; }
 
     /* --- Mensagens Finais --- */
     #success { padding: 40px 20px; animation: fadeIn 0.5s ease; }
-    .success-icon { font-size: 3.5rem; margin-bottom: 15px; display: block; }
+    .success-icon { font-size: 4rem; margin-bottom: 20px; display: block; }
     #error { background-color: #2a0a0a; color: #ff6b6b; padding: 15px; border-radius: 8px; border: 1px solid #ff3333; margin-top: 20px; text-align: left; font-size: 0.9rem; }
 
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    @media (max-width: 480px) { .container { padding: 20px; border: none; background: transparent; box-shadow: none; } body { padding: 5px; } }
+    @media (max-width: 480px) { .container { padding: 20px; border: none; background: transparent; box-shadow: none; } body { padding: 0; } }
   </style>
+  
   <script src="https://cdn.jsdelivr.net/npm/tus-js-client@2.3.0/dist/tus.min.js"></script>
 </head>
 <body>
@@ -135,36 +138,26 @@
     <div id="uploadScreen">
       <h2>Enviar Tarefa</h2>
       
-      <!-- Box Verde (Só aparece se tiver Nome E Email) -->
-      <div id="user-identified-box" class="hidden">
-        <div class="user-greeting">Aluno Identificado</div>
-        <div class="user-data" id="display-name">...</div>
-        <div class="user-data" id="display-email" style="font-size: 0.8rem; color: #aaa; margin-top:3px;">...</div>
+      <div class="info-box">
+        <strong>Por que pedimos seus dados?</strong>
+        Usamos seu nome e e-mail para identificar o envio e garantir que você receba o feedback da sua análise.
       </div>
 
-      <!-- Formulário de Inputs -->
-      <div id="manual-input-area">
-        <!-- Box informativo some se o nome já estiver preenchido para limpar visual -->
-        <div class="info-box" id="why-data-msg">
-          <strong>Por que pedimos seus dados?</strong>
-          Usamos seu nome e e-mail para identificar o envio e garantir que você receba o feedback.
-        </div>
+      <div class="form-group">
+        <label for="studentName">Nome Completo</label>
+        <input type="text" id="studentName" class="form-input" placeholder="Ex: João da Silva">
+      </div>
 
-        <div class="form-group">
-          <label for="studentName">Nome Completo</label>
-          <input type="text" id="studentName" class="form-input" placeholder="Ex: João da Silva">
-        </div>
-        
-        <div class="form-group">
-          <label for="studentEmail">E-mail de login na Hotmart</label>
-          <input type="email" id="studentEmail" class="form-input" placeholder="Ex: joao@email.com">
-        </div>
+      <div class="form-group">
+        <label for="studentEmail">E-mail de login na Hotmart</label>
+        <input type="email" id="studentEmail" class="form-input" placeholder="Ex: joao@email.com">
       </div>
 
       <label id="dropzone" for="fileInput">
         <strong>Selecionar Vídeo</strong>
         <span>Clique ou arraste o arquivo</span>
       </label>
+      
       <input id="fileInput" type="file" accept="video/*" class="visually-hidden" />
 
       <div class="progress-wrapper hidden" id="progressContainer">
@@ -179,15 +172,17 @@
 
     <div id="success" class="hidden">
       <span class="success-icon">✅</span>
-      <h2 style="color: #4caf50; margin-bottom: 10px;">Vídeo Enviado!</h2>
-      <p style="color: #ccc; font-size: 0.95rem; line-height: 1.5;">Recebemos sua tarefa com sucesso.<br>Aguarde a nossa análise.</p>
+      <h2 style="color: #4caf50; margin-bottom: 15px;">Vídeo Enviado!</h2>
+      <p style="color: #ccc; font-size: 1rem; line-height: 1.5;">
+        Recebemos sua tarefa com sucesso.<br>
+        Agora é só aguardar a nossa análise.
+      </p>
     </div>
   </div>
 
   <script>
     const TUS_ENDPOINT = "https://tus-upload-server-1019908552664.southamerica-east1.run.app/files/";
     
-    // Elementos
     const uploadScreen = document.getElementById("uploadScreen");
     const successScreen = document.getElementById("success");
     const dropzone = document.getElementById("dropzone");
@@ -199,67 +194,27 @@
     const inputName = document.getElementById("studentName");
     const inputEmail = document.getElementById("studentEmail");
     
-    const manualArea = document.getElementById("manual-input-area");
-    const whyDataMsg = document.getElementById("why-data-msg");
-    const autoBox = document.getElementById("user-identified-box");
-    const displayName = document.getElementById("display-name");
-    const displayEmail = document.getElementById("display-email");
-
     let lessonName = "Aula Geral";
 
-    // --- MÁGICA DA AUTOMAÇÃO INTELIGENTE ---
+    // Captura o nome da aula via URL
     window.addEventListener('DOMContentLoaded', () => {
       const params = new URLSearchParams(window.location.search);
       const urlLesson = params.get('aula') || params.get('lesson');
-      const urlName = params.get('nome') || params.get('name');
-      const urlEmail = params.get('email');
-
       if (urlLesson) lessonName = urlLesson;
-
-      // Verificador de Tags Quebradas (se vier '*|NAME|*' ou vazio, ignora)
-      const hasValidName = urlName && urlName.indexOf('*|') === -1 && urlName.indexOf('{') === -1;
-      const hasValidEmail = urlEmail && urlEmail.indexOf('*|') === -1 && urlEmail.indexOf('{') === -1;
-
-      if (hasValidName) {
-        // Temos o Nome!
-        inputName.value = urlName;
-        
-        if (hasValidEmail) {
-            // JACKPOT: Temos Nome E Email
-            inputEmail.value = urlEmail;
-            // Esconde o form manual, mostra o box verde
-            manualArea.classList.add('hidden');
-            autoBox.classList.remove('hidden');
-            displayName.textContent = urlName;
-            displayEmail.textContent = urlEmail;
-        } else {
-            // Meio Termo: Temos Nome, mas falta Email
-            // Trava o campo de nome visualmente
-            inputName.readOnly = true;
-            inputName.style.opacity = "0.7"; // Visual de desabilitado
-            
-            // Esconde a msg de "Por que pedimos dados" para limpar a tela
-            whyDataMsg.classList.add('hidden');
-            
-            // Foca automaticamente no email, pois é o único que falta
-            // (Pequeno delay para garantir renderização)
-            setTimeout(() => inputEmail.focus(), 500);
-        }
-      }
     });
 
-    // --- Resto do Código (Upload) ---
-    dropzone.addEventListener("dragover", (e) => { e.preventDefault(); if (!dropzone.classList.contains("disabled")) { dropzone.style.backgroundColor = "#1f1f1f"; dropzone.style.borderColor = "#FF9100"; } });
-    dropzone.addEventListener("dragleave", () => { if (!dropzone.classList.contains("disabled")) { dropzone.style.backgroundColor = "#111"; dropzone.style.borderColor = "#444"; } });
-    dropzone.addEventListener("drop", (e) => { e.preventDefault(); dropzone.style.backgroundColor = "#111"; dropzone.style.borderColor = "#444"; if (dropzone.classList.contains("disabled")) return; const file = e.dataTransfer.files[0]; if (file) validateAndStart(file); });
+    // Funções de Drag & Drop e Upload
+    dropzone.addEventListener("dragover", (e) => { e.preventDefault(); if (!dropzone.classList.contains("disabled")) { dropzone.style.backgroundColor = "#222"; dropzone.style.borderColor = "#FF9100"; } });
+    dropzone.addEventListener("dragleave", () => { if (!dropzone.classList.contains("disabled")) { dropzone.style.backgroundColor = "#111"; dropzone.style.borderColor = "#555"; } });
+    dropzone.addEventListener("drop", (e) => { e.preventDefault(); dropzone.style.backgroundColor = "#111"; dropzone.style.borderColor = "#555"; if (dropzone.classList.contains("disabled")) return; const file = e.dataTransfer.files[0]; if (file) validateAndStart(file); });
     fileInput.addEventListener("change", () => { const file = fileInput.files[0]; if (file) validateAndStart(file); });
 
     function validateAndStart(file) {
       const name = inputName.value.trim();
       const email = inputEmail.value.trim();
-      
+
       if (!name || !email) {
-        alert("⚠️ Atenção:\n\nPrecisamos do E-mail para concluir.\nVerifique se todos os campos estão preenchidos.");
+        alert("⚠️ Atenção:\n\nPor favor, preencha seu NOME e E-MAIL antes de selecionar o vídeo.");
         fileInput.value = ""; 
         if(!name) inputName.focus();
         else inputEmail.focus();
@@ -272,7 +227,7 @@
       errorMsg.classList.add("hidden");
       progressContainer.classList.remove("hidden");
       dropzone.classList.add("disabled");
-      dropzone.innerHTML = "<strong>Aguarde...</strong>";
+      dropzone.innerHTML = "<strong>Aguarde...</strong><span>Enviando arquivo...</span>";
       inputName.disabled = true;
       inputEmail.disabled = true;
 
@@ -290,17 +245,13 @@
         },
         onError: function(error) {
           console.error("Erro:", error);
-          errorMsg.innerHTML = "❌ <strong>Erro no envio:</strong><br>Tente novamente ou atualize a página.";
+          errorMsg.innerHTML = "❌ <strong>Falha no envio:</strong><br>Verifique sua conexão e tente novamente.";
           errorMsg.classList.remove("hidden");
           dropzone.classList.remove("disabled");
-          dropzone.innerHTML = "<strong>Selecionar Vídeo</strong>";
+          dropzone.innerHTML = "<strong>Selecionar Vídeo</strong><span>Clique ou arraste o arquivo</span>";
           fileInput.value = "";
-          // Destrava se precisar corrigir algo
-          if (!manualArea.classList.contains('hidden')) { 
-             // Se o nome veio automático, mantém ele travado, destrava só email
-             if(!inputName.readOnly) inputName.disabled = false;
-             inputEmail.disabled = false; 
-          }
+          inputName.disabled = false;
+          inputEmail.disabled = false;
         },
         onProgress: function(bytesUploaded, bytesTotal) {
           const percentage = ((bytesUploaded / bytesTotal) * 100).toFixed(0);
