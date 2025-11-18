@@ -3,149 +3,63 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Clube do Ukulele - Envio v2</title>
+  <title>Clube do Ukulele - Envio v3</title>
 
   <style>
     /* --- Reset e Base --- */
     * { box-sizing: border-box; }
-
-    body {
-      font-family: 'Roboto', 'Segoe UI', sans-serif;
-      background-color: transparent;
-      color: #FFFFFF;
-      margin: 0;
-      padding: 10px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      min-height: 100vh;
-    }
-
-    /* --- Container Principal --- */
-    .container {
-      background: #1a1a1a;
-      padding: 30px;
-      border-radius: 16px;
-      width: 100%;
-      max-width: 450px;
-      border: 1px solid #333;
-      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
-      text-align: center;
-    }
-
-    h2 {
-      color: #FFFFFF;
-      margin: 0 0 20px 0;
-      font-weight: 700;
-      font-size: 1.5rem;
-    }
-
-    /* --- Box Informativo --- */
-    .info-box {
-      background-color: rgba(255, 109, 0, 0.08);
-      border-left: 3px solid #FF6D00;
-      padding: 15px;
-      border-radius: 4px;
-      margin-bottom: 25px;
-      text-align: left;
-      font-size: 0.9rem;
-      color: #ddd;
-      line-height: 1.4;
-    }
-    .info-box strong { color: #FF6D00; display: block; margin-bottom: 4px; }
-
-    /* --- Campos de Texto --- */
-    .form-group { margin-bottom: 20px; text-align: left; }
+    body { font-family: 'Roboto', sans-serif; background-color: transparent; color: #fff; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
     
-    .form-group label { 
-      display: block; 
-      color: #FF6D00; 
-      font-size: 0.85rem; 
-      margin-bottom: 8px; 
-      font-weight: 700; 
-      text-transform: uppercase; 
-      letter-spacing: 0.5px; 
-    }
-    
-    .form-input { 
-      width: 100%; 
-      padding: 14px; 
-      background-color: #262626; 
-      border: 1px solid #444; 
-      border-radius: 8px; 
-      color: #FFF; 
-      font-size: 1rem; 
-      transition: all 0.2s ease; 
-    }
-    
-    /* Estilo Travado */
-    .form-input:read-only {
-      background-color: #111; 
-      border-color: #333;
-      color: #999;
-      cursor: not-allowed;
-    }
-    
-    .form-input:focus { 
-      outline: none; 
-      border-color: #FF6D00; 
-      background-color: #333; 
-    }
+    /* BARRA DE DIAGNÓSTICO (Temporária) */
+    #debug-bar { width: 100%; background: #fff176; color: #000; font-size: 12px; padding: 5px; text-align: center; font-family: monospace; border-bottom: 1px solid #ccc; word-break: break-all; }
 
-    /* --- Upload --- */
-    #dropzone { 
-      display: flex; flex-direction: column; align-items: center; justify-content: center; 
-      border: 2px dashed #555; border-radius: 12px; padding: 35px 20px; 
-      cursor: pointer; background-color: #111; color: #bbb; transition: all 0.2s ease; 
-      margin-top: 10px; min-height: 130px; 
-    }
-    #dropzone strong { color: #FF6D00; font-size: 1.1rem; margin-bottom: 5px; text-transform: uppercase; }
-    #dropzone:hover { background-color: #1f1f1f; border-color: #FF6D00; transform: translateY(-2px); }
-    #dropzone.disabled { pointer-events: none; opacity: 0.5; filter: grayscale(100%); border-style: solid; }
-
-    .visually-hidden { position: absolute; height: 1px; width: 1px; overflow: hidden; clip: rect(1px, 1px, 1px, 1px); opacity: 0; }
+    .container { background: #1a1a1a; padding: 30px; border-radius: 16px; width: 90%; max-width: 450px; border: 1px solid #333; margin-top: 20px; text-align: center; }
+    h2 { margin: 0 0 20px 0; color: #fff; }
+    
+    .info-box { background: rgba(255, 109, 0, 0.1); border-left: 3px solid #FF6D00; padding: 15px; text-align: left; font-size: 0.9rem; color: #ddd; margin-bottom: 20px; }
+    
+    .form-group { margin-bottom: 15px; text-align: left; }
+    .form-group label { display: block; color: #FF6D00; font-size: 0.8rem; margin-bottom: 5px; font-weight: bold; }
+    .form-input { width: 100%; padding: 12px; background: #262626; border: 1px solid #444; border-radius: 8px; color: #fff; font-size: 1rem; }
+    .form-input:read-only { background: #111; color: #888; cursor: not-allowed; border-color: #333; }
+    
+    #dropzone { border: 2px dashed #555; border-radius: 12px; padding: 30px; cursor: pointer; background: #111; color: #bbb; margin-top: 10px; }
+    #dropzone strong { color: #FF6D00; display: block; margin-bottom: 5px; }
+    #dropzone.disabled { opacity: 0.5; pointer-events: none; }
+    
     .hidden { display: none !important; }
-
-    /* --- Progresso e Mensagens --- */
-    .progress-wrapper { margin-top: 25px; text-align: left; }
-    .progress-info { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem; color: #FF6D00; font-weight: bold; }
-    progress { width: 100%; height: 10px; border-radius: 5px; overflow: hidden; background-color: #333; appearance: none; border: none; }
-    progress::-webkit-progress-bar { background-color: #333; border-radius: 5px; }
-    progress::-webkit-progress-value { background-color: #FF6D00; border-radius: 5px; transition: width 0.3s ease; }
-
-    #success { padding: 40px 20px; animation: fadeIn 0.5s ease; }
-    .success-icon { font-size: 4rem; margin-bottom: 20px; display: block; }
-    #error { background-color: #2a0a0a; color: #ff6b6b; padding: 15px; border-radius: 8px; border: 1px solid #ff3333; margin-top: 20px; text-align: left; font-size: 0.9rem; }
-
-    /* Rodapé de Versão (Para Debug) */
-    .version-tag {
-        margin-top: 20px; font-size: 0.7rem; color: #444;
-    }
-
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .visually-hidden { position: absolute; opacity: 0; width: 1px; height: 1px; }
+    
+    /* Progresso */
+    .progress-wrapper { margin-top: 20px; text-align: left; }
+    progress { width: 100%; height: 10px; background: #333; border-radius: 5px; border: none; }
+    progress::-webkit-progress-value { background: #FF6D00; border-radius: 5px; }
+    
+    #success { padding: 20px; }
+    #error { background: #3a0000; color: #ff5555; padding: 10px; margin-top: 10px; border-radius: 5px; font-size: 0.9rem; }
   </style>
-  
   <script src="https://cdn.jsdelivr.net/npm/tus-js-client@2.3.0/dist/tus.min.js"></script>
 </head>
 <body>
-  <div class="container" id="mainContainer">
 
+  <!-- BARRA DE DEBUG: Mostra o que chegou na URL -->
+  <div id="debug-bar">Carregando dados da URL...</div>
+
+  <div class="container" id="mainContainer">
     <div id="uploadScreen">
       <h2>Enviar Tarefa</h2>
       
       <div class="info-box" id="infoBox">
-        <strong>Por que pedimos seus dados?</strong>
-        Usamos seu nome e e-mail para identificar o envio e garantir que você receba o feedback.
+        <strong>Dados do Aluno:</strong><br>Preencha abaixo para identificar seu vídeo.
       </div>
 
       <div class="form-group">
-        <label for="studentName">Nome Completo</label>
+        <label>Nome Completo</label>
         <input type="text" id="studentName" class="form-input" placeholder="Ex: João da Silva">
       </div>
 
       <div class="form-group">
-        <label for="studentEmail">E-mail de login na Hotmart</label>
+        <label>E-mail de login</label>
         <input type="email" id="studentEmail" class="form-input" placeholder="Ex: joao@email.com">
       </div>
 
@@ -153,162 +67,83 @@
         <strong>Selecionar Vídeo</strong>
         <span>Clique ou arraste o arquivo</span>
       </label>
-      
       <input id="fileInput" type="file" accept="video/*" class="visually-hidden" />
 
       <div class="progress-wrapper hidden" id="progressContainer">
-        <div class="progress-info">
-          <span id="statusText">Enviando...</span>
-          <span id="percentageText">0%</span>
+        <div style="display:flex; justify-content:space-between; color:#FF6D00; font-size:0.8rem; margin-bottom:5px;">
+          <span>Enviando...</span><span id="percentageText">0%</span>
         </div>
         <progress id="progressBar" value="0" max="100"></progress>
       </div>
       <div id="error" class="hidden"></div>
-      
-      <!-- TAG DE DEBUG (Para sabermos se chegou) -->
-      <div class="version-tag">
-        System v2.1 | <span id="debug-msg">Aguardando dados...</span>
-      </div>
     </div>
 
     <div id="success" class="hidden">
-      <span class="success-icon">✅</span>
-      <h2 style="color: #4caf50; margin-bottom: 15px;">Vídeo Enviado!</h2>
-      <p style="color: #ccc; font-size: 1rem; line-height: 1.5;">
-        Recebemos sua tarefa com sucesso.
-      </p>
+      <h2 style="color:#4caf50">✅ Sucesso!</h2>
+      <p style="color:#ccc">Seu vídeo foi enviado.</p>
     </div>
   </div>
 
   <script>
     const TUS_ENDPOINT = "https://tus-upload-server-1019908552664.southamerica-east1.run.app/files/";
-    
     const inputName = document.getElementById("studentName");
     const inputEmail = document.getElementById("studentEmail");
-    const infoBox = document.getElementById("infoBox");
-    const debugMsg = document.getElementById("debug-msg");
-    
-    // Elementos UI
-    const uploadScreen = document.getElementById("uploadScreen");
-    const successScreen = document.getElementById("success");
-    const dropzone = document.getElementById("dropzone");
-    const fileInput = document.getElementById("fileInput");
-    const progressContainer = document.getElementById("progressContainer");
-    const progressBar = document.getElementById("progressBar");
-    const percentageText = document.getElementById("percentageText");
-    const errorMsg = document.getElementById("error");
-
+    const debugBar = document.getElementById("debug-bar");
     let lessonName = "Aula Geral";
 
-    // --- LÓGICA INTELIGENTE DE CAPTURA ---
+    // --- LEITURA DA URL (DEBUG) ---
     window.addEventListener('DOMContentLoaded', () => {
-      const params = new URLSearchParams(window.location.search);
+      const fullUrl = window.location.search;
+      const params = new URLSearchParams(fullUrl);
       
-      // 1. Captura Aula
-      const urlLesson = params.get('aula') || params.get('lesson');
+      // Mostra na barra amarela exatamente o que o navegador recebeu
+      debugBar.textContent = "URL RAW: " + (fullUrl || "(vazia)");
+
+      const urlLesson = params.get('aula');
+      const urlName = params.get('nome');
+      
       if (urlLesson) lessonName = urlLesson;
 
-      // 2. Captura Nome (Forçando decodificação de espaços)
-      let urlName = params.get('nome') || params.get('name');
-      
-      // Debug Visual: Mostra o que chegou
-      if (urlName) {
-          debugMsg.textContent = "Recebido: " + urlName.substring(0, 15) + "...";
-      } else {
-          debugMsg.textContent = "Nenhum nome na URL.";
-      }
-
-      // Se chegou algo que não seja o código puro '*|NAME|*'
       if (urlName && urlName.indexOf('*|') === -1) {
-        inputName.value = urlName;        // Preenche o campo
-        inputName.readOnly = true;        // Trava
-        inputName.style.opacity = "0.7";  // Visual cinza
+        inputName.value = urlName;
+        inputName.readOnly = true;
+        inputName.style.opacity = "0.7";
         
-        // Tenta ser simpático e pegar só o primeiro nome real (pula os números do ID)
-        // Ex: "44.164 MARCO NANKRAN" -> Tenta pegar "MARCO"
-        let friendlyName = "Aluno";
-        const parts = urlName.split(' ');
-        
-        // Procura a primeira parte que não seja número/ponto
-        for(let part of parts) {
-            if(part.length > 2 && !part.includes('.')) {
-                friendlyName = part;
-                break;
-            }
-        }
-
-        // Atualiza a caixa de info
-        infoBox.innerHTML = "<strong>Olá, " + friendlyName + "!</strong><br>Confirme seu e-mail abaixo para liberar o envio.";
-        
-        // Foca no email automaticamente
+        // Foca no email
         setTimeout(() => inputEmail.focus(), 500);
       }
     });
 
-    // --- UPLOAD ---
-    dropzone.addEventListener("dragover", (e) => { e.preventDefault(); if (!dropzone.classList.contains("disabled")) { dropzone.style.backgroundColor = "#222"; dropzone.style.borderColor = "#FF9100"; } });
-    dropzone.addEventListener("dragleave", () => { if (!dropzone.classList.contains("disabled")) { dropzone.style.backgroundColor = "#111"; dropzone.style.borderColor = "#555"; } });
-    dropzone.addEventListener("drop", (e) => { e.preventDefault(); dropzone.style.backgroundColor = "#111"; dropzone.style.borderColor = "#555"; if (dropzone.classList.contains("disabled")) return; const file = e.dataTransfer.files[0]; if (file) validateAndStart(file); });
-    fileInput.addEventListener("change", () => { const file = fileInput.files[0]; if (file) validateAndStart(file); });
+    // --- UPLOAD (Manteve igual) ---
+    const dropzone = document.getElementById("dropzone");
+    const fileInput = document.getElementById("fileInput");
+    const ui = { upload: document.getElementById("uploadScreen"), success: document.getElementById("success"), progress: document.getElementById("progressContainer"), bar: document.getElementById("progressBar"), text: document.getElementById("percentageText"), error: document.getElementById("error") };
 
-    function validateAndStart(file) {
+    function handleFile(file) {
       const name = inputName.value.trim();
       const email = inputEmail.value.trim();
-
-      if (!name || !email) {
-        alert("Por favor, preencha o E-MAIL para continuar.");
-        fileInput.value = ""; 
-        if(!name && !inputName.readOnly) inputName.focus();
-        else inputEmail.focus();
-        return;
-      }
-      startUpload(file, name, email);
-    }
-
-    function startUpload(file, name, email) {
-      errorMsg.classList.add("hidden");
-      progressContainer.classList.remove("hidden");
-      dropzone.classList.add("disabled");
-      dropzone.innerHTML = "<strong>Aguarde...</strong><span>Enviando arquivo...</span>";
+      if (!name || !email) { alert("Preencha o E-MAIL para enviar."); if(!name) inputName.focus(); else inputEmail.focus(); return; }
       
-      // Trava tudo
-      if(!inputName.readOnly) inputName.disabled = true;
-      inputEmail.disabled = true;
-
+      ui.error.classList.add("hidden");
+      ui.progress.classList.remove("hidden");
+      dropzone.classList.add("disabled");
+      
       const upload = new tus.Upload(file, {
         endpoint: TUS_ENDPOINT,
         chunkSize: 10485760,
         retryDelays: [0, 1000, 3000, 5000],
-        metadata: {
-          filename: file.name,
-          filetype: file.type,
-          student_name: name, // É AQUI QUE VAI PRO STORAGE
-          student_email: email,
-          lesson: lessonName,
-          upload_date: new Date().toISOString()
-        },
-        onError: function(error) {
-          console.error("Erro:", error);
-          errorMsg.innerHTML = "❌ Erro no envio. Tente novamente.";
-          errorMsg.classList.remove("hidden");
-          dropzone.classList.remove("disabled");
-          dropzone.innerHTML = "<strong>Selecionar Vídeo</strong>";
-          fileInput.value = "";
-          if(!inputName.readOnly) inputName.disabled = false;
-          inputEmail.disabled = false;
-        },
-        onProgress: function(bytesUploaded, bytesTotal) {
-          const percentage = ((bytesUploaded / bytesTotal) * 100).toFixed(0);
-          progressBar.value = percentage;
-          percentageText.textContent = percentage + "%";
-        },
-        onSuccess: function() {
-          uploadScreen.classList.add("hidden");
-          successScreen.classList.remove("hidden");
-        }
+        metadata: { filename: file.name, filetype: file.type, student_name: name, student_email: email, lesson: lessonName, upload_date: new Date().toISOString() },
+        onError: (err) => { ui.error.innerHTML = "Erro: " + err; ui.error.classList.remove("hidden"); dropzone.classList.remove("disabled"); },
+        onProgress: (loaded, total) => { const p = ((loaded/total)*100).toFixed(0); ui.bar.value = p; ui.text.textContent = p + "%"; },
+        onSuccess: () => { ui.upload.classList.add("hidden"); ui.success.classList.remove("hidden"); }
       });
       upload.start();
     }
+
+    dropzone.ondragover = (e) => { e.preventDefault(); dropzone.style.background = "#222"; };
+    dropzone.ondragleave = () => { dropzone.style.background = "#111"; };
+    dropzone.ondrop = (e) => { e.preventDefault(); dropzone.style.background = "#111"; if(!dropzone.classList.contains("disabled")) handleFile(e.dataTransfer.files[0]); };
+    fileInput.onchange = () => handleFile(fileInput.files[0]);
   </script>
 </body>
 </html>
