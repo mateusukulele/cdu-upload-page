@@ -8,23 +8,30 @@
     /* --- RESET --- */
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
-    html, body {
+    html {
       height: 100%;
-      width: 100%;
-      overflow: hidden; /* Trava rolagem */
     }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       background-color: transparent;
       color: #ffffff;
-      /* padding: topo direita baixo esquerda */
-      /* Aumentei o baixo para 30px para dar o respiro que você pediu */
-      padding: 10px 5px 30px 5px; 
+      min-height: 100%;
+      
+      /* AQUI ESTÁ A CORREÇÃO: */
+      overflow-y: auto; /* Permite rolagem se necessário */
+      padding: 10px 5px 60px 5px; /* 60px de espaço extra no final */
+      
       display: flex;
       flex-direction: column;
       align-items: center;
     }
+
+    /* Estilização da Barra de Rolagem (Fina e discreta) */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #121212; }
+    ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #555; }
 
     .container {
       width: 100%;
@@ -71,34 +78,35 @@
     
     .form-input::placeholder { color: #777; font-style: italic; }
 
-    /* --- DROPZONE (Visual Ajustado) --- */
+    /* --- DROPZONE (Visual Mais Destacado) --- */
     #dropzone {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       width: 100%;
-      min-height: 140px;
+      min-height: 150px; /* Um pouco mais alto */
       
-      background-color: #262626; 
-      border: 2px dashed #777;   
+      /* Fundo um pouco mais claro para destacar como "Botão Gigante" */
+      background-color: #2a2a2a; 
+      border: 2px dashed #888;   
       
       border-radius: 8px;
       cursor: pointer;
-      margin-top: 10px;
+      margin-top: 15px;
       transition: all 0.2s;
       text-align: center;
     }
     
     #dropzone strong { 
       color: #FF6D00; 
-      font-size: 17px; 
+      font-size: 18px; 
       margin-bottom: 6px;
       font-weight: 700; 
     }
     
     #dropzone span { 
-      color: #aaa; 
+      color: #bbb; 
       font-size: 13px; 
     }
     
@@ -229,8 +237,8 @@
     }
 
     dropzone.addEventListener("dragover", (e) => { e.preventDefault(); if(!dropzone.classList.contains('disabled')) dropzone.style.backgroundColor = "#333"; });
-    dropzone.addEventListener("dragleave", () => { if(!dropzone.classList.contains('disabled')) dropzone.style.backgroundColor = "#262626"; });
-    dropzone.addEventListener("drop", (e) => { e.preventDefault(); dropzone.style.backgroundColor = "#262626"; if(!dropzone.classList.contains("disabled") && e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); });
+    dropzone.addEventListener("dragleave", () => { if(!dropzone.classList.contains('disabled')) dropzone.style.backgroundColor = "#2a2a2a"; });
+    dropzone.addEventListener("drop", (e) => { e.preventDefault(); dropzone.style.backgroundColor = "#2a2a2a"; if(!dropzone.classList.contains("disabled") && e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); });
     fileInput.addEventListener("change", () => { if(fileInput.files[0]) handleFile(fileInput.files[0]); });
   </script>
 </body>
