@@ -3,167 +3,130 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Formulário Nativo</title>
-
+  <title>Upload Limpo</title>
   <style>
-    /* --- RESET & BASE --- */
-    * { box-sizing: border-box; }
-
+    /* --- RESET & COMPATIBILIDADE EDGE --- */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
     body {
-      font-family: 'Segoe UI', Roboto, Helvetica, sans-serif;
-      background-color: transparent; /* FUNDO TRANSPARENTE É ESSENCIAL */
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: transparent; /* Fundo transparente */
       color: #ffffff;
-      margin: 0;
-      padding: 0;
+      /* Removemos min-height: 100vh para evitar bugs de scroll no Edge */
+      padding: 5px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      overflow: hidden; /* Evita barra de rolagem dupla */
+      width: 100%;
     }
 
     .container {
       width: 100%;
-      max-width: 100%; /* Usa toda a largura disponível no iframe */
-      padding: 5px;
+      max-width: 100%;
     }
 
-    /* --- INPUTS (Estilo Nativo Dark) --- */
+    /* --- INPUTS COM DESTAQUE --- */
     .form-group {
       margin-bottom: 20px;
       text-align: left;
     }
-
+    
     .form-group label {
-      display: block;
-      color: #cccccc; /* Cinza claro, mais elegante que branco puro */
-      font-size: 0.85rem;
-      font-weight: 600;
+      display: inline-block;
+      background-color: #FF6D00; /* DESTAQUE FUNDO LARANJA */
+      color: #000000; /* Texto preto para contraste máximo */
+      font-size: 0.75rem;
+      font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 0.5px;
+      padding: 4px 8px;
+      border-radius: 4px;
       margin-bottom: 8px;
     }
-
+    
     .form-input {
       width: 100%;
-      padding: 15px;
-      /* Fundo levemente mais claro que o preto da Hotmart */
-      background-color: #202024; 
-      border: 1px solid #323238;
+      padding: 14px 16px;
+      background-color: #1a1a1a; /* Fundo escuro */
+      border: 1px solid #333;
       border-radius: 6px;
       color: #fff;
       font-size: 1rem;
-      transition: all 0.2s ease;
-    }
-
-    .form-input::placeholder {
-      color: #505059;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+      /* Fix para Edge/Mobile não darem zoom */
+      touch-action: manipulation; 
     }
 
     .form-input:focus {
-      outline: none;
-      border-color: #FF6D00; /* O único toque de laranja */
-      background-color: #29292e;
-      box-shadow: 0 0 0 2px rgba(255, 109, 0, 0.2);
-    }
-
-    /* --- DROPZONE (Área de Clique) --- */
-    #dropzone {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background-color: #202024;
-      border: 2px dashed #323238;
-      border-radius: 8px;
-      padding: 40px 20px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      margin-top: 10px;
-      text-align: center;
-      min-height: 140px;
-    }
-
-    #dropzone strong {
-      color: #FF6D00;
-      font-size: 1.1rem;
-      margin-bottom: 8px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    #dropzone span {
-      color: #777;
-      font-size: 0.9rem;
-    }
-
-    #dropzone:hover {
       border-color: #FF6D00;
-      background-color: #29292e;
+      background-color: #222;
+      box-shadow: 0 0 0 3px rgba(255, 109, 0, 0.2);
     }
+    
+    .form-input::placeholder { color: #666; font-style: italic; }
 
-    #dropzone.disabled {
-      opacity: 0.5;
-      pointer-events: none;
-      filter: grayscale(100%);
+    /* --- DROPZONE LIMPO --- */
+    #dropzone {
+      border: 2px dashed #444;
+      border-radius: 8px;
+      padding: 30px 20px;
+      cursor: pointer;
+      background-color: #121212;
+      transition: all 0.2s ease;
+      text-align: center;
+      margin-top: 10px;
     }
+    
+    #dropzone strong { 
+      color: #FF6D00; 
+      font-size: 1.1rem; 
+      display: block; 
+      margin-bottom: 5px;
+      font-weight: 700; 
+    }
+    
+    #dropzone span { color: #888; font-size: 0.9rem; }
+    
+    #dropzone:hover { 
+      border-color: #FF6D00; 
+      background-color: #1a1a1a; 
+      transform: translateY(-1px); 
+    }
+    
+    #dropzone.disabled { opacity: 0.5; pointer-events: none; filter: grayscale(100%); }
 
     /* --- PROGRESSO --- */
-    .progress-container { margin-top: 25px; }
-    
-    .progress-labels {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 8px;
-      font-size: 0.8rem;
-      color: #FF6D00;
-      font-weight: bold;
-    }
+    .progress-container { margin-top: 20px; }
+    .progress-labels { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.8rem; color: #FF6D00; font-weight: bold; }
+    progress { width: 100%; height: 8px; border-radius: 4px; background: #333; border: none; }
+    progress::-webkit-progress-bar { background: #333; border-radius: 4px; }
+    progress::-webkit-progress-value { background: #FF6D00; border-radius: 4px; }
 
-    progress {
-      width: 100%;
-      height: 6px;
-      border-radius: 3px;
-      background: #323238;
-      border: none;
-    }
-
-    progress::-webkit-progress-bar { background: #323238; border-radius: 3px; }
-    progress::-webkit-progress-value { background: #FF6D00; border-radius: 3px; transition: width 0.2s; }
-
-    /* --- MENSAGENS --- */
+    /* --- UTILITÁRIOS --- */
     .hidden { display: none !important; }
-    .visually-hidden { position: absolute; width: 1px; opacity: 0; }
-
-    #success-view {
-      padding: 40px 20px;
-      text-align: center;
-      background: #202024;
-      border: 1px solid #323238;
-      border-radius: 8px;
-    }
-    .check-icon { font-size: 50px; margin-bottom: 15px; display: block; color: #4caf50; }
+    .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; opacity: 0; }
     
-    #error-msg {
-      margin-top: 20px;
-      padding: 15px;
-      background: rgba(255, 80, 80, 0.1);
-      border: 1px solid rgba(255, 80, 80, 0.3);
-      border-radius: 6px;
-      color: #ff8080;
-      font-size: 0.9rem;
-      text-align: left;
+    #success-view { 
+      padding: 40px 20px; 
+      text-align: center; 
+      background: #1a1a1a; 
+      border: 1px solid #333; 
+      border-radius: 8px; 
     }
-
+    .check-icon { font-size: 50px; margin-bottom: 15px; display: block; }
+    
+    #error-msg { 
+      margin-top: 15px; padding: 10px; 
+      background: rgba(255, 50, 50, 0.1); border: 1px solid #ff4444; 
+      border-radius: 6px; color: #ff8888; font-size: 0.9rem; text-align: left; 
+    }
   </style>
-  
-  <!-- TUS Client -->
   <script src="https://cdn.jsdelivr.net/npm/tus-js-client@2.3.0/dist/tus.min.js"></script>
 </head>
 <body>
 
   <div class="container">
-    
-    <!-- FORMULÁRIO -->
     <div id="uploadScreen">
       
       <div class="form-group">
@@ -172,45 +135,34 @@
       </div>
 
       <div class="form-group">
-        <label for="studentEmail">E-mail do Curso</label>
+        <label for="studentEmail">E-mail Hotmart</label>
         <input type="email" id="studentEmail" class="form-input" placeholder="seu@email.com">
       </div>
 
       <label id="dropzone" for="fileInput">
         <strong>Selecionar Vídeo</strong>
-        <span>Clique aqui ou arraste o arquivo</span>
+        <span>Clique ou arraste o arquivo</span>
       </label>
-      
       <input id="fileInput" type="file" accept="video/*" class="visually-hidden" />
 
-      <!-- Barra de Progresso -->
       <div id="progressArea" class="progress-container hidden">
-        <div class="progress-labels">
-          <span>Enviando...</span>
-          <span id="percentageText">0%</span>
-        </div>
+        <div class="progress-labels"><span>Enviando...</span><span id="percentageText">0%</span></div>
         <progress id="progressBar" value="0" max="100"></progress>
       </div>
 
       <div id="error-msg" class="hidden"></div>
     </div>
 
-    <!-- SUCESSO -->
     <div id="success-view" class="hidden">
       <span class="check-icon">✅</span>
-      <h2 style="color: #fff; margin: 0 0 10px 0; font-size: 1.2rem;">Sucesso!</h2>
-      <p style="color: #ccc; margin: 0; font-size: 0.9rem;">
-        Seu vídeo foi enviado corretamente.
-      </p>
+      <h2 style="color: #4caf50; margin: 0 0 10px 0;">Sucesso!</h2>
+      <p style="color: #ccc; font-size: 0.9rem;">Arquivo enviado corretamente.</p>
     </div>
-
   </div>
 
   <script>
-    // --- CONFIGURAÇÃO ---
     const TUS_ENDPOINT = "https://tus-upload-server-1019908552664.southamerica-east1.run.app/files/";
-
-    // --- ELEMENTOS ---
+    
     const dropzone = document.getElementById("dropzone");
     const fileInput = document.getElementById("fileInput");
     const inputName = document.getElementById("studentName");
@@ -225,20 +177,18 @@
       error: document.getElementById("error-msg")
     };
 
-    // --- CAPTURA DA AULA ---
     let lessonName = "Aula Geral";
     const params = new URLSearchParams(window.location.search);
     if(params.get('aula')) lessonName = params.get('aula');
 
-    // --- LÓGICA ---
     function handleFile(file) {
       const name = inputName.value.trim();
       const email = inputEmail.value.trim();
 
       if (!name || !email) {
-        alert("⚠️ Por favor, preencha NOME e E-MAIL para continuar.");
+        alert("Por favor, preencha NOME e E-MAIL.");
         if(!name) inputName.focus(); else inputEmail.focus();
-        fileInput.value = ""; 
+        fileInput.value = "";
         return;
       }
       startUpload(file, name, email);
@@ -248,49 +198,33 @@
       ui.error.classList.add("hidden");
       ui.progress.classList.remove("hidden");
       dropzone.classList.add("disabled");
-      dropzone.innerHTML = "<strong>Aguarde...</strong><span>Enviando...</span>";
+      dropzone.innerHTML = "<strong>Aguarde...</strong>";
       
-      inputName.disabled = true;
-      inputEmail.disabled = true;
+      inputName.disabled = true; inputEmail.disabled = true;
 
       const upload = new tus.Upload(file, {
         endpoint: TUS_ENDPOINT,
         chunkSize: 10485760,
-        metadata: {
-          filename: file.name,
-          filetype: file.type,
-          student_name: name,
-          student_email: email,
-          lesson: lessonName,
-          upload_date: new Date().toISOString()
+        metadata: { filename: file.name, filetype: file.type, student_name: name, student_email: email, lesson: lessonName, upload_date: new Date().toISOString() },
+        onError: (err) => { 
+          console.error(err); 
+          ui.error.innerHTML = "Erro no envio. Verifique a conexão."; 
+          ui.error.classList.remove("hidden"); 
+          dropzone.classList.remove("disabled"); 
+          dropzone.innerHTML = "<strong>Selecionar Vídeo</strong>"; 
+          inputName.disabled = false; inputEmail.disabled = false; 
         },
-        onError: function(error) {
-          console.error("Erro:", error);
-          ui.error.innerHTML = "❌ Erro no envio. Verifique sua conexão.";
-          ui.error.classList.remove("hidden");
-          dropzone.classList.remove("disabled");
-          dropzone.innerHTML = "<strong>Selecionar Vídeo</strong><span>Tentar Novamente</span>";
-          inputName.disabled = false;
-          inputEmail.disabled = false;
-        },
-        onProgress: function(bytesUploaded, bytesTotal) {
-          const percentage = ((bytesUploaded / bytesTotal) * 100).toFixed(0);
-          ui.bar.value = percentage;
-          ui.text.textContent = percentage + "%";
-        },
-        onSuccess: function() {
-          ui.screen.classList.add("hidden");
-          ui.success.classList.remove("hidden");
-        }
+        onProgress: (l, t) => { const p = ((l/t)*100).toFixed(0); ui.bar.value = p; ui.text.textContent = p + "%"; },
+        onSuccess: () => { ui.screen.classList.add("hidden"); ui.success.classList.remove("hidden"); }
       });
       upload.start();
     }
 
-    dropzone.addEventListener("dragover", (e) => { e.preventDefault(); if(!dropzone.classList.contains('disabled')) dropzone.style.backgroundColor = "#29292e"; });
-    dropzone.addEventListener("dragleave", () => { if(!dropzone.classList.contains('disabled')) dropzone.style.backgroundColor = "#202024"; });
+    dropzone.addEventListener("dragover", (e) => { e.preventDefault(); if(!dropzone.classList.contains('disabled')) dropzone.style.backgroundColor = "#222"; });
+    dropzone.addEventListener("dragleave", () => { if(!dropzone.classList.contains('disabled')) dropzone.style.backgroundColor = "#121212"; });
     dropzone.addEventListener("drop", (e) => { 
       e.preventDefault(); 
-      dropzone.style.backgroundColor = "#202024"; 
+      dropzone.style.backgroundColor = "#121212"; 
       if(!dropzone.classList.contains("disabled") && e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); 
     });
     fileInput.addEventListener("change", () => { if(fileInput.files[0]) handleFile(fileInput.files[0]); });
