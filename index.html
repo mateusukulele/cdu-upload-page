@@ -9,8 +9,8 @@
     /* --- Estilo Google Dark Mode --- */
     body {
       font-family: 'Roboto', 'Segoe UI', sans-serif;
-      background-color: #131314; /* Preto Profundo */
-      color: #E3E3E3; /* Branco Suave */
+      background-color: #131314;
+      color: #E3E3E3;
       margin: 0;
       display: flex;
       justify-content: center;
@@ -19,14 +19,15 @@
     }
 
     .container {
-      background: #1E1F20; /* Cinza Escuro Google */
+      background: #1E1F20;
       padding: 40px;
-      border-radius: 16px; /* Bordas mais arredondadas */
+      border-radius: 16px;
       width: 90%;
       max-width: 500px;
       border: 1px solid #444746;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
       text-align: center;
+      position: relative;
     }
 
     h2 {
@@ -37,7 +38,7 @@
     }
 
     p {
-      color: #C4C7C5; /* Cinza claro para subtítulos */
+      color: #C4C7C5;
       margin-bottom: 30px;
       font-size: 0.95rem;
       line-height: 1.5;
@@ -49,27 +50,43 @@
       border-radius: 12px;
       padding: 60px 20px;
       cursor: pointer;
-      background-color: #131314; /* Fundo mais escuro que o card */
+      background-color: #131314;
       color: #C4C7C5;
       transition: all 0.2s ease;
+      position: relative; /* Importante para o clique */
     }
 
     #dropzone strong {
-      color: #A8C7FA; /* Azul Destaque */
+      color: #A8C7FA;
       font-size: 1.1rem;
       display: block;
       margin-bottom: 5px;
+      pointer-events: none; /* Garante que o clique vá para a div pai */
+    }
+    
+    #dropzone span {
+      pointer-events: none;
     }
 
     #dropzone:hover {
       border-color: #A8C7FA;
-      background-color: #1F1F29; /* Leve tom azulado no hover */
+      background-color: #1F1F29;
     }
 
     #dropzone.disabled {
       pointer-events: none;
       opacity: 0.5;
-      cursor: default;
+    }
+
+    /* O segredo para o input funcionar sempre: não usar display:none */
+    .visually-hidden {
+      position: absolute !important;
+      height: 1px;
+      width: 1px;
+      overflow: hidden;
+      clip: rect(1px, 1px, 1px, 1px);
+      white-space: nowrap;
+      opacity: 0; 
     }
 
     .hidden {
@@ -101,7 +118,6 @@
       border: none;
     }
     
-    /* Chrome/Safari */
     progress::-webkit-progress-bar {
       background-color: #444746;
       border-radius: 4px;
@@ -113,7 +129,6 @@
       transition: width 0.3s ease;
     }
 
-    /* Firefox */
     progress::-moz-progress-bar {
       background-color: #A8C7FA;
       border-radius: 4px;
@@ -121,8 +136,8 @@
 
     /* Mensagens */
     #success {
-      background-color: #0F291E; /* Verde bem escuro */
-      color: #6DD58C; /* Verde claro neon */
+      background-color: #0F291E;
+      color: #6DD58C;
       padding: 20px;
       border-radius: 12px;
       margin-top: 25px;
@@ -131,8 +146,8 @@
     }
 
     #error {
-      background-color: #311110; /* Vermelho bem escuro */
-      color: #F2B8B5; /* Vermelho claro */
+      background-color: #311110;
+      color: #F2B8B5;
       padding: 20px;
       border-radius: 12px;
       margin-top: 25px;
@@ -144,8 +159,8 @@
     /* Botão */
     .btn-reset {
       margin-top: 15px;
-      background-color: #A8C7FA; /* Azul Google */
-      color: #062E6F; /* Texto escuro para contraste no botão */
+      background-color: #A8C7FA;
+      color: #062E6F;
       border: none;
       padding: 10px 24px;
       border-radius: 24px;
@@ -174,12 +189,14 @@
     <h2>Enviar Vídeo</h2>
     <p>Arraste seu arquivo para a área abaixo<br>ou clique para selecionar.</p>
 
+    <!-- Área de clique -->
     <div id="dropzone">
       <strong>Clique para Selecionar</strong>
       <span style="font-size: 0.9rem;">ou solte o arquivo aqui</span>
     </div>
 
-    <input id="fileInput" type="file" accept="video/*" class="hidden" />
+    <!-- Input Escondido (mas clicável via JS) -->
+    <input id="fileInput" type="file" accept="video/*" class="visually-hidden" />
 
     <div class="progress-wrapper hidden" id="progressContainer">
       <div class="progress-info">
@@ -191,4 +208,27 @@
 
     <div id="success" class="hidden">
       <div style="font-size: 1.5rem; margin-bottom: 10px;">🎉</div>
-      <strong>Upl
+      <strong>Upload Concluído!</strong><br>
+      <span style="font-size: 0.9rem; opacity: 0.8;">Seu vídeo foi enviado com sucesso.</span>
+      <br><br>
+      <button class="btn-reset" onclick="resetUpload()">Enviar outro vídeo</button>
+    </div>
+
+    <div id="error" class="hidden"></div>
+
+  </div>
+
+  <script>
+    // --- CONFIGURAÇÃO ---
+    const TUS_ENDPOINT = "https://tus-upload-server-1019908552664.southamerica-east1.run.app/files/";
+
+    // Seleção de Elementos
+    const dropzone = document.getElementById("dropzone");
+    const fileInput = document.getElementById("fileInput");
+    const progressContainer = document.getElementById("progressContainer");
+    const progressBar = document.getElementById("progressBar");
+    const percentageText = document.getElementById("percentageText");
+    const successMsg = document.getElementById("success");
+    const errorMsg = document.getElementById("error");
+
+    // ---
