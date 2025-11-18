@@ -3,100 +3,68 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Clube do Ukulele - Envio v4</title>
+  <title>Clube do Ukulele - Envio v5 (Hash)</title>
 
   <style>
-    /* --- Reset e Base --- */
     * { box-sizing: border-box; }
-    body { font-family: 'Roboto', sans-serif; background-color: transparent; color: #fff; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-    
-    /* DEBUG BAR (Pode remover depois) */
-    #debug-bar { width: 100%; background: #fff176; color: #000; font-size: 11px; padding: 4px; text-align: center; font-family: monospace; border-bottom: 1px solid #ccc; }
+    body { font-family: 'Roboto', sans-serif; background: transparent; color: #fff; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
 
-    .container { background: #1a1a1a; padding: 30px; border-radius: 16px; width: 95%; max-width: 450px; border: 1px solid #333; margin-top: 15px; text-align: center; }
-    h2 { margin: 0 0 20px 0; color: #fff; }
-    
-    /* Box de Informação */
-    .info-box { background: rgba(255, 109, 0, 0.1); border-left: 3px solid #FF6D00; padding: 15px; text-align: left; font-size: 0.9rem; color: #ddd; margin-bottom: 20px; border-radius: 4px; }
-    
-    /* --- ÁREA DO NOME (ESTILO TEXTO) --- */
-    .name-display-area {
-        text-align: left;
-        margin-bottom: 20px;
-        padding-bottom: 10px;
-        border-bottom: 1px solid #333;
-    }
-    .name-label {
-        font-size: 0.75rem;
-        color: #888;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        margin-bottom: 5px;
-        display: block;
-    }
-    .name-value {
-        font-size: 1.2rem;
-        color: #FF6D00; /* Laranja Destaque */
-        font-weight: 700;
-        word-break: break-word;
-    }
+    /* DIAGNÓSTICO (Apagar depois que funcionar) */
+    #diagnostic { width: 100%; background: #000; border: 1px solid #333; color: #0f0; font-family: monospace; font-size: 12px; padding: 10px; margin-bottom: 15px; text-align: left; word-wrap: break-word; }
 
-    /* --- Campos Padrão --- */
-    .form-group { margin-bottom: 20px; text-align: left; }
-    .form-group label { display: block; color: #FF6D00; font-size: 0.8rem; margin-bottom: 6px; font-weight: bold; text-transform: uppercase; }
+    .container { background: #1a1a1a; padding: 25px; border-radius: 16px; width: 100%; max-width: 450px; border: 1px solid #333; text-align: center; }
+    h2 { margin: 0 0 15px 0; color: #fff; font-size: 1.4rem; }
+    
+    /* Visual do Nome Identificado */
+    .identified-user { background: rgba(255, 109, 0, 0.15); border: 1px solid #FF6D00; border-radius: 8px; padding: 15px; margin-bottom: 20px; text-align: left; }
+    .identified-label { color: #FF6D00; font-size: 0.75rem; text-transform: uppercase; font-weight: bold; display: block; margin-bottom: 5px; }
+    .identified-value { color: #fff; font-size: 1.1rem; font-weight: 500; }
+
+    /* Campos Manuais */
+    .form-group { margin-bottom: 15px; text-align: left; }
+    .form-group label { display: block; color: #FF6D00; font-size: 0.8rem; font-weight: bold; margin-bottom: 5px; }
     .form-input { width: 100%; padding: 12px; background: #262626; border: 1px solid #444; border-radius: 8px; color: #fff; font-size: 1rem; }
     .form-input:focus { outline: none; border-color: #FF6D00; background: #333; }
-    
-    /* --- Upload --- */
-    #dropzone { border: 2px dashed #555; border-radius: 12px; padding: 30px; cursor: pointer; background: #111; color: #bbb; margin-top: 10px; }
-    #dropzone strong { color: #FF6D00; display: block; margin-bottom: 5px; font-size: 1.1rem; }
-    #dropzone:hover { background: #1f1f1f; border-color: #FF6D00; }
-    #dropzone.disabled { opacity: 0.5; pointer-events: none; filter: grayscale(100%); }
-    
+
+    #dropzone { border: 2px dashed #555; border-radius: 12px; padding: 30px 20px; cursor: pointer; background: #111; color: #bbb; margin-top: 10px; }
+    #dropzone strong { color: #FF6D00; font-size: 1.1rem; display: block; margin-bottom: 5px; }
+    #dropzone:hover { background: #222; border-color: #FF6D00; }
+    #dropzone.disabled { opacity: 0.5; pointer-events: none; }
+
     .hidden { display: none !important; }
     .visually-hidden { position: absolute; opacity: 0; width: 1px; height: 1px; }
-    
+
     /* Progresso */
-    .progress-wrapper { margin-top: 25px; text-align: left; }
+    .progress-wrapper { margin-top: 20px; text-align: left; }
     progress { width: 100%; height: 8px; background: #333; border-radius: 4px; border: none; }
     progress::-webkit-progress-value { background: #FF6D00; border-radius: 4px; }
-    
+
     #success { padding: 20px; }
-    #error { background: #3a0000; color: #ff5555; padding: 15px; margin-top: 15px; border-radius: 8px; font-size: 0.9rem; text-align: left; }
+    #error { background: #3a0000; color: #ff5555; padding: 10px; border-radius: 5px; margin-top: 15px; text-align: left; font-size: 0.9rem; }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/tus-js-client@2.3.0/dist/tus.min.js"></script>
 </head>
 <body>
 
-  <div id="debug-bar">Aguardando...</div>
+  <!-- CAIXA DE DEBUG (Diz o que o site está vendo) -->
+  <div id="diagnostic">Iniciando sistema...</div>
 
   <div class="container" id="mainContainer">
     <div id="uploadScreen">
       <h2>Enviar Tarefa</h2>
-      
-      <div class="info-box" id="infoBox">
-        <strong>Identificação:</strong><br>Confirme seus dados abaixo.
+
+      <!-- CENÁRIO 1: NOME AUTOMÁTICO -->
+      <div id="autoNameArea" class="identified-user hidden">
+        <span class="identified-label">Aluno Identificado:</span>
+        <div id="autoNameText" class="identified-value">...</div>
       </div>
 
-      <!-- 
-        CENÁRIO 1: NOME COMO TEXTO (Dinâmico)
-        Aparece quando o nome vem da Hotmart
-      -->
-      <div id="nameDisplayGroup" class="name-display-area hidden">
-          <span class="name-label">Aluno Identificado</span>
-          <div id="nameDisplayText" class="name-value">...</div>
-      </div>
-
-      <!-- 
-        CENÁRIO 2: NOME COMO INPUT (Manual)
-        Aparece se o link vier vazio
-      -->
-      <div id="nameInputGroup" class="form-group">
+      <!-- CENÁRIO 2: NOME MANUAL -->
+      <div id="manualNameArea" class="form-group">
         <label>Nome Completo</label>
-        <input type="text" id="studentNameInput" class="form-input" placeholder="Ex: João da Silva">
+        <input type="text" id="studentNameInput" class="form-input" placeholder="Digite seu nome">
       </div>
 
-      <!-- E-MAIL (Sempre aparece) -->
       <div class="form-group">
         <label>E-mail de login</label>
         <input type="email" id="studentEmail" class="form-input" placeholder="Ex: joao@email.com">
@@ -118,146 +86,76 @@
     </div>
 
     <div id="success" class="hidden">
-      <h2 style="color:#4caf50">✅ Sucesso!</h2>
-      <p style="color:#ccc; font-size:1rem;">Seu vídeo foi enviado corretamente.</p>
+      <h2 style="color:#4caf50">✅ Recebido!</h2>
+      <p style="color:#ccc">Vídeo enviado com sucesso.</p>
     </div>
   </div>
 
   <script>
+    // --- CONFIG ---
     const TUS_ENDPOINT = "https://tus-upload-server-1019908552664.southamerica-east1.run.app/files/";
     
-    // Variáveis Globais
-    let finalStudentName = ""; 
-    let lessonName = "Aula Geral";
+    // UI References
+    const diagnostic = document.getElementById('diagnostic');
+    const autoNameArea = document.getElementById('autoNameArea');
+    const autoNameText = document.getElementById('autoNameText');
+    const manualNameArea = document.getElementById('manualNameArea');
+    const nameInput = document.getElementById('studentNameInput');
+    const emailInput = document.getElementById('studentEmail');
     
-    // Elementos
-    const nameDisplayGroup = document.getElementById("nameDisplayGroup");
-    const nameDisplayText = document.getElementById("nameDisplayText");
-    const nameInputGroup = document.getElementById("nameInputGroup");
-    const nameInput = document.getElementById("studentNameInput");
-    const emailInput = document.getElementById("studentEmail");
-    const debugBar = document.getElementById("debug-bar");
-    const infoBox = document.getElementById("infoBox");
+    // Estado
+    let studentNameFinal = "";
+    let lessonName = "Aula Geral";
 
-    // --- 1. LÓGICA DE EXIBIÇÃO (TEXTO vs INPUT) ---
+    // --- LEITURA INTELIGENTE (QUERY ou HASH) ---
     window.addEventListener('DOMContentLoaded', () => {
-      const params = new URLSearchParams(window.location.search);
-      const fullUrl = window.location.search;
-      debugBar.textContent = "URL Recebida: " + (fullUrl || "(vazia)");
+      const hash = window.location.hash.substring(1); // Remove o #
+      const query = window.location.search;
+      
+      // Parser manual de Hash (ex: nome=Marco&aula=Batida)
+      const hashParams = new URLSearchParams(hash);
+      const queryParams = new URLSearchParams(query);
 
-      const urlLesson = params.get('aula');
-      const urlName = params.get('nome');
+      // Prioriza Hash, depois Query
+      let rawName = hashParams.get('nome') || queryParams.get('nome') || hashParams.get('name') || queryParams.get('name');
+      let rawLesson = hashParams.get('aula') || queryParams.get('aula');
 
-      if (urlLesson) lessonName = urlLesson;
+      if (rawLesson) lessonName = rawLesson;
 
-      // Se o nome veio e NÃO é o código cru '*|NAME|*'
-      if (urlName && urlName.indexOf('*|') === -1) {
-          // MODO AUTOMÁTICO:
-          // 1. Salva o nome na variável global para envio
-          finalStudentName = urlName;
-          
-          // 2. Esconde o input manual
-          nameInputGroup.classList.add('hidden');
-          
-          // 3. Mostra o texto bonito
-          nameDisplayGroup.classList.remove('hidden');
-          nameDisplayText.textContent = urlName; // Exibe "44.164 MARCO..."
-          
-          // 4. UX: Foca direto no e-mail
-          setTimeout(() => emailInput.focus(), 500);
+      // DEBUG VISUAL
+      diagnostic.innerHTML = "<strong>STATUS:</strong><br>" +
+                             "URL HASH: " + (hash || "vazio") + "<br>" +
+                             "NOME CAPTURADO: " + (rawName || "Nenhum");
 
+      // Lógica de Exibição
+      if (rawName && rawName.indexOf('*|') === -1) {
+        // SUCESSO: Temos um nome válido
+        studentNameFinal = decodeURIComponent(rawName); // Garante que %20 vire espaço
+        
+        autoNameText.textContent = studentNameFinal;
+        autoNameArea.classList.remove('hidden');
+        manualNameArea.classList.add('hidden');
+        
+        // Foca no e-mail
+        setTimeout(() => emailInput.focus(), 500);
       } else {
-          // MODO MANUAL (Fallback):
-          // Garante que o input está visível
-          nameInputGroup.classList.remove('hidden');
-          nameDisplayGroup.classList.add('hidden');
+        // FALHA: Vai para manual
+        autoNameArea.classList.add('hidden');
+        manualNameArea.classList.remove('hidden');
       }
     });
 
-    // --- 2. SISTEMA DE UPLOAD ---
+    // --- UPLOAD (TUS) ---
     const dropzone = document.getElementById("dropzone");
     const fileInput = document.getElementById("fileInput");
-    const ui = { 
-        upload: document.getElementById("uploadScreen"), 
-        success: document.getElementById("success"), 
-        progress: document.getElementById("progressContainer"), 
-        bar: document.getElementById("progressBar"), 
-        text: document.getElementById("percentageText"), 
-        error: document.getElementById("error") 
-    };
+    const ui = { upload: document.getElementById("uploadScreen"), success: document.getElementById("success"), progress: document.getElementById("progressContainer"), bar: document.getElementById("progressBar"), text: document.getElementById("percentageText"), error: document.getElementById("error") };
 
     function handleFile(file) {
-      // Decide qual nome usar: O automático (variável) ou o digitado (input)
-      let nameToSend = finalStudentName; 
-      
       // Se não veio automático, pega do input
-      if (!nameToSend) {
-          nameToSend = nameInput.value.trim();
-      }
+      let nameToSend = studentNameFinal || nameInput.value.trim();
+      let emailToSend = emailInput.value.trim();
 
-      const email = emailInput.value.trim();
-
-      // Validação
-      if (!nameToSend || !email) {
-          alert("Por favor, preencha os dados necessários (Nome/Email).");
-          if(!nameToSend) nameInput.focus();
-          else emailInput.focus();
-          fileInput.value = ""; // Reseta arquivo
-          return;
-      }
-      
-      startUpload(file, nameToSend, email);
-    }
-
-    function startUpload(file, name, email) {
-      ui.error.classList.add("hidden");
-      ui.progress.classList.remove("hidden");
-      dropzone.classList.add("disabled");
-      dropzone.innerHTML = "<strong>Aguarde...</strong><span>Enviando seu vídeo...</span>";
-      
-      // Trava inputs para não editar durante envio
-      nameInput.disabled = true;
-      emailInput.disabled = true;
-      
-      const upload = new tus.Upload(file, {
-        endpoint: TUS_ENDPOINT,
-        chunkSize: 10485760,
-        retryDelays: [0, 1000, 3000, 5000],
-        metadata: { 
-            filename: file.name, 
-            filetype: file.type, 
-            student_name: name, // Envia o nome correto (Texto ou Input)
-            student_email: email, 
-            lesson: lessonName, 
-            upload_date: new Date().toISOString() 
-        },
-        onError: (err) => { 
-            console.error(err);
-            ui.error.innerHTML = "❌ Erro no envio. Verifique sua conexão."; 
-            ui.error.classList.remove("hidden"); 
-            dropzone.classList.remove("disabled");
-            dropzone.innerHTML = "<strong>Selecionar Vídeo</strong><span>Clique ou arraste</span>";
-            nameInput.disabled = false;
-            emailInput.disabled = false;
-        },
-        onProgress: (loaded, total) => { 
-            const p = ((loaded/total)*100).toFixed(0); 
-            ui.bar.value = p; 
-            ui.text.textContent = p + "%"; 
-        },
-        onSuccess: () => { 
-            ui.upload.classList.add("hidden"); 
-            ui.success.classList.remove("hidden"); 
-        }
-      });
-      upload.start();
-    }
-
-    // Eventos Drag/Drop
-    dropzone.ondragover = (e) => { e.preventDefault(); if(!dropzone.classList.contains('disabled')) dropzone.style.backgroundColor = "#222"; };
-    dropzone.ondragleave = () => { if(!dropzone.classList.contains('disabled')) dropzone.style.backgroundColor = "#111"; };
-    dropzone.ondrop = (e) => { e.preventDefault(); dropzone.style.backgroundColor = "#111"; if(!dropzone.classList.contains("disabled")) handleFile(e.dataTransfer.files[0]); };
-    fileInput.onchange = () => { if(fileInput.files[0]) handleFile(fileInput.files[0]); };
-  </script>
-</body>
-</html>
+      if (!nameToSend || !emailToSend) {
+        alert("Preencha todos os campos.");
+        if(!nameToSend) nameInput.focus(); else emailInput.focus();
+        fileI
