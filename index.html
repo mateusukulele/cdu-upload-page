@@ -3,48 +3,53 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Clube do Ukulele - Envio Laranja</title>
+  <title>Clube do Ukulele - Envio de Tarefa</title>
 
   <style>
-    /* --- Estilo Dark Mode Contrastado --- */
+    /* --- Reset e Base --- */
+    * { box-sizing: border-box; }
+
     body {
       font-family: 'Roboto', 'Segoe UI', sans-serif;
-      background-color: #000000;
+      background-color: transparent; /* Fundo transparente para mesclar com iframe se necessário */
       color: #FFFFFF;
       margin: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh; /* Mudou para min-height para evitar cortes em telas pequenas */
       padding: 20px;
-      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
     }
 
+    /* --- Container Principal --- */
     .container {
-      background: #1a1a1a;
-      padding: 40px;
+      background: #1a1a1a; /* Cinza Profundo */
+      padding: 30px;
       border-radius: 16px;
       width: 100%;
-      max-width: 500px;
+      max-width: 420px; /* Largura ideal para leitura */
       border: 1px solid #333;
-      box-shadow: 0 0 50px rgba(255, 109, 0, 0.1);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
       text-align: center;
+      transition: transform 0.3s ease;
     }
 
     h2 {
       color: #FFFFFF;
-      margin-top: 0;
-      margin-bottom: 10px;
-      font-weight: 600;
+      margin: 0 0 10px 0;
+      font-weight: 700;
+      font-size: 1.5rem;
     }
 
-    p {
-      color: #CCCCCC;
+    p.description {
+      color: #bbb;
       margin-bottom: 25px;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
+      line-height: 1.5;
     }
 
-    /* --- CAMPOS DE FORMULÁRIO --- */
+    /* --- Campos de Texto (Nome/Email) --- */
     .form-group {
       margin-bottom: 15px;
       text-align: left;
@@ -52,164 +57,132 @@
 
     .form-group label {
       display: block;
-      color: #FF6D00;
-      font-size: 0.85rem;
-      margin-bottom: 5px;
-      font-weight: bold;
+      color: #FF6D00; /* Laranja Marca */
+      font-size: 0.8rem;
+      margin-bottom: 6px;
+      font-weight: 700;
       text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     .form-input {
       width: 100%;
       padding: 12px;
-      background-color: #111;
+      background-color: #0d0d0d;
       border: 1px solid #333;
       border-radius: 8px;
       color: #FFF;
       font-size: 1rem;
-      box-sizing: border-box; /* Importante para o padding não estourar a largura */
-      transition: border-color 0.3s;
+      transition: all 0.2s ease;
     }
 
     .form-input:focus {
       outline: none;
       border-color: #FF6D00;
-    }
-    
-    /* Classe para esconder campos se já vierem preenchidos */
-    .input-hidden {
-      display: none;
+      background-color: #151515;
+      box-shadow: 0 0 0 3px rgba(255, 109, 0, 0.2);
     }
 
-    /* --- DROPZONE --- */
+    /* --- Área de Upload (Dropzone) --- */
     #dropzone {
-      display: block;
-      border: 2px dashed #FF6D00;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border: 2px dashed #444;
       border-radius: 12px;
-      padding: 40px 20px;
+      padding: 30px 20px;
       cursor: pointer;
       background-color: #111;
-      color: #FF6D00;
+      color: #bbb;
       transition: all 0.2s ease;
-      margin-top: 20px;
-      margin-bottom: 20px;
+      margin-top: 10px;
+      min-height: 120px;
     }
 
     #dropzone strong {
-      font-size: 1.1rem;
-      display: block;
+      color: #FF6D00;
+      font-size: 1rem;
       margin-bottom: 5px;
       text-transform: uppercase;
-      letter-spacing: 1px;
     }
     
-    #dropzone span {
-      color: #999;
-      font-size: 0.85rem;
-    }
+    #dropzone span { font-size: 0.85rem; }
 
     #dropzone:hover {
-      background-color: #251000;
-      border-color: #FF9100;
-      transform: scale(1.01);
+      background-color: #1f1f1f;
+      border-color: #FF6D00;
+      transform: translateY(-2px);
     }
 
+    /* Estados do Dropzone */
     #dropzone.disabled {
       pointer-events: none;
-      opacity: 0.4;
-      border-color: #555;
+      opacity: 0.5;
       filter: grayscale(100%);
+      border-style: solid;
     }
 
-    .visually-hidden {
-      position: absolute !important;
-      height: 1px;
-      width: 1px;
-      overflow: hidden;
-      clip: rect(1px, 1px, 1px, 1px);
-      white-space: nowrap;
-      opacity: 0; 
-    }
+    /* Utilitários de Visibilidade */
+    .visually-hidden { position: absolute; height: 1px; width: 1px; overflow: hidden; clip: rect(1px, 1px, 1px, 1px); opacity: 0; }
+    .hidden { display: none !important; }
 
-    .hidden {
-      display: none;
-    }
-
-    /* Barra de Progresso */
-    .progress-wrapper {
-      margin-top: 20px;
-      text-align: left;
-    }
-
+    /* --- Barra de Progresso --- */
+    .progress-wrapper { margin-top: 20px; text-align: left; }
+    
     .progress-info {
       display: flex;
       justify-content: space-between;
       margin-bottom: 8px;
-      font-size: 14px;
+      font-size: 0.85rem;
       color: #FF6D00;
       font-weight: bold;
     }
 
     progress {
       width: 100%;
-      height: 10px;
-      border-radius: 5px;
+      height: 8px;
+      border-radius: 4px;
       overflow: hidden;
       background-color: #333;
       appearance: none;
       border: none;
     }
-    
-    progress::-webkit-progress-bar {
-      background-color: #333;
-      border-radius: 5px;
-    }
+    progress::-webkit-progress-bar { background-color: #333; border-radius: 4px; }
+    progress::-webkit-progress-value { background-color: #FF6D00; border-radius: 4px; transition: width 0.3s ease; }
 
-    progress::-webkit-progress-value {
-      background-color: #FF6D00;
-      border-radius: 5px;
-      transition: width 0.3s ease;
-    }
-
-    /* Mensagens */
+    /* --- Mensagens Finais --- */
     #success {
-      background-color: #0a1a0a; 
-      color: #4caf50;
-      padding: 20px;
-      border-radius: 12px;
-      border: 1px solid #4caf50;
-      margin-top: 20px;
+      padding: 40px 20px;
+      animation: fadeIn 0.5s ease;
+    }
+    
+    .success-icon {
+      font-size: 3rem;
+      margin-bottom: 15px;
+      display: block;
     }
 
     #error {
-      background-color: #1a0a0a;
-      color: #ff5252;
-      padding: 20px;
-      border-radius: 12px;
-      border: 1px solid #ff5252;
+      background-color: #2a0a0a;
+      color: #ff6b6b;
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid #ff3333;
       margin-top: 20px;
-      word-break: break-word;
       text-align: left;
       font-size: 0.9rem;
     }
 
-    .btn-reset {
-      margin-top: 15px;
-      background-color: #FF6D00;
-      color: #000;
-      border: none;
-      padding: 12px 30px;
-      border-radius: 30px;
-      cursor: pointer;
-      font-weight: 800;
-      font-size: 14px;
-      text-transform: uppercase;
-      transition: background 0.2s;
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    .btn-reset:hover {
-      background-color: #FF9100;
-      box-shadow: 0 0 15px rgba(255, 109, 0, 0.4);
+    /* Ajuste Mobile */
+    @media (max-width: 480px) {
+      .container { padding: 20px; border: none; background: transparent; box-shadow: none; }
+      body { padding: 10px; align-items: flex-start; }
     }
   </style>
 
@@ -217,53 +190,47 @@
 </head>
 
 <body>
-  <div class="container">
+  <div class="container" id="mainContainer">
 
-    <h2>Enviar Vídeo</h2>
-    <p>Preencha seus dados e selecione o arquivo.</p>
+    <!-- TELA DE UPLOAD E FORMULÁRIO -->
+    <div id="uploadScreen">
+      <h2>Enviar Tarefa</h2>
+      <p class="description">Preencha seus dados para identificarmos seu vídeo.</p>
 
-    <!-- ÁREA DE DADOS DO ALUNO -->
-    <div id="studentForm">
-      <div class="form-group" id="groupName">
-        <label for="studentName">Seu Nome</label>
-        <input type="text" id="studentName" class="form-input" placeholder="Ex: João da Silva">
+      <div class="form-group">
+        <label for="studentName">Nome Completo</label>
+        <input type="text" id="studentName" class="form-input" placeholder="Digite seu nome">
       </div>
 
-      <div class="form-group" id="groupEmail">
-        <label for="studentEmail">Seu E-mail</label>
-        <input type="email" id="studentEmail" class="form-input" placeholder="Ex: joao@email.com">
+      <div class="form-group">
+        <label for="studentEmail">E-mail de Aluno</label>
+        <input type="email" id="studentEmail" class="form-input" placeholder="seu@email.com">
       </div>
 
-      <!-- Campo Aula (Geralmente oculto via URL, mas pode aparecer se necessário) -->
-      <div class="form-group" id="groupLesson">
-        <label for="lessonName">Aula / Tarefa</label>
-        <input type="text" id="lessonName" class="form-input" placeholder="Ex: Módulo 1 - Aula 3">
+      <label id="dropzone" for="fileInput">
+        <strong>Selecionar Vídeo</strong>
+        <span>Clique ou arraste o arquivo</span>
+      </label>
+      
+      <input id="fileInput" type="file" accept="video/*" class="visually-hidden" />
+
+      <div class="progress-wrapper hidden" id="progressContainer">
+        <div class="progress-info">
+          <span id="statusText">Enviando...</span>
+          <span id="percentageText">0%</span>
+        </div>
+        <progress id="progressBar" value="0" max="100"></progress>
       </div>
+
+      <div id="error" class="hidden"></div>
     </div>
 
-    <label id="dropzone" for="fileInput">
-      <strong>Clique para Selecionar</strong>
-      <span>ou arraste o arquivo aqui</span>
-    </label>
-
-    <input id="fileInput" type="file" accept="video/*" class="visually-hidden" />
-
-    <div class="progress-wrapper hidden" id="progressContainer">
-      <div class="progress-info">
-        <span>Carregando...</span>
-        <span id="percentageText">0%</span>
-      </div>
-      <progress id="progressBar" value="0" max="100"></progress>
-    </div>
-
+    <!-- TELA DE SUCESSO (Inicialmente oculta) -->
     <div id="success" class="hidden">
-      <div style="font-size: 2rem; margin-bottom: 10px;">✅</div>
-      <strong>Upload Concluído!</strong><br>
-      <p style="margin-bottom:10px; font-size:0.9rem; color:#888;">Recebemos seu vídeo com sucesso.</p>
-      <button class="btn-reset" onclick="resetUpload()">Enviar Outro</button>
+      <span class="success-icon">✅</span>
+      <h2 style="color: #4caf50;">Sucesso!</h2>
+      <p style="color: #ddd; margin-top: 10px;">Seu vídeo foi enviado corretamente.<br>Nossa equipe irá avaliar em breve.</p>
     </div>
-
-    <div id="error" class="hidden"></div>
 
   </div>
 
@@ -271,132 +238,111 @@
     // --- CONFIGURAÇÃO ---
     const TUS_ENDPOINT = "https://tus-upload-server-1019908552664.southamerica-east1.run.app/files/";
 
-    // Elementos do DOM
+    // Elementos
+    const uploadScreen = document.getElementById("uploadScreen");
+    const successScreen = document.getElementById("success");
     const dropzone = document.getElementById("dropzone");
     const fileInput = document.getElementById("fileInput");
     const progressContainer = document.getElementById("progressContainer");
     const progressBar = document.getElementById("progressBar");
     const percentageText = document.getElementById("percentageText");
-    const successMsg = document.getElementById("success");
+    const statusText = document.getElementById("statusText");
     const errorMsg = document.getElementById("error");
     
-    // Campos do Formulário
+    // Inputs
     const inputName = document.getElementById("studentName");
     const inputEmail = document.getElementById("studentEmail");
-    const inputLesson = document.getElementById("lessonName");
-    
-    // Grupos (para esconder se necessário)
-    const groupName = document.getElementById("groupName");
-    const groupEmail = document.getElementById("groupEmail");
-    const groupLesson = document.getElementById("groupLesson");
 
-    // --- AO CARREGAR A PÁGINA: Captura Parâmetros da URL ---
+    // Variável para a Aula (via URL)
+    let lessonName = "Aula Geral";
+
+    // Captura parâmetro da URL ao carregar (?aula=X)
     window.addEventListener('DOMContentLoaded', () => {
       const params = new URLSearchParams(window.location.search);
-      
-      // Tenta pegar os parâmetros 'nome', 'email' e 'aula' da URL
-      const urlName = params.get('nome') || params.get('name');
-      const urlEmail = params.get('email');
       const urlLesson = params.get('aula') || params.get('lesson');
-
-      // Se vier na URL, preenche e trava/esconde o campo para simplificar
-      if (urlName) {
-        inputName.value = urlName;
-        // Opcional: Se quiser esconder o campo quando já vier preenchido, descomente a linha abaixo:
-        // groupName.classList.add('hidden'); 
-        inputName.readOnly = true; // Deixa visível mas não editável (confirmação visual)
-        inputName.style.opacity = "0.6";
-      }
-
-      if (urlEmail) {
-        inputEmail.value = urlEmail;
-        // groupEmail.classList.add('hidden');
-        inputEmail.readOnly = true;
-        inputEmail.style.opacity = "0.6";
-      }
-
-      if (urlLesson) {
-        inputLesson.value = urlLesson;
-        // Como a aula é fixa por página, podemos esconder esse campo se vier na URL
-        groupLesson.classList.add('hidden');
-      }
+      if (urlLesson) lessonName = urlLesson;
     });
 
-    // --- EVENTOS ---
-
+    // Eventos de Drag & Drop (UX Visual)
     dropzone.addEventListener("dragover", (e) => {
       e.preventDefault();
       if (!dropzone.classList.contains("disabled")) {
-        dropzone.style.backgroundColor = "#251000";
+        dropzone.style.backgroundColor = "#1f1f1f";
         dropzone.style.borderColor = "#FF9100";
       }
     });
-
     dropzone.addEventListener("dragleave", () => {
       if (!dropzone.classList.contains("disabled")) {
         dropzone.style.backgroundColor = "#111";
-        dropzone.style.borderColor = "#FF6D00";
+        dropzone.style.borderColor = "#444";
       }
     });
-
     dropzone.addEventListener("drop", (e) => {
       e.preventDefault();
       dropzone.style.backgroundColor = "#111";
-      dropzone.style.borderColor = "#FF6D00";
+      dropzone.style.borderColor = "#444";
       if (dropzone.classList.contains("disabled")) return;
-
       const file = e.dataTransfer.files[0];
-      if (file) handleFileSelection(file);
+      if (file) validateAndStart(file);
     });
-
+    
     fileInput.addEventListener("change", () => {
       const file = fileInput.files[0];
-      if (file) handleFileSelection(file);
+      if (file) validateAndStart(file);
     });
 
-    // --- VALIDAÇÃO E INÍCIO ---
+    // Validação antes do envio
+    function validateAndStart(file) {
+      const name = inputName.value.trim();
+      const email = inputEmail.value.trim();
 
-    function handleFileSelection(file) {
-      // Validação simples
-      if (!inputName.value.trim() || !inputEmail.value.trim()) {
-        alert("Por favor, preencha seu Nome e E-mail antes de enviar o vídeo.");
-        // Reseta o input de arquivo para permitir selecionar de novo após preencher
-        fileInput.value = ""; 
+      if (!name || !email) {
+        alert("⚠️ Por favor, preencha seu NOME e E-MAIL antes de selecionar o vídeo.");
+        fileInput.value = ""; // Limpa seleção
+        // Foca no campo vazio
+        if(!name) inputName.focus();
+        else inputEmail.focus();
         return;
       }
-
-      startUpload(file);
+      startUpload(file, name, email);
     }
 
-    function startUpload(file) {
-      resetUI(true);
+    // Processo de Upload
+    function startUpload(file, name, email) {
+      // UI de Carregamento
+      errorMsg.classList.add("hidden");
+      progressContainer.classList.remove("hidden");
+      dropzone.classList.add("disabled");
+      dropzone.innerHTML = "<strong>Aguarde...</strong>";
       
-      // Captura os valores atuais (seja da URL ou digitados)
-      const studentName = inputName.value.trim();
-      const studentEmail = inputEmail.value.trim();
-      const lessonName = inputLesson.value.trim() || "Não especificada";
+      // Trava inputs
+      inputName.disabled = true;
+      inputEmail.disabled = true;
 
       const upload = new tus.Upload(file, {
         endpoint: TUS_ENDPOINT,
         chunkSize: 10485760, // 10MB
         retryDelays: [0, 1000, 3000, 5000],
-        
-        // AQUI ESTÁ A MÁGICA: Enviamos os dados junto com o arquivo
         metadata: {
           filename: file.name,
           filetype: file.type,
-          student_name: studentName,
-          student_email: studentEmail,
+          student_name: name,
+          student_email: email,
           lesson: lessonName,
           upload_date: new Date().toISOString()
         },
 
         onError: function(error) {
           console.error("Erro:", error);
-          errorMsg.innerHTML = "❌ <strong>Erro:</strong><br>" + error + 
-                               "<br><br><button class='btn-reset' onclick='resetUpload()'>Tentar Novamente</button>";
+          errorMsg.innerHTML = "❌ Falha no envio. Tente novamente ou verifique sua conexão.";
           errorMsg.classList.remove("hidden");
+          
+          // Restaura UI para tentar de novo
           dropzone.classList.remove("disabled");
+          dropzone.innerHTML = "<strong>Selecionar Vídeo</strong>";
+          fileInput.value = "";
+          inputName.disabled = false;
+          inputEmail.disabled = false;
         },
 
         onProgress: function(bytesUploaded, bytesTotal) {
@@ -406,50 +352,14 @@
         },
 
         onSuccess: function() {
-          console.log("Sucesso:", upload.url);
-          // Aqui você tem acesso aos metadados se precisar enviar para um webhook depois
-          console.log("Dados enviados:", { studentName, studentEmail, lessonName, url: upload.url });
-          
-          progressContainer.classList.add("hidden");
-          successMsg.classList.remove("hidden");
+          // Troca a tela inteira pela mensagem de sucesso
+          uploadScreen.classList.add("hidden"); // Esconde formulário
+          successScreen.classList.remove("hidden"); // Mostra sucesso
+          console.log("Upload concluído:", upload.url);
         }
       });
 
       upload.start();
-    }
-
-    function resetUI(isUploading) {
-      if (isUploading) {
-        successMsg.classList.add("hidden");
-        errorMsg.classList.add("hidden");
-        progressContainer.classList.remove("hidden");
-        
-        dropzone.classList.add("disabled");
-        dropzone.innerHTML = "<strong>Enviando...</strong><span>Por favor, aguarde.</span>";
-        
-        // Trava inputs durante upload
-        inputName.disabled = true;
-        inputEmail.disabled = true;
-        inputLesson.disabled = true;
-
-        progressBar.value = 0;
-        percentageText.textContent = "0%";
-      }
-    }
-
-    function resetUpload() {
-      fileInput.value = "";
-      successMsg.classList.add("hidden");
-      errorMsg.classList.add("hidden");
-      progressContainer.classList.add("hidden");
-      
-      dropzone.classList.remove("disabled");
-      dropzone.innerHTML = "<strong>Clique para Selecionar</strong><span>ou arraste o arquivo aqui</span>";
-
-      // Destrava inputs
-      inputName.disabled = false;
-      inputEmail.disabled = false;
-      inputLesson.disabled = false;
     }
   </script>
 </body>
