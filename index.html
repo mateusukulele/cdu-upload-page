@@ -23,8 +23,7 @@
       overflow-y: auto; 
       overflow-x: hidden;
       
-      /* --- AQUI ESTÁ O AJUSTE --- */
-      /* 15px no topo (respiro) | 5px laterais | 20px embaixo */
+      /* Padding mantido como você gostou: 15px topo | 20px base */
       padding: 15px 5px 20px 5px;
       
       display: flex;
@@ -39,13 +38,16 @@
 
     .container { width: 100%; max-width: 600px; }
 
-    /* --- INPUT --- */
+    /* --- INPUTS --- */
     .form-group { margin-bottom: 10px; width: 100%; }
     
     .form-input {
       display: block;
       width: 100%;
-      padding: 14px;
+      
+      /* REDUZIDO DE 14px PARA 10px (Mais fino) */
+      padding: 10px;
+      
       background-color: #333333; 
       border: 1px solid #555; 
       border-radius: 6px;
@@ -62,6 +64,12 @@
       box-shadow: 0 0 0 2px rgba(255, 109, 0, 0.1);
     }
     
+    /* Classe de Erro */
+    .form-input.input-error {
+      border-color: #ff4444;
+      background-color: #3a2020;
+    }
+    
     .form-input::placeholder { color: #999; font-style: italic; }
 
     /* --- BOTÃO --- */
@@ -70,7 +78,10 @@
       align-items: center;
       justify-content: center;
       width: 100%;
-      padding: 14px; 
+      
+      /* REDUZIDO DE 14px PARA 10px (Mais fino) */
+      padding: 10px; 
+      
       margin-top: 5px;
       background-color: #FF6D00; 
       color: #000000; 
@@ -188,22 +199,77 @@
     const params = new URLSearchParams(window.location.search);
     if(params.get('aula')) lessonName = params.get('aula');
 
-    function handleFile(file) {
+    // --- VALIDAÇÃO AVANÇADA ---
+    function validateInputs() {
       const name = inputName.value.trim();
-      const email = inputEmail.value.trim();
+      const email = inputEmail.value.trim().toLowerCase();
+      
+      inputName.classList.remove('input-error');
+      inputEmail.classList.remove('input-error');
+      ui.error.classList.add('hidden');
 
-      if (!name || !email) {
-        alert("⚠️ Por favor, preencha todos os campos.");
-        if(!name) inputName.focus(); else inputEmail.focus();
+      // 1. Validação de Nome (Pelo menos 2 palavras)
+      const nameParts = name.split(' ').filter(part => part.length > 0);
+      if (nameParts.length < 2) {
+        showError("Por favor, digite seu <strong>Nome e Sobrenome</strong>.", inputName);
+        return false;
+      }
+
+      // 2. Validação de E-mail (Estrutura)
+      if (!email || !email.includes('@') || !email.includes('.')) {
+        showError("E-mail inválido. Verifique se digitou corretamente.", inputEmail);
+        return false;
+      }
+      if (email.includes(' ') || email.includes(',')) {
+        showError("O e-mail não pode conter espaços ou vírgulas.", inputEmail);
+        return false;
+      }
+
+      // 3. Validação de E-mail (Typos Comuns)
+      const typos = [
+        '@gmial', '@gamil', '@gmal', '@gmai.', '@gmaill', '@g-mail', 
+        '@hotmial', '@hotmil', '@hormail', '@hotnail', '@hotmaill', 
+        '@outlok', '@otlook', 
+        '@yaho.', '@yahooo', 
+        '@icoud', 
+        '.cmo', '.con', '.coom', '.combr', '.br.com', 
+        'gmail.com.br'
+      ];
+
+      for (let typo of typos) {
+        if (email.includes(typo)) {
+          showError(`Parece que há um erro de digitação: <strong>${typo}</strong>. Verifique seu e-mail.`, inputEmail);
+          return false;
+        }
+      }
+
+      return { name, email };
+    }
+
+    function showError(msg, field) {
+      ui.error.innerHTML = "⚠️ " + msg;
+      ui.error.classList.remove('hidden');
+      if(field) {
+        field.classList.add('input-error');
+        field.focus();
+      }
+    }
+
+    // --- HANDLER ---
+    function handleFile(file) {
+      const data = validateInputs();
+      
+      if (!data) {
         fileInput.value = ""; 
         return;
       }
-      startUpload(file, name, email);
+      startUpload(file, data.name, data.email);
     }
 
     function startUpload(file, name, email) {
       ui.error.classList.add("hidden");
       ui.progress.classList.remove("hidden");
+      
       uploadBtn.classList.add("disabled");
       uploadBtn.innerHTML = "⏳ Aguarde...";
       uploadBtn.style.pointerEvents = "none";
@@ -223,7 +289,7 @@
         },
         onError: (err) => { 
             console.error(err); 
-            ui.error.innerHTML = "Erro no envio. Verifique a conexão."; 
+            ui.error.innerHTML = "❌ Erro no envio. Verifique sua internet."; 
             ui.error.classList.remove("hidden"); 
             uploadBtn.classList.remove("disabled");
             uploadBtn.innerHTML = '<span class="icon-upload">📁</span> Tentar Novamente';
