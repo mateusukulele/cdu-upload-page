@@ -23,8 +23,9 @@
       overflow-y: auto; 
       overflow-x: hidden;
       
-      /* Padding 0 no topo para colar no cabeçalho */
-      padding: 0 5px 20px 5px;
+      /* --- AQUI ESTÁ O AJUSTE --- */
+      /* 15px no topo (respiro) | 5px laterais | 20px embaixo */
+      padding: 15px 5px 20px 5px;
       
       display: flex;
       flex-direction: column;
@@ -36,19 +37,15 @@
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
 
-    /* Container limita a largura dos campos */
-    .container { 
-      width: 100%; 
-      max-width: 600px; 
-    }
+    .container { width: 100%; max-width: 600px; }
 
-    /* --- INPUTS (Sem Labels) --- */
+    /* --- INPUT --- */
     .form-group { margin-bottom: 10px; width: 100%; }
     
     .form-input {
       display: block;
       width: 100%;
-      padding: 14px; /* Altura confortável */
+      padding: 14px;
       background-color: #333333; 
       border: 1px solid #555; 
       border-radius: 6px;
@@ -139,12 +136,10 @@
     <div id="uploadScreen">
       
       <div class="form-group">
-        <!-- Placeholder explicativo -->
         <input type="text" id="studentName" class="form-input" placeholder="Digite seu nome completo...">
       </div>
 
       <div class="form-group">
-        <!-- Placeholder explicativo -->
         <input type="email" id="studentEmail" class="form-input" placeholder="Seu e-mail de acesso ao Clube...">
       </div>
 
