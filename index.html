@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Intercâmbio de Vídeos</title>
   
-  <!-- FONTE NATIVA -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -22,7 +21,7 @@
       color: #ffffff;
       overflow-y: auto; 
       overflow-x: hidden;
-      padding: 15px 5px 20px 5px;
+      padding: 15px 0 20px 0; /* Padding lateral removido para encostar nas bordas */
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -32,7 +31,12 @@
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
 
-    .container { width: 100%; max-width: 600px; }
+    /* --- MUDANÇA AQUI: LARGURA TOTAL --- */
+    .container { 
+      width: 100%; 
+      max-width: 100%; /* Liberado para crescer */
+      padding: 0 5px; /* Pequena margem interna de segurança */
+    }
 
     /* --- INPUTS --- */
     .form-group { margin-bottom: 10px; width: 100%; }
@@ -40,7 +44,7 @@
     .form-input {
       display: block;
       width: 100%;
-      padding: 10px;
+      padding: 14px;
       background-color: #333333; 
       border: 1px solid #555; 
       border-radius: 6px;
@@ -70,7 +74,7 @@
       align-items: center;
       justify-content: center;
       width: 100%;
-      padding: 10px; 
+      padding: 14px; 
       margin-top: 5px;
       background-color: #FF6D00; 
       color: #000000; 
@@ -97,18 +101,26 @@
 
     .icon-upload { margin-right: 8px; font-size: 18px; }
 
-    /* --- PROGRESSO & MENSAGENS --- */
+    /* --- PROGRESSO --- */
     .progress-container { margin-top: 12px; width: 100%; }
     .progress-labels { display: flex; justify-content: space-between; margin-bottom: 4px; color: #FF6D00; font-weight: bold; font-size: 11px; }
     progress { width: 100%; height: 6px; border-radius: 3px; background: #444; border: none; }
     progress::-webkit-progress-bar { background: #444; border-radius: 3px; }
     progress::-webkit-progress-value { background: #FF6D00; border-radius: 3px; }
 
+    /* --- MENSAGENS --- */
     .hidden { display: none !important; }
     
     #success-view { 
-      display: flex; align-items: center; justify-content: flex-start; text-align: left;
-      padding: 15px 20px; background: #333; border: 1px solid #4caf50; border-radius: 8px; margin-top: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      text-align: left;
+      padding: 15px 20px; 
+      background: #333; 
+      border: 1px solid #4caf50; 
+      border-radius: 8px; 
+      margin-top: 5px;
     }
     .check-icon { font-size: 28px; color: #4caf50; margin-right: 15px; flex-shrink: 0; }
     .success-content h2 { color: #4caf50; margin: 0 0 2px 0; font-size: 16px; font-weight: 800; }
@@ -126,6 +138,7 @@
 
   <div class="container">
     <div id="uploadScreen">
+      
       <div class="form-group">
         <input type="text" id="studentName" class="form-input" placeholder="Digite seu nome completo...">
       </div>
@@ -179,69 +192,43 @@
     const params = new URLSearchParams(window.location.search);
     if(params.get('aula')) lessonName = params.get('aula');
 
-    // --- LÓGICA DE VALIDAÇÃO ---
     function validateInputs() {
       const name = inputName.value.trim();
       const email = inputEmail.value.trim().toLowerCase();
       
-      // Limpa erros anteriores
       inputName.classList.remove('input-error');
       inputEmail.classList.remove('input-error');
       ui.error.classList.add('hidden');
 
-      // 1. Valida Nome (Mínimo 2 palavras)
-      const nameParts = name.split(' ').filter(p => p.length > 1);
-      if (nameParts.length < 2) {
-        showError("Digite seu <strong>Nome e Sobrenome</strong>.", inputName);
+      if (name.split(' ').filter(p=>p.length>1).length < 2) {
+        showError("Por favor, digite seu <strong>Nome e Sobrenome</strong>.", inputName);
         return false;
       }
 
-      // 2. Valida Estrutura E-mail
-      if (!email.includes('@') || !email.includes('.')) {
+      if (!email || !email.includes('@') || !email.includes('.')) {
         showError("E-mail inválido. Verifique se digitou corretamente.", inputEmail);
         return false;
       }
-      // Espaços e vírgulas
       if (email.includes(' ') || email.includes(',')) {
         showError("O e-mail não pode conter espaços ou vírgulas.", inputEmail);
         return false;
       }
 
-      // 3. LISTA NEGRA DE ERROS DE DIGITAÇÃO (Blocklist)
-      const blocklist = [
-        // GMAIL VARIATIONS
-        'gmial', 'gamil', 'gmal', 'gmaill', 'gmai.', 'g-mail', 'gnail', 'gmil',
-        // HOTMAIL VARIATIONS
-        'hotmial', 'hotmil', 'hormail', 'hotnail', 'hotmaill', 'hotmal',
-        // OUTLOOK VARIATIONS
-        'outlok', 'otlook',
-        // YAHOO VARIATIONS
-        'yaho.', 'yahooo',
-        // ICLOUD VARIATIONS
-        'icoud', 
-        // EXTENSION ERRORS
-        '.cmo', '.con', '.coom', '.combr', '.br.com'
+      const typos = [
+        '@gmial', '@gamil', '@gmal', '@gmai.', '@gmaill', '@g-mail', 
+        '@hotmial', '@hotmil', '@hormail', '@hotnail', '@hotmaill', 
+        '@outlok', '@otlook', 
+        '@yaho.', '@yahooo', 
+        '@icoud', 
+        '.cmo', '.con', '.coom', '.combr', '.br.com', 
+        'gmail.com.br'
       ];
 
-      // Verifica se alguma parte do email contém os erros
-      for (let errorStr of blocklist) {
-        // Verifica se o erro está presente DEPOIS do arroba (domínio)
-        const domainPart = email.split('@')[1];
-        if (domainPart && domainPart.includes(errorStr)) {
-           showError(`Parece que há um erro de digitação: <strong>${errorStr}</strong>? Verifique seu e-mail.`, inputEmail);
-           return false;
-        }
-        // Verifica extensões no final da string
-        if (errorStr.startsWith('.') && email.endsWith(errorStr)) {
-           showError(`A extensão do e-mail parece errada: <strong>${errorStr}</strong>.`, inputEmail);
-           return false;
-        }
-      }
-
-      // Bloqueio específico para gmail.com.br (Não existe, é .com)
-      if (email.endsWith('@gmail.com.br')) {
-          showError("Atenção: O Gmail geralmente é apenas <strong>@gmail.com</strong> (sem o .br). Verifique.", inputEmail);
+      for (let typo of typos) {
+        if (email.includes(typo)) {
+          showError(`Parece que há um erro de digitação: <strong>${typo}</strong>. Verifique seu e-mail.`, inputEmail);
           return false;
+        }
       }
 
       return { name, email };
@@ -258,6 +245,7 @@
 
     function handleFile(file) {
       const data = validateInputs();
+      
       if (!data) {
         fileInput.value = ""; 
         return;
@@ -268,6 +256,7 @@
     function startUpload(file, name, email) {
       ui.error.classList.add("hidden");
       ui.progress.classList.remove("hidden");
+      
       uploadBtn.classList.add("disabled");
       uploadBtn.innerHTML = "⏳ Aguarde...";
       uploadBtn.style.pointerEvents = "none";
@@ -277,10 +266,17 @@
       const upload = new tus.Upload(file, {
         endpoint: TUS_ENDPOINT,
         chunkSize: 10485760,
-        metadata: { filename: file.name, filetype: file.type, student_name: name, student_email: email, lesson: lessonName, upload_date: new Date().toISOString() },
+        metadata: { 
+            filename: file.name, 
+            filetype: file.type, 
+            student_name: name, 
+            student_email: email, 
+            lesson: lessonName, 
+            upload_date: new Date().toISOString() 
+        },
         onError: (err) => { 
             console.error(err); 
-            ui.error.innerHTML = "❌ Erro no envio. Tente novamente."; 
+            ui.error.innerHTML = "❌ Erro no envio. Verifique sua internet."; 
             ui.error.classList.remove("hidden"); 
             uploadBtn.classList.remove("disabled");
             uploadBtn.innerHTML = '<span class="icon-upload">📁</span> Tentar Novamente';
@@ -299,5 +295,3 @@
   </script>
 </body>
 </html>
-
-
