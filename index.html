@@ -4,97 +4,298 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Intercâmbio de Vídeos</title>
+  
+  <!-- FONTE NATIVA -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+
   <style>
+    /* --- RESET --- */
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    
     html, body { height: 100%; width: 100%; }
+
     body {
       font-family: 'Nunito Sans', sans-serif;
-      background-color: transparent; /* TRANSPARENTE */
+      background-color: transparent;
       color: #ffffff;
-      overflow-y: auto; overflow-x: hidden;
-      padding: 10px 5px 20px 5px;
-      display: flex; flex-direction: column; align-items: center;
+      overflow-y: auto; 
+      overflow-x: hidden;
+      padding: 15px 5px 20px 5px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
+
     ::-webkit-scrollbar { width: 3px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+
     .container { width: 100%; max-width: 600px; }
-    
-    /* INPUTS */
+
+    /* --- INPUTS --- */
     .form-group { margin-bottom: 10px; width: 100%; }
+    
     .form-input {
-      display: block; width: 100%; padding: 12px;
-      background-color: #333333; /* Cinza para destacar do fundo nativo */
-      border: 1px solid #555; border-radius: 6px;
-      color: #fff; font-family: 'Nunito Sans', sans-serif; font-size: 15px;
-      outline: none; transition: all 0.2s;
+      display: block;
+      width: 100%;
+      padding: 10px;
+      background-color: #333333; 
+      border: 1px solid #555; 
+      border-radius: 6px;
+      color: #fff;
+      font-family: 'Nunito Sans', sans-serif;
+      font-size: 15px;
+      outline: none;
+      transition: all 0.2s;
     }
-    .form-input:focus { border-color: #FF6D00; background-color: #404040; box-shadow: 0 0 0 2px rgba(255, 109, 0, 0.1); }
+
+    .form-input:focus {
+      border-color: #FF6D00;
+      background-color: #404040;
+      box-shadow: 0 0 0 2px rgba(255, 109, 0, 0.1);
+    }
+    
+    .form-input.input-error {
+      border-color: #ff4444;
+      background-color: #3a2020;
+    }
+    
     .form-input::placeholder { color: #999; font-style: italic; }
 
-    /* BOTÃO */
+    /* --- BOTÃO --- */
     .btn-upload {
-      display: flex; align-items: center; justify-content: center; width: 100%;
-      padding: 12px; margin-top: 5px;
-      background-color: #FF6D00; color: #000000; border: none; border-radius: 6px;
-      cursor: pointer; font-family: 'Nunito Sans', sans-serif; font-weight: 800; font-size: 14px;
-      text-transform: uppercase; letter-spacing: 0.5px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.3); transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 10px; 
+      margin-top: 5px;
+      background-color: #FF6D00; 
+      color: #000000; 
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: 'Nunito Sans', sans-serif;
+      font-weight: 800; 
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      transition: all 0.2s ease;
     }
+
     .btn-upload:hover { background-color: #ff8533; transform: translateY(-1px); }
-    .btn-upload.disabled { background-color: #444; color: #888; cursor: not-allowed; transform: none; }
+    
+    .btn-upload.disabled {
+      background-color: #444;
+      color: #888;
+      cursor: not-allowed;
+      transform: none;
+    }
+
     .icon-upload { margin-right: 8px; font-size: 18px; }
 
-    /* PROGRESSO & MENSAGENS */
+    /* --- PROGRESSO & MENSAGENS --- */
     .progress-container { margin-top: 12px; width: 100%; }
     .progress-labels { display: flex; justify-content: space-between; margin-bottom: 4px; color: #FF6D00; font-weight: bold; font-size: 11px; }
     progress { width: 100%; height: 6px; border-radius: 3px; background: #444; border: none; }
     progress::-webkit-progress-bar { background: #444; border-radius: 3px; }
     progress::-webkit-progress-value { background: #FF6D00; border-radius: 3px; }
+
     .hidden { display: none !important; }
-    #success-view { display: flex; align-items: center; justify-content: flex-start; text-align: left; padding: 15px 20px; background: #333; border: 1px solid #4caf50; border-radius: 8px; margin-top: 5px; }
+    
+    #success-view { 
+      display: flex; align-items: center; justify-content: flex-start; text-align: left;
+      padding: 15px 20px; background: #333; border: 1px solid #4caf50; border-radius: 8px; margin-top: 5px;
+    }
     .check-icon { font-size: 28px; color: #4caf50; margin-right: 15px; flex-shrink: 0; }
     .success-content h2 { color: #4caf50; margin: 0 0 2px 0; font-size: 16px; font-weight: 800; }
     .success-content p { color: #ddd; font-size: 12px; line-height: 1.3; margin: 0; }
-    #error-msg { margin-top: 8px; padding: 8px 12px; background: rgba(255, 50, 50, 0.1); border: 1px solid #ff4444; border-radius: 6px; color: #ff8888; font-size: 11px; text-align: left; line-height: 1.3; }
+    
+    #error-msg { 
+      margin-top: 8px; padding: 8px 12px; 
+      background: rgba(255, 50, 50, 0.1); border: 1px solid #ff4444; 
+      border-radius: 6px; color: #ff8888; font-size: 11px; text-align: left; line-height: 1.3;
+    }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/tus-js-client@2.3.0/dist/tus.min.js"></script>
 </head>
 <body>
+
   <div class="container">
     <div id="uploadScreen">
-      <div class="form-group"><input type="text" id="studentName" class="form-input" placeholder="Digite seu nome completo..."></div>
-      <div class="form-group"><input type="email" id="studentEmail" class="form-input" placeholder="Seu e-mail de acesso ao Clube..."></div>
-      <label for="fileInput" class="btn-upload" id="uploadBtn"><span class="icon-upload">📁</span> SELECIONAR VÍDEO</label>
+      <div class="form-group">
+        <input type="text" id="studentName" class="form-input" placeholder="Digite seu nome completo...">
+      </div>
+
+      <div class="form-group">
+        <input type="email" id="studentEmail" class="form-input" placeholder="Seu e-mail de acesso ao Clube...">
+      </div>
+
+      <label for="fileInput" class="btn-upload" id="uploadBtn">
+        <span class="icon-upload">📁</span>
+        SELECIONAR VÍDEO
+      </label>
+      
       <input id="fileInput" type="file" accept="video/*" style="display:none;" />
-      <div id="progressArea" class="progress-container hidden"><div class="progress-labels"><span>Enviando...</span><span id="percentageText">0%</span></div><progress id="progressBar" value="0" max="100"></progress></div>
+
+      <div id="progressArea" class="progress-container hidden">
+        <div class="progress-labels"><span>Enviando...</span><span id="percentageText">0%</span></div>
+        <progress id="progressBar" value="0" max="100"></progress>
+      </div>
+
       <div id="error-msg" class="hidden"></div>
     </div>
-    <div id="success-view" class="hidden"><div class="check-icon">✅</div><div class="success-content"><h2>Vídeo Enviado!</h2><p>Aguarde a análise via E-mail e WhatsApp.</p></div></div>
+
+    <div id="success-view" class="hidden">
+      <div class="check-icon">✅</div>
+      <div class="success-content">
+        <h2>Vídeo Enviado!</h2>
+        <p>Aguarde a análise via E-mail e WhatsApp.</p>
+      </div>
+    </div>
   </div>
+
   <script>
     const TUS_ENDPOINT = "https://tus-upload-server-1019908552664.southamerica-east1.run.app/files/";
-    const uploadBtn = document.getElementById("uploadBtn"), fileInput = document.getElementById("fileInput"), inputName = document.getElementById("studentName"), inputEmail = document.getElementById("studentEmail");
-    const ui = { screen: document.getElementById("uploadScreen"), success: document.getElementById("success-view"), progress: document.getElementById("progressArea"), bar: document.getElementById("progressBar"), text: document.getElementById("percentageText"), error: document.getElementById("error-msg") };
-    let lessonName = "Aula Geral"; const params = new URLSearchParams(window.location.search); if(params.get('aula')) lessonName = params.get('aula');
+    
+    const uploadBtn = document.getElementById("uploadBtn");
+    const fileInput = document.getElementById("fileInput");
+    const inputName = document.getElementById("studentName");
+    const inputEmail = document.getElementById("studentEmail");
+    
+    const ui = {
+      screen: document.getElementById("uploadScreen"),
+      success: document.getElementById("success-view"),
+      progress: document.getElementById("progressArea"),
+      bar: document.getElementById("progressBar"),
+      text: document.getElementById("percentageText"),
+      error: document.getElementById("error-msg")
+    };
+
+    let lessonName = "Aula Geral";
+    const params = new URLSearchParams(window.location.search);
+    if(params.get('aula')) lessonName = params.get('aula');
+
+    // --- LÓGICA DE VALIDAÇÃO ---
     function validateInputs() {
-      const name = inputName.value.trim(), email = inputEmail.value.trim().toLowerCase();
-      inputName.classList.remove('input-error'); inputEmail.classList.remove('input-error'); ui.error.classList.add('hidden');
-      if (name.split(' ').filter(p=>p.length>0).length < 2) { showError("Por favor, digite seu <strong>Nome e Sobrenome</strong>.", inputName); return false; }
-      if (!email || !email.includes('@') || !email.includes('.')) { showError("E-mail inválido.", inputEmail); return false; }
+      const name = inputName.value.trim();
+      const email = inputEmail.value.trim().toLowerCase();
+      
+      // Limpa erros anteriores
+      inputName.classList.remove('input-error');
+      inputEmail.classList.remove('input-error');
+      ui.error.classList.add('hidden');
+
+      // 1. Valida Nome (Mínimo 2 palavras)
+      const nameParts = name.split(' ').filter(p => p.length > 1);
+      if (nameParts.length < 2) {
+        showError("Digite seu <strong>Nome e Sobrenome</strong>.", inputName);
+        return false;
+      }
+
+      // 2. Valida Estrutura E-mail
+      if (!email.includes('@') || !email.includes('.')) {
+        showError("E-mail inválido. Verifique se digitou corretamente.", inputEmail);
+        return false;
+      }
+      // Espaços e vírgulas
+      if (email.includes(' ') || email.includes(',')) {
+        showError("O e-mail não pode conter espaços ou vírgulas.", inputEmail);
+        return false;
+      }
+
+      // 3. LISTA NEGRA DE ERROS DE DIGITAÇÃO (Blocklist)
+      const blocklist = [
+        // GMAIL VARIATIONS
+        'gmial', 'gamil', 'gmal', 'gmaill', 'gmai.', 'g-mail', 'gnail', 'gmil',
+        // HOTMAIL VARIATIONS
+        'hotmial', 'hotmil', 'hormail', 'hotnail', 'hotmaill', 'hotmal',
+        // OUTLOOK VARIATIONS
+        'outlok', 'otlook',
+        // YAHOO VARIATIONS
+        'yaho.', 'yahooo',
+        // ICLOUD VARIATIONS
+        'icoud', 
+        // EXTENSION ERRORS
+        '.cmo', '.con', '.coom', '.combr', '.br.com'
+      ];
+
+      // Verifica se alguma parte do email contém os erros
+      for (let errorStr of blocklist) {
+        // Verifica se o erro está presente DEPOIS do arroba (domínio)
+        const domainPart = email.split('@')[1];
+        if (domainPart && domainPart.includes(errorStr)) {
+           showError(`Parece que há um erro de digitação: <strong>${errorStr}</strong>? Verifique seu e-mail.`, inputEmail);
+           return false;
+        }
+        // Verifica extensões no final da string
+        if (errorStr.startsWith('.') && email.endsWith(errorStr)) {
+           showError(`A extensão do e-mail parece errada: <strong>${errorStr}</strong>.`, inputEmail);
+           return false;
+        }
+      }
+
+      // Bloqueio específico para gmail.com.br (Não existe, é .com)
+      if (email.endsWith('@gmail.com.br')) {
+          showError("Atenção: O Gmail geralmente é apenas <strong>@gmail.com</strong> (sem o .br). Verifique.", inputEmail);
+          return false;
+      }
+
       return { name, email };
     }
-    function showError(msg, field) { ui.error.innerHTML = "⚠️ " + msg; ui.error.classList.remove('hidden'); if(field) { field.classList.add('input-error'); field.focus(); } }
-    function handleFile(file) { const data = validateInputs(); if (!data) { fileInput.value = ""; return; } startUpload(file, data.name, data.email); }
+
+    function showError(msg, field) {
+      ui.error.innerHTML = "⚠️ " + msg;
+      ui.error.classList.remove('hidden');
+      if(field) {
+        field.classList.add('input-error');
+        field.focus();
+      }
+    }
+
+    function handleFile(file) {
+      const data = validateInputs();
+      if (!data) {
+        fileInput.value = ""; 
+        return;
+      }
+      startUpload(file, data.name, data.email);
+    }
+
     function startUpload(file, name, email) {
-      ui.error.classList.add("hidden"); ui.progress.classList.remove("hidden"); uploadBtn.classList.add("disabled"); uploadBtn.innerHTML = "⏳ Aguarde..."; uploadBtn.style.pointerEvents = "none"; inputName.disabled = true; inputEmail.disabled = true;
-      const upload = new tus.Upload(file, { endpoint: TUS_ENDPOINT, chunkSize: 10485760, metadata: { filename: file.name, filetype: file.type, student_name: name, student_email: email, lesson: lessonName, upload_date: new Date().toISOString() }, onError: (err) => { console.error(err); ui.error.innerHTML = "❌ Erro no envio. Verifique sua conexão."; ui.error.classList.remove("hidden"); uploadBtn.classList.remove("disabled"); uploadBtn.innerHTML = '<span class="icon-upload">📁</span> Tentar Novamente'; uploadBtn.style.pointerEvents = "auto"; inputName.disabled = false; inputEmail.disabled = false; }, onProgress: (l, t) => { const p = ((l/t)*100).toFixed(0); ui.bar.value = p; ui.text.textContent = p + "%"; }, onSuccess: () => { ui.screen.classList.add("hidden"); ui.success.classList.remove("hidden"); } });
+      ui.error.classList.add("hidden");
+      ui.progress.classList.remove("hidden");
+      uploadBtn.classList.add("disabled");
+      uploadBtn.innerHTML = "⏳ Aguarde...";
+      uploadBtn.style.pointerEvents = "none";
+      inputName.disabled = true;
+      inputEmail.disabled = true;
+
+      const upload = new tus.Upload(file, {
+        endpoint: TUS_ENDPOINT,
+        chunkSize: 10485760,
+        metadata: { filename: file.name, filetype: file.type, student_name: name, student_email: email, lesson: lessonName, upload_date: new Date().toISOString() },
+        onError: (err) => { 
+            console.error(err); 
+            ui.error.innerHTML = "❌ Erro no envio. Tente novamente."; 
+            ui.error.classList.remove("hidden"); 
+            uploadBtn.classList.remove("disabled");
+            uploadBtn.innerHTML = '<span class="icon-upload">📁</span> Tentar Novamente';
+            uploadBtn.style.pointerEvents = "auto";
+            inputName.disabled = false; inputEmail.disabled = false; 
+        },
+        onProgress: (l, t) => { const p = ((l/t)*100).toFixed(0); ui.bar.value = p; ui.text.textContent = p + "%"; },
+        onSuccess: () => { ui.screen.classList.add("hidden"); ui.success.classList.remove("hidden"); }
+      });
       upload.start();
     }
-    fileInput.addEventListener("change", () => { if(fileInput.files[0]) handleFile(fileInput.files[0]); });
+
+    fileInput.addEventListener("change", () => { 
+        if(fileInput.files[0]) handleFile(fileInput.files[0]); 
+    });
   </script>
 </body>
 </html>
