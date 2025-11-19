@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Intercâmbio de Vídeos</title>
   
   <!-- FONTE NATIVA -->
@@ -11,24 +11,22 @@
   <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 
   <style>
-    /* --- RESET --- */
+    /* --- RESET ROBUSTO --- */
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
-    html, body { height: 100%; width: 100%; }
+    html, body { 
+      height: 100%; 
+      width: 100%; 
+      background-color: transparent;
+    }
 
     body {
       font-family: 'Nunito Sans', sans-serif;
-      background-color: transparent;
       color: #ffffff;
       overflow-y: auto; 
-      overflow-x: hidden;
-      
-      /* Padding mantido como você gostou: 15px topo | 20px base */
-      padding: 15px 5px 20px 5px;
-      
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      /* Removemos o padding lateral daqui para evitar soma de larguras */
+      padding-top: 15px; 
+      padding-bottom: 20px;
     }
 
     /* Scrollbar discreta */
@@ -36,7 +34,15 @@
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
 
-    .container { width: 100%; max-width: 600px; }
+    /* --- CONTAINER MOBILE SAFE --- */
+    .container { 
+      display: block;
+      /* Largura de 92% garante que nunca toque nas bordas do celular */
+      width: 92%; 
+      max-width: 600px; 
+      /* Centraliza horizontalmente */
+      margin: 0 auto; 
+    }
 
     /* --- INPUTS --- */
     .form-group { margin-bottom: 10px; width: 100%; }
@@ -44,10 +50,7 @@
     .form-input {
       display: block;
       width: 100%;
-      
-      /* REDUZIDO DE 14px PARA 10px (Mais fino) */
-      padding: 10px;
-      
+      padding: 12px;
       background-color: #333333; 
       border: 1px solid #555; 
       border-radius: 6px;
@@ -56,18 +59,14 @@
       font-size: 15px;
       outline: none;
       transition: all 0.2s;
+      /* Evita zoom no iPhone ao clicar */
+      -webkit-text-size-adjust: 100%;
     }
 
     .form-input:focus {
       border-color: #FF6D00;
       background-color: #404040;
       box-shadow: 0 0 0 2px rgba(255, 109, 0, 0.1);
-    }
-    
-    /* Classe de Erro */
-    .form-input.input-error {
-      border-color: #ff4444;
-      background-color: #3a2020;
     }
     
     .form-input::placeholder { color: #999; font-style: italic; }
@@ -78,10 +77,7 @@
       align-items: center;
       justify-content: center;
       width: 100%;
-      
-      /* REDUZIDO DE 14px PARA 10px (Mais fino) */
-      padding: 10px; 
-      
+      padding: 14px; 
       margin-top: 5px;
       background-color: #FF6D00; 
       color: #000000; 
@@ -199,7 +195,7 @@
     const params = new URLSearchParams(window.location.search);
     if(params.get('aula')) lessonName = params.get('aula');
 
-    // --- VALIDAÇÃO AVANÇADA ---
+    // --- VALIDAÇÃO ---
     function validateInputs() {
       const name = inputName.value.trim();
       const email = inputEmail.value.trim().toLowerCase();
@@ -208,14 +204,14 @@
       inputEmail.classList.remove('input-error');
       ui.error.classList.add('hidden');
 
-      // 1. Validação de Nome (Pelo menos 2 palavras)
+      // 1. Validação de Nome
       const nameParts = name.split(' ').filter(part => part.length > 0);
       if (nameParts.length < 2) {
         showError("Por favor, digite seu <strong>Nome e Sobrenome</strong>.", inputName);
         return false;
       }
 
-      // 2. Validação de E-mail (Estrutura)
+      // 2. Validação de E-mail
       if (!email || !email.includes('@') || !email.includes('.')) {
         showError("E-mail inválido. Verifique se digitou corretamente.", inputEmail);
         return false;
@@ -225,7 +221,7 @@
         return false;
       }
 
-      // 3. Validação de E-mail (Typos Comuns)
+      // 3. Typos
       const typos = [
         '@gmial', '@gamil', '@gmal', '@gmai.', '@gmaill', '@g-mail', 
         '@hotmial', '@hotmil', '@hormail', '@hotnail', '@hotmaill', 
