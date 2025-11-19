@@ -3,46 +3,42 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Upload Seguro</title>
+  <title>Upload Clube do Ukulele</title>
   <style>
-    /* --- RESET E BASE --- */
+    /* --- RESET --- */
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
-    html {
-      height: 100%;
-    }
+    html { height: 100%; }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background-color: transparent; /* Transparente para fundir com a Hotmart */
+      background-color: transparent;
       color: #ffffff;
       min-height: 100%;
-      /* Espaço extra no final e rolagem automática se precisar */
+      /* Permite rolagem se a tela for muito pequena (segurança) */
       overflow-y: auto;
-      padding: 10px 5px 60px 5px; 
+      padding: 20px 10px;
       display: flex;
       flex-direction: column;
       align-items: center;
     }
 
-    /* Estilização da Barra de Rolagem (Fina e discreta para combinar com Dark Mode) */
-    ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-track { background: #121212; }
-    ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: #555; }
+    /* Scrollbar discreta */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
 
     .container {
       width: 100%;
       max-width: 100%; 
     }
 
-    /* --- INPUTS (Estilo Premium Dark) --- */
+    /* --- INPUTS --- */
     .form-group {
-      margin-bottom: 15px;
+      margin-bottom: 20px;
       width: 100%;
     }
     
-    /* Rótulo Laranja */
     .form-group label {
       display: inline-block;
       background-color: #FF6D00;
@@ -51,21 +47,20 @@
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      padding: 4px 8px;
-      border-radius: 3px;
-      margin-bottom: 6px;
+      padding: 5px 10px;
+      border-radius: 4px;
+      margin-bottom: 8px;
     }
     
-    /* Campo de Texto Cinza */
     .form-input {
       display: block;
       width: 100%;
-      padding: 14px;
-      background-color: #262626; /* Cinza escuro bonito */
+      padding: 16px; /* Mais alto para facilitar o toque no mobile */
+      background-color: #262626; 
       border: 1px solid #444;
-      border-radius: 6px;
+      border-radius: 8px;
       color: #fff;
-      font-size: 15px;
+      font-size: 16px; /* Fonte 16px evita zoom automático no iPhone */
       outline: none;
       transition: all 0.2s;
     }
@@ -73,86 +68,88 @@
     .form-input:focus {
       border-color: #FF6D00;
       background-color: #333;
-      box-shadow: 0 0 0 2px rgba(255, 109, 0, 0.1);
+      box-shadow: 0 0 0 2px rgba(255, 109, 0, 0.15);
     }
     
-    .form-input::placeholder { color: #777; font-style: italic; }
+    .form-input::placeholder { color: #666; font-style: italic; }
 
-    /* --- DROPZONE (Caixa de Vídeo Bonita) --- */
+    /* --- DROPZONE --- */
     #dropzone {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       width: 100%;
-      min-height: 150px; /* Altura confortável */
+      min-height: 160px; /* Área de toque generosa */
       
-      background-color: #2a2a2a; /* Cinza destaque */
-      border: 2px dashed #888;   /* Borda visível */
+      background-color: #2a2a2a; 
+      border: 2px dashed #666;   
       
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
-      margin-top: 15px;
+      margin-top: 10px;
       transition: all 0.2s;
       text-align: center;
+      padding: 20px;
     }
     
     #dropzone strong { 
       color: #FF6D00; 
       font-size: 18px; 
-      margin-bottom: 6px;
+      margin-bottom: 8px;
       font-weight: 700; 
-      display: block;
+      text-transform: uppercase;
     }
     
     #dropzone span { 
       color: #bbb; 
-      font-size: 13px; 
+      font-size: 14px; 
+      line-height: 1.4;
     }
     
-    #dropzone:hover { 
+    #dropzone:hover, #dropzone:active { 
       border-color: #FF6D00; 
       background-color: #333; 
-      transform: translateY(-2px); 
+      transform: scale(0.99);
     }
     
     #dropzone.disabled { opacity: 0.5; pointer-events: none; filter: grayscale(100%); }
 
-    /* Esconde o input feio padrão do navegador */
-    .visually-hidden { 
-      position: absolute !important;
-      height: 1px; 
-      width: 1px; 
-      overflow: hidden;
-      clip: rect(1px, 1px, 1px, 1px);
-      white-space: nowrap; /* adicionado para garantir */
-      opacity: 0;
+    /* --- AJUSTES MOBILE (O Pulo do Gato) --- */
+    @media (max-width: 600px) {
+      body {
+        padding: 10px 0; /* Remove padding lateral no mobile pra ganhar espaço */
+      }
+      .form-input {
+        background-color: #1f1f1f; /* Ligeiramente mais escuro no mobile */
+      }
     }
-    
-    .hidden { display: none !important; }
 
     /* --- PROGRESSO --- */
-    .progress-container { margin-top: 15px; width: 100%; }
-    .progress-labels { display: flex; justify-content: space-between; margin-bottom: 5px; color: #FF6D00; font-weight: bold; font-size: 12px; }
-    progress { width: 100%; height: 8px; border-radius: 4px; background: #333; border: none; }
-    progress::-webkit-progress-bar { background: #333; border-radius: 4px; }
-    progress::-webkit-progress-value { background: #FF6D00; border-radius: 4px; }
-    
+    .progress-container { margin-top: 20px; width: 100%; }
+    .progress-labels { display: flex; justify-content: space-between; margin-bottom: 8px; color: #FF6D00; font-weight: bold; font-size: 13px; }
+    progress { width: 100%; height: 10px; border-radius: 5px; background: #333; border: none; }
+    progress::-webkit-progress-bar { background: #333; border-radius: 5px; }
+    progress::-webkit-progress-value { background: #FF6D00; border-radius: 5px; }
+
     /* --- MENSAGENS --- */
+    .hidden { display: none !important; }
+    .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; opacity: 0; }
+    
     #success-view { 
-      padding: 30px 20px; 
+      padding: 40px 20px; 
       text-align: center; 
       background: #262626; 
       border: 1px solid #333; 
-      border-radius: 8px; 
+      border-radius: 12px; 
       margin-top: 20px;
     }
-    .check-icon { font-size: 45px; margin-bottom: 10px; display: block; }
+    .check-icon { font-size: 50px; margin-bottom: 15px; display: block; }
     
     #error-msg { 
-      margin-top: 15px; padding: 10px; 
+      margin-top: 20px; padding: 15px; 
       background: rgba(255, 50, 50, 0.1); border: 1px solid #ff4444; 
-      border-radius: 6px; color: #ff8888; font-size: 13px; text-align: left; 
+      border-radius: 8px; color: #ff8888; font-size: 14px; text-align: left; 
     }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/tus-js-client@2.3.0/dist/tus.min.js"></script>
@@ -168,17 +165,14 @@
       </div>
 
       <div class="form-group">
-        <label for="studentEmail">E-MAIL HOTMART</label>
+        <label for="studentEmail">E-MAIL USADO NO CLUBE DO UKULELE</label>
         <input type="email" id="studentEmail" class="form-input" placeholder="seu@email.com">
       </div>
 
-      <!-- O LABEL AQUI É O SEGREDO PARA O CLIQUE FUNCIONAR NA CAIXA TODA -->
       <label id="dropzone" for="fileInput">
         <strong>Selecionar Vídeo</strong>
         <span>Clique aqui ou arraste o arquivo</span>
       </label>
-      
-      <!-- Input escondido corretamente -->
       <input id="fileInput" type="file" accept="video/*" class="visually-hidden" />
 
       <div id="progressArea" class="progress-container hidden">
@@ -191,8 +185,8 @@
 
     <div id="success-view" class="hidden">
       <span class="check-icon">✅</span>
-      <h2 style="color: #4caf50; margin-bottom: 10px; font-size: 18px;">Sucesso!</h2>
-      <p style="color: #ccc; font-size: 14px;">Arquivo enviado corretamente.</p>
+      <h2 style="color: #4caf50; margin-bottom: 10px; font-size: 20px;">Sucesso!</h2>
+      <p style="color: #ccc; font-size: 15px;">Arquivo enviado corretamente.</p>
     </div>
   </div>
 
