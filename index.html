@@ -3,41 +3,36 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Upload Seguro</title>
+  <title>Upload Compacto</title>
   <style>
-    /* --- RESET --- */
+    /* --- TRAVA TOTAL DE ROLAGEM --- */
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
     html, body {
       height: 100%;
       width: 100%;
-      overflow-y: auto; /* Permite rolagem se necessário */
-      overflow-x: hidden;
+      overflow: hidden; /* PROÍBE BARRA DE ROLAGEM */
     }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       background-color: transparent;
       color: #ffffff;
-      padding: 10px 5px 40px 5px; /* Padding inferior para garantir espaço */
+      /* Padding mínimo */
+      padding: 0 5px; 
       display: flex;
       flex-direction: column;
-      align-items: center;
+      justify-content: flex-start; /* Começa do topo */
     }
-
-    /* Scrollbar discreta */
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
 
     .container {
       width: 100%;
       max-width: 100%; 
     }
 
-    /* --- INPUTS --- */
+    /* --- INPUTS COMPACTOS --- */
     .form-group {
-      margin-bottom: 15px;
+      margin-bottom: 12px; /* Margem reduzida */
       width: 100%;
     }
     
@@ -45,24 +40,24 @@
       display: inline-block;
       background-color: #FF6D00;
       color: #000;
-      font-size: 11px;
+      font-size: 10px; /* Fonte levemente menor */
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      padding: 4px 8px;
+      padding: 3px 6px;
       border-radius: 3px;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
     
     .form-input {
       display: block;
       width: 100%;
-      padding: 14px;
+      padding: 12px; /* Padding confortável, mas não gigante */
       background-color: #262626; 
       border: 1px solid #444;
       border-radius: 6px;
       color: #fff;
-      font-size: 15px;
+      font-size: 14px;
       outline: none;
       transition: all 0.2s;
     }
@@ -75,76 +70,68 @@
     
     .form-input::placeholder { color: #777; font-style: italic; }
 
-    /* --- BOTÃO DE UPLOAD (O Novo Design) --- */
+    /* --- BOTÃO DE UPLOAD (Compacto) --- */
     .btn-upload {
       display: flex;
       align-items: center;
       justify-content: center;
       width: 100%;
-      padding: 18px;
-      margin-top: 10px;
+      padding: 15px; /* Altura do botão otimizada */
+      margin-top: 5px;
       
-      background-color: #FF6D00; /* Laranja Vibrante */
-      color: #000000; /* Texto Preto */
+      background-color: #FF6D00; 
+      color: #000000; 
       
       border: none;
-      border-radius: 8px;
+      border-radius: 6px;
       cursor: pointer;
       font-family: inherit;
       font-weight: 800;
-      font-size: 16px;
+      font-size: 15px;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
       transition: all 0.2s ease;
     }
 
     .btn-upload:hover {
-      background-color: #ff8533; /* Laranja mais claro no hover */
-      transform: translateY(-2px);
-      box-shadow: 0 6px 12px rgba(255, 109, 0, 0.2);
+      background-color: #ff8533;
+      transform: translateY(-1px);
     }
 
-    .btn-upload:active {
-      transform: translateY(0);
-    }
-    
-    /* Estado desabilitado (Enviando) */
     .btn-upload.disabled {
       background-color: #444;
       color: #888;
       cursor: not-allowed;
-      box-shadow: none;
       transform: none;
     }
 
-    .icon-upload { margin-right: 10px; font-size: 20px; }
+    .icon-upload { margin-right: 8px; font-size: 18px; }
 
     /* --- PROGRESSO --- */
-    .progress-container { margin-top: 20px; width: 100%; }
-    .progress-labels { display: flex; justify-content: space-between; margin-bottom: 5px; color: #FF6D00; font-weight: bold; font-size: 12px; }
-    progress { width: 100%; height: 8px; border-radius: 4px; background: #333; border: none; }
-    progress::-webkit-progress-bar { background: #333; border-radius: 4px; }
-    progress::-webkit-progress-value { background: #FF6D00; border-radius: 4px; }
+    .progress-container { margin-top: 10px; width: 100%; }
+    .progress-labels { display: flex; justify-content: space-between; margin-bottom: 3px; color: #FF6D00; font-weight: bold; font-size: 11px; }
+    progress { width: 100%; height: 6px; border-radius: 3px; background: #333; border: none; }
+    progress::-webkit-progress-bar { background: #333; border-radius: 3px; }
+    progress::-webkit-progress-value { background: #FF6D00; border-radius: 3px; }
 
     /* --- UTILITÁRIOS --- */
     .hidden { display: none !important; }
     .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; opacity: 0; }
     
     #success-view { 
-      padding: 30px 20px; 
+      padding: 20px; 
       text-align: center; 
       background: #262626; 
       border: 1px solid #333; 
       border-radius: 8px; 
       margin-top: 10px;
     }
-    .check-icon { font-size: 45px; margin-bottom: 10px; display: block; }
+    .check-icon { font-size: 40px; margin-bottom: 10px; display: block; }
     
     #error-msg { 
-      margin-top: 15px; padding: 12px; 
+      margin-top: 10px; padding: 10px; 
       background: rgba(255, 50, 50, 0.1); border: 1px solid #ff4444; 
-      border-radius: 6px; color: #ff8888; font-size: 13px; text-align: left; 
+      border-radius: 6px; color: #ff8888; font-size: 12px; text-align: left; 
     }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/tus-js-client@2.3.0/dist/tus.min.js"></script>
@@ -160,11 +147,11 @@
       </div>
 
       <div class="form-group">
-        <label for="studentEmail">E-MAIL HOTMART</label>
+        <label for="studentEmail">E-MAIL USADO NO CLUBE DO UKULELE</label>
         <input type="email" id="studentEmail" class="form-input" placeholder="seu@email.com">
       </div>
 
-      <!-- BOTÃO DE AÇÃO -->
+      <!-- BOTÃO DIRETO (Sem Dropzone Gigante) -->
       <label for="fileInput" class="btn-upload" id="uploadBtn">
         <span class="icon-upload">📁</span>
         Selecionar Vídeo
@@ -182,8 +169,8 @@
 
     <div id="success-view" class="hidden">
       <span class="check-icon">✅</span>
-      <h2 style="color: #4caf50; margin-bottom: 10px; font-size: 18px;">Sucesso!</h2>
-      <p style="color: #ccc; font-size: 14px;">Arquivo enviado corretamente.</p>
+      <h2 style="color: #4caf50; margin-bottom: 5px; font-size: 18px;">Sucesso!</h2>
+      <p style="color: #ccc; font-size: 13px;">Arquivo enviado.</p>
     </div>
   </div>
 
@@ -213,11 +200,8 @@
       const email = inputEmail.value.trim();
 
       if (!name || !email) {
-        alert("⚠️ Atenção:\nPreencha NOME e E-MAIL antes de escolher o vídeo.");
-        
-        // Reseta o arquivo para permitir selecionar de novo
+        alert("⚠️ Preencha NOME e E-MAIL antes de escolher o vídeo.");
         fileInput.value = ""; 
-        
         if(!name) inputName.focus(); else inputEmail.focus();
         return;
       }
@@ -228,10 +212,9 @@
       ui.error.classList.add("hidden");
       ui.progress.classList.remove("hidden");
       
-      // Trava botão visualmente
       uploadBtn.classList.add("disabled");
       uploadBtn.innerHTML = "⏳ Aguarde...";
-      uploadBtn.style.pointerEvents = "none"; // Garante que não clica de novo
+      uploadBtn.style.pointerEvents = "none";
       
       inputName.disabled = true; inputEmail.disabled = true;
 
@@ -241,14 +224,11 @@
         metadata: { filename: file.name, filetype: file.type, student_name: name, student_email: email, lesson: lessonName, upload_date: new Date().toISOString() },
         onError: (err) => { 
             console.error(err); 
-            ui.error.innerHTML = "Erro no envio. Verifique sua conexão."; 
+            ui.error.innerHTML = "Erro no envio. Verifique a conexão."; 
             ui.error.classList.remove("hidden"); 
-            
-            // Destrava interface
             uploadBtn.classList.remove("disabled");
             uploadBtn.innerHTML = '<span class="icon-upload">📁</span> Tentar Novamente';
             uploadBtn.style.pointerEvents = "auto";
-            
             inputName.disabled = false; inputEmail.disabled = false; 
         },
         onProgress: (l, t) => { const p = ((l/t)*100).toFixed(0); ui.bar.value = p; ui.text.textContent = p + "%"; },
@@ -257,7 +237,6 @@
       upload.start();
     }
 
-    // Detecta a seleção do arquivo
     fileInput.addEventListener("change", () => { 
         if(fileInput.files[0]) handleFile(fileInput.files[0]); 
     });
