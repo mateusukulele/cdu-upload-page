@@ -5,21 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Upload Uke-A-Uke</title>
   
-  <!-- Fontes Bonitas -->
+  <!-- Fontes e Biblioteca de Upload -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-  
-  <!-- Biblioteca de Upload -->
   <script src="https://cdn.jsdelivr.net/npm/tus-js-client@2.3.0/dist/tus.min.js"></script>
 
   <style>
-    /* --- ESTILOS VISUAIS (Beleza e Layout) --- */
+    /* --- ESTILOS VISUAIS (Beleza e UX) --- */
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
     body {
       font-family: 'Nunito Sans', sans-serif;
-      background-color: transparent; /* Fundo transparente para misturar com a Hotmart */
+      background-color: transparent; /* Fundo transparente para integrar na Hotmart */
       color: #ffffff;
       padding: 0 10px;
       display: flex;
@@ -30,12 +28,12 @@
 
     .container { width: 100%; max-width: 100%; }
 
-    /* Animação suave entre telas */
+    /* Animação suave entre as etapas */
     #step-validation, #step-upload, #step-upsell, #step-success { display: none; animation: fadeIn 0.5s ease-in-out; }
     .active { display: block !important; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* Inputs (Caixas de texto) */
+    /* Caixas de Texto (Inputs) */
     .form-group { margin-bottom: 15px; width: 100%; }
     
     .form-input {
@@ -49,7 +47,7 @@
     .form-input.error { border-color: #ff4444; background-color: #3a2020; }
     .form-input::placeholder { color: #aaa; }
 
-    /* Botões */
+    /* Botões Principais */
     .btn-main {
       width: 100%; padding: 16px; 
       background-color: #FF6D00; color: #fff;
@@ -58,12 +56,12 @@
       text-transform: uppercase; letter-spacing: 0.5px;
       transition: 0.3s; display: flex; align-items: center; justify-content: center;
     }
-    .btn-main:hover { background-color: #ff8533; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(255, 109, 0, 0.3); }
+    .btn-main:hover { background-color: #e65100; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(255, 109, 0, 0.3); }
     .btn-main:disabled { background-color: #555; color: #888; cursor: wait; transform: none; box-shadow: none; }
 
-    /* Mensagens de Erro e Ajuda */
+    /* Mensagens de Erro */
     .msg-box { margin-top: 15px; padding: 15px; border-radius: 8px; font-size: 14px; display: none; text-align: left; line-height: 1.5; }
-    .msg-error { background: rgba(255, 68, 68, 0.1); color: #ff9999; border: 1px solid #ff4444; display: block; }
+    .msg-error { background: rgba(255, 68, 68, 0.15); color: #ffadad; border: 1px solid #ff4444; display: block; }
     
     /* Upload UI */
     .welcome-msg { color: #FF6D00; font-weight: 800; margin-bottom: 5px; text-align: center; font-size: 18px; }
@@ -73,12 +71,10 @@
     progress { width: 100%; height: 8px; border-radius: 4px; background: #444; border: none; }
     progress::-webkit-progress-value { background: #FF6D00; border-radius: 4px; }
     
-    /* Tela de Upsell (Bloqueio) */
+    /* Tela de Ajuda (Quando não acha o email) */
     .upsell-box { background: #fff; color: #333; border-radius: 8px; padding: 25px; text-align: center; border: 2px solid #ddd; margin-top: 10px; }
-    .upsell-title { color: #d32f2f; font-weight: 900; font-size: 20px; margin-bottom: 10px; }
-    .btn-upsell { background-color: #27ae60; color: white; padding: 12px 20px; border-radius: 5px; text-decoration: none; display: inline-block; font-weight: bold; margin-top: 15px; transition: 0.2s;}
-    .btn-upsell:hover { background-color: #2ecc71; }
-    .btn-retry { background: none; border: none; color: #666; font-size: 13px; margin-top: 20px; cursor: pointer; text-decoration: underline; }
+    .upsell-title { color: #d32f2f; font-weight: 900; font-size: 18px; margin-bottom: 10px; }
+    .btn-retry { background: none; border: none; color: #666; font-size: 14px; margin-top: 20px; cursor: pointer; text-decoration: underline; font-weight: bold; }
 
   </style>
 </head>
@@ -86,11 +82,11 @@
 
   <div class="container">
     
-    <!-- 1. TELA DE IDENTIFICAÇÃO (Antiga Validação) -->
+    <!-- 1. TELA: IDENTIFICAÇÃO -->
     <div id="step-validation" class="active">
       <div style="text-align:center; margin-bottom:20px;">
         <p style="font-size:16px; color:#fff; font-weight:600;">Vamos identificar você?</p>
-        <p style="font-size:13px; color:#ccc; margin-top:5px;">Digite abaixo o <strong>mesmo e-mail</strong> que você usa para entrar no Clube.</p>
+        <p style="font-size:13px; color:#ccc; margin-top:5px;">Para liberar o envio, digite seu <strong>e-mail de acesso ao Clube</strong>.</p>
       </div>
 
       <div class="form-group">
@@ -98,13 +94,13 @@
       </div>
       
       <button id="btnValidate" class="btn-main" onclick="validateUser()">
-        Liberar Envio de Vídeo
+        Buscar meu cadastro
       </button>
       
       <div id="validationError" class="msg-box msg-error" style="display:none;"></div>
     </div>
 
-    <!-- 2. TELA DE AJUDA (Quando não encontra o e-mail) -->
+    <!-- 2. TELA: NÃO ENCONTRADO (Ajuda) -->
     <div id="step-upsell">
       <div class="upsell-box">
         <div class="upsell-title">🤔 Ops! Não encontramos...</div>
@@ -114,21 +110,18 @@
         </p>
         <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
         <p style="font-size:14px; color:#555;">
-          Para validar seu acesso, precisamos que você digite <strong>exatamente o mesmo e-mail</strong> que usou na compra ou no cadastro do Clube.
+          Tem certeza que digitou certo? Precisa ser <strong>exatamente o mesmo e-mail</strong> que você usa para entrar no curso.
         </p>
         
-        <button class="btn-retry" onclick="resetView()">Ah, entendi! Deixa eu corrigir o e-mail.</button>
-        
-        <!-- Caso queira deixar um link de suporte ou vendas, pode descomentar abaixo -->
-        <!-- <br><a href="LINK_SUPORTE" class="btn-upsell">Preciso de Ajuda</a> -->
+        <button class="btn-retry" onclick="resetView()">Ah, entendi! Corrigir e-mail</button>
       </div>
     </div>
 
-    <!-- 3. TELA DE UPLOAD (Acesso Liberado) -->
+    <!-- 3. TELA: UPLOAD (Liberado) -->
     <div id="step-upload">
       <div class="welcome-msg">👋 Oi, <span id="studentNameDisplay">Aluno</span>!</div>
       <p class="lesson-info">
-        Tudo pronto. Pode enviar seu vídeo para a aula:<br>
+        Tudo certo. Pode enviar seu vídeo para a aula:<br>
         <strong style="color:#fff; font-size:16px;" id="lessonNameDisplay">...</strong>
       </p>
 
@@ -139,7 +132,7 @@
 
       <div id="progressArea" class="progress-container" style="display:none;">
         <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:5px; color:#FF6D00;">
-          <span>Subindo vídeo... não feche.</span><span id="percentageText">0%</span>
+          <span>Subindo vídeo... não feche essa janela.</span><span id="percentageText">0%</span>
         </div>
         <progress id="progressBar" value="0" max="100"></progress>
       </div>
@@ -147,15 +140,15 @@
       <div id="uploadError" class="msg-box msg-error" style="display:none;"></div>
     </div>
 
-    <!-- 4. TELA DE SUCESSO -->
+    <!-- 4. TELA: SUCESSO -->
     <div id="step-success">
       <div style="background:#2e7d32; border:1px solid #4caf50; padding:20px; border-radius:8px; display:flex; flex-direction:column; align-items:center; margin-top:5px; text-align:center;">
         <div style="font-size:40px; margin-bottom:10px;">✅</div>
         <div>
           <h3 style="color:#fff; font-size:20px; margin:0 0 5px 0; font-weight:800;">Vídeo Enviado!</h3>
           <p style="color:#e8f5e9; font-size:14px; line-height:1.4; margin:0;">
-            Recebemos seu arquivo com sucesso.<br>
-            Fique de olho no seu E-mail/WhatsApp para a análise.
+            Recebemos seu arquivo.<br>
+            Fique de olho no seu Zap/Email para a análise.
           </p>
         </div>
       </div>
@@ -165,10 +158,10 @@
 
   <script>
     // =========================================================
-    // CONFIGURAÇÕES 
+    // CONFIGURAÇÕES (Suas URLs Originais)
     // =========================================================
     
-    // 1. URL DO APPS SCRIPT (Verifique se é esta mesma)
+    // 1. URL DO APPS SCRIPT
     const API_URL = "https://script.google.com/macros/s/AKfycbypzt5_0sxbVkS-MM_CJjO9xFY0peVrMqUDa5uq7L44LdQKCBoK99x3gGt75Ns2wjYN8g/exec"; 
     
     // 2. URL DO SERVIDOR DE UPLOAD
@@ -202,7 +195,7 @@
 
     els.lessonDisplay.innerText = currentLesson;
 
-    // Função para trocar as telas (Validacao -> Upload -> Sucesso)
+    // Função para trocar as telas
     function showView(name) {
       ['step-validation', 'step-upsell', 'step-upload', 'step-success'].forEach(id => {
         document.getElementById(id).classList.remove('active');
@@ -268,11 +261,11 @@
 
       } catch (err) {
         console.error(err);
-        els.valErr.innerHTML = "❌ Erro de conexão. Verifique sua internet e tente novamente.";
+        els.valErr.innerHTML = "❌ Erro de conexão. Verifique sua internet.";
         els.valErr.style.display = 'block';
       } finally {
         els.btnVal.disabled = false;
-        els.btnVal.innerHTML = "Liberar Envio de Vídeo";
+        els.btnVal.innerHTML = "Buscar meu cadastro";
       }
     }
 
@@ -292,7 +285,7 @@
         metadata: {
           filename: file.name,
           filetype: file.type,
-          // Enviamos os dados que já validamos antes
+          // Enviamos os dados validados (o Python vai ler isso)
           student_name: currentStudentName,
           student_email: currentStudentEmail,
           lesson: currentLesson,
