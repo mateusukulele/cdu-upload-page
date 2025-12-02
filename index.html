@@ -5,20 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Upload Uke-A-Uke</title>
   
+  <!-- Fontes Bonitas -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Biblioteca de Upload -->
   <script src="https://cdn.jsdelivr.net/npm/tus-js-client@2.3.0/dist/tus.min.js"></script>
 
   <style>
-    /* --- ESTILOS VISUAIS --- */
+    /* --- ESTILOS VISUAIS (Beleza e Layout) --- */
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
     body {
       font-family: 'Nunito Sans', sans-serif;
-      background-color: transparent;
+      background-color: transparent; /* Fundo transparente para misturar com a Hotmart */
       color: #ffffff;
-      padding: 0 5px;
+      padding: 0 10px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -27,108 +30,116 @@
 
     .container { width: 100%; max-width: 100%; }
 
-    /* Telas Animadas */
-    #step-validation, #step-upload, #step-upsell, #step-success { display: none; animation: fadeIn 0.4s; }
+    /* Animação suave entre telas */
+    #step-validation, #step-upload, #step-upsell, #step-success { display: none; animation: fadeIn 0.5s ease-in-out; }
     .active { display: block !important; }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* Inputs */
-    .form-group { margin-bottom: 12px; width: 100%; }
+    /* Inputs (Caixas de texto) */
+    .form-group { margin-bottom: 15px; width: 100%; }
     
     .form-input {
-      width: 100%; padding: 14px; background-color: #333; border: 1px solid #555;
-      border-radius: 6px; color: #fff; font-size: 15px; outline: none; transition: 0.2s;
+      width: 100%; padding: 16px; 
+      background-color: #333; 
+      border: 1px solid #555;
+      border-radius: 8px; 
+      color: #fff; font-size: 16px; outline: none; transition: 0.3s;
     }
-    .form-input:focus { border-color: #FF6D00; background-color: #404040; }
+    .form-input:focus { border-color: #FF6D00; background-color: #404040; box-shadow: 0 0 8px rgba(255, 109, 0, 0.2); }
     .form-input.error { border-color: #ff4444; background-color: #3a2020; }
-    .form-input::placeholder { color: #999; font-style: italic; }
+    .form-input::placeholder { color: #aaa; }
 
     /* Botões */
     .btn-main {
-      width: 100%; padding: 14px; background-color: #FF6D00; color: #000;
-      border: none; border-radius: 6px; cursor: pointer; font-weight: 800; font-size: 14px;
-      text-transform: uppercase; transition: 0.2s; display: flex; align-items: center; justify-content: center;
+      width: 100%; padding: 16px; 
+      background-color: #FF6D00; color: #fff;
+      border: none; border-radius: 8px; 
+      cursor: pointer; font-weight: 800; font-size: 16px;
+      text-transform: uppercase; letter-spacing: 0.5px;
+      transition: 0.3s; display: flex; align-items: center; justify-content: center;
     }
-    .btn-main:hover { background-color: #ff8533; transform: translateY(-1px); }
-    .btn-main:disabled { background-color: #555; color: #888; cursor: wait; transform: none; }
+    .btn-main:hover { background-color: #ff8533; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(255, 109, 0, 0.3); }
+    .btn-main:disabled { background-color: #555; color: #888; cursor: wait; transform: none; box-shadow: none; }
 
-    /* Upsell / Bloqueio */
-    .upsell-box {
-      background: #fff; color: #333; border-radius: 8px; padding: 20px; 
-      text-align: center; border: 2px solid #ddd; margin-top: 10px;
-    }
-    .upsell-title { color: #d32f2f; font-weight: 800; font-size: 18px; margin-bottom: 10px; }
-    .btn-upsell { 
-      background-color: #27ae60; color: white; padding: 12px; border-radius: 5px; 
-      text-decoration: none; display: inline-block; font-weight: bold; margin-top: 10px; 
-    }
-    .btn-retry { 
-      background: none; border: none; color: #666; font-size: 12px; 
-      margin-top: 15px; cursor: pointer; text-decoration: underline; 
-    }
-
-    /* Mensagens */
-    .msg-box { margin-top: 10px; padding: 10px; border-radius: 5px; font-size: 13px; display: none; text-align: left; }
-    .msg-error { background: rgba(255, 68, 68, 0.1); color: #ff8888; border: 1px solid #ff4444; display: block; }
+    /* Mensagens de Erro e Ajuda */
+    .msg-box { margin-top: 15px; padding: 15px; border-radius: 8px; font-size: 14px; display: none; text-align: left; line-height: 1.5; }
+    .msg-error { background: rgba(255, 68, 68, 0.1); color: #ff9999; border: 1px solid #ff4444; display: block; }
     
     /* Upload UI */
-    .welcome-msg { color: #FF6D00; font-weight: bold; margin-bottom: 5px; text-align: center; font-size: 16px; }
-    .lesson-info { font-size: 13px; color: #ccc; text-align: center; margin-bottom: 15px; line-height: 1.4; }
+    .welcome-msg { color: #FF6D00; font-weight: 800; margin-bottom: 5px; text-align: center; font-size: 18px; }
+    .lesson-info { font-size: 14px; color: #ccc; text-align: center; margin-bottom: 20px; line-height: 1.4; }
     
-    .progress-container { margin-top: 12px; }
-    progress { width: 100%; height: 6px; border-radius: 3px; background: #444; border: none; }
-    progress::-webkit-progress-value { background: #FF6D00; }
+    .progress-container { margin-top: 15px; }
+    progress { width: 100%; height: 8px; border-radius: 4px; background: #444; border: none; }
+    progress::-webkit-progress-value { background: #FF6D00; border-radius: 4px; }
+    
+    /* Tela de Upsell (Bloqueio) */
+    .upsell-box { background: #fff; color: #333; border-radius: 8px; padding: 25px; text-align: center; border: 2px solid #ddd; margin-top: 10px; }
+    .upsell-title { color: #d32f2f; font-weight: 900; font-size: 20px; margin-bottom: 10px; }
+    .btn-upsell { background-color: #27ae60; color: white; padding: 12px 20px; border-radius: 5px; text-decoration: none; display: inline-block; font-weight: bold; margin-top: 15px; transition: 0.2s;}
+    .btn-upsell:hover { background-color: #2ecc71; }
+    .btn-retry { background: none; border: none; color: #666; font-size: 13px; margin-top: 20px; cursor: pointer; text-decoration: underline; }
+
   </style>
 </head>
 <body>
 
   <div class="container">
     
-    <!-- 1. TELA DE VALIDAÇÃO -->
+    <!-- 1. TELA DE IDENTIFICAÇÃO (Antiga Validação) -->
     <div id="step-validation" class="active">
-      <div class="form-group">
-        <input type="email" id="emailInput" class="form-input" placeholder="Digite seu e-mail de aluno...">
+      <div style="text-align:center; margin-bottom:20px;">
+        <p style="font-size:16px; color:#fff; font-weight:600;">Vamos identificar você?</p>
+        <p style="font-size:13px; color:#ccc; margin-top:5px;">Digite abaixo o <strong>mesmo e-mail</strong> que você usa para entrar no Clube.</p>
       </div>
+
+      <div class="form-group">
+        <input type="email" id="emailInput" class="form-input" placeholder="seu@email.com">
+      </div>
+      
       <button id="btnValidate" class="btn-main" onclick="validateUser()">
-        Validar Acesso
+        Liberar Envio de Vídeo
       </button>
+      
       <div id="validationError" class="msg-box msg-error" style="display:none;"></div>
     </div>
 
-    <!-- 2. TELA DE BLOQUEIO (UPSELL) -->
+    <!-- 2. TELA DE AJUDA (Quando não encontra o e-mail) -->
     <div id="step-upsell">
       <div class="upsell-box">
-        <div class="upsell-title">🚫 Acesso não encontrado</div>
-        <p style="font-size:14px; line-height:1.4;">
-          O e-mail <strong id="displayEmailUpsell"></strong> não consta na nossa lista de alunos ativos.
+        <div class="upsell-title">🤔 Ops! Não encontramos...</div>
+        <p style="font-size:15px; line-height:1.5;">
+          Procuramos pelo e-mail:<br>
+          <strong id="displayEmailUpsell" style="color:#d32f2f;"></strong>
         </p>
-        <p style="font-size:12px; color:#555; margin-top:10px;">
-          Verifique se digitou corretamente ou adquira o plano abaixo.
+        <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
+        <p style="font-size:14px; color:#555;">
+          Para validar seu acesso, precisamos que você digite <strong>exatamente o mesmo e-mail</strong> que usou na compra ou no cadastro do Clube.
         </p>
         
-        <!-- LINK DE VENDAS -->
-        <a href="https://clubedoukulele.com" target="_blank" class="btn-upsell">Quero ser Aluno</a>
-        <br>
-        <button class="btn-retry" onclick="resetView()">Tentar outro e-mail</button>
+        <button class="btn-retry" onclick="resetView()">Ah, entendi! Deixa eu corrigir o e-mail.</button>
+        
+        <!-- Caso queira deixar um link de suporte ou vendas, pode descomentar abaixo -->
+        <!-- <br><a href="LINK_SUPORTE" class="btn-upsell">Preciso de Ajuda</a> -->
       </div>
     </div>
 
-    <!-- 3. TELA DE UPLOAD (LIBERADO) -->
+    <!-- 3. TELA DE UPLOAD (Acesso Liberado) -->
     <div id="step-upload">
-      <div class="welcome-msg">👋 Olá, <span id="studentNameDisplay">Aluno</span>!</div>
+      <div class="welcome-msg">👋 Oi, <span id="studentNameDisplay">Aluno</span>!</div>
       <p class="lesson-info">
-        Enviar vídeo para:<br>
-        <strong style="color:#fff;" id="lessonNameDisplay">...</strong>
+        Tudo pronto. Pode enviar seu vídeo para a aula:<br>
+        <strong style="color:#fff; font-size:16px;" id="lessonNameDisplay">...</strong>
       </p>
 
       <label for="fileInput" class="btn-main">
-        <span style="margin-right:8px; font-size:18px;">📁</span> SELECIONAR VÍDEO
+        <span style="margin-right:10px; font-size:20px;">📤</span> SELECIONAR VÍDEO
       </label>
       <input id="fileInput" type="file" accept="video/*" style="display:none;" />
 
       <div id="progressArea" class="progress-container" style="display:none;">
-        <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:3px; color:#FF6D00;">
-          <span>Enviando...</span><span id="percentageText">0%</span>
+        <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:5px; color:#FF6D00;">
+          <span>Subindo vídeo... não feche.</span><span id="percentageText">0%</span>
         </div>
         <progress id="progressBar" value="0" max="100"></progress>
       </div>
@@ -138,12 +149,13 @@
 
     <!-- 4. TELA DE SUCESSO -->
     <div id="step-success">
-      <div style="background:#333; border:1px solid #4caf50; padding:15px; border-radius:8px; display:flex; align-items:center; margin-top:5px;">
-        <div style="font-size:24px; margin-right:15px; color:#4caf50;">✅</div>
+      <div style="background:#2e7d32; border:1px solid #4caf50; padding:20px; border-radius:8px; display:flex; flex-direction:column; align-items:center; margin-top:5px; text-align:center;">
+        <div style="font-size:40px; margin-bottom:10px;">✅</div>
         <div>
-          <h3 style="color:#4caf50; font-size:16px; margin:0 0 5px 0;">Vídeo Enviado!</h3>
-          <p style="color:#ddd; font-size:12px; line-height:1.3; margin:0;">
-            Recebemos seu arquivo.<br>Aguarde a análise.
+          <h3 style="color:#fff; font-size:20px; margin:0 0 5px 0; font-weight:800;">Vídeo Enviado!</h3>
+          <p style="color:#e8f5e9; font-size:14px; line-height:1.4; margin:0;">
+            Recebemos seu arquivo com sucesso.<br>
+            Fique de olho no seu E-mail/WhatsApp para a análise.
           </p>
         </div>
       </div>
@@ -153,13 +165,13 @@
 
   <script>
     // =========================================================
-    // CONFIGURAÇÕES
+    // CONFIGURAÇÕES 
     // =========================================================
     
-    // URL DO APPS SCRIPT (ATUALIZADA)
+    // 1. URL DO APPS SCRIPT (Verifique se é esta mesma)
     const API_URL = "https://script.google.com/macros/s/AKfycbypzt5_0sxbVkS-MM_CJjO9xFY0peVrMqUDa5uq7L44LdQKCBoK99x3gGt75Ns2wjYN8g/exec"; 
     
-    // URL DO TUS
+    // 2. URL DO SERVIDOR DE UPLOAD
     const TUS_ENDPOINT = "https://tus-upload-server-1019908552664.southamerica-east1.run.app/files/";
 
     // =========================================================
@@ -169,18 +181,11 @@
     let currentStudentEmail = "";
     let currentLesson = "Aula Geral";
 
-    // Pega nome da aula da URL (?aula=...)
+    // Pega o nome da aula que vem do link da Hotmart
     const params = new URLSearchParams(window.location.search);
     if(params.get('aula')) currentLesson = params.get('aula');
 
-    // Mapeamento dos elementos da tela
-    const views = {
-      val: document.getElementById('step-validation'),
-      upsell: document.getElementById('step-upsell'),
-      upload: document.getElementById('step-upload'),
-      success: document.getElementById('step-success')
-    };
-    
+    // Elementos da Tela
     const els = {
       email: document.getElementById('emailInput'),
       btnVal: document.getElementById('btnValidate'),
@@ -191,118 +196,113 @@
       bar: document.getElementById('progressBar'),
       txt: document.getElementById('percentageText'),
       prog: document.getElementById('progressArea'),
-      upErr: document.getElementById('uploadError')
+      upErr: document.getElementById('uploadError'),
+      upsellEmail: document.getElementById('displayEmailUpsell')
     };
 
     els.lessonDisplay.innerText = currentLesson;
 
-    // --- TROCA DE TELAS ---
+    // Função para trocar as telas (Validacao -> Upload -> Sucesso)
     function showView(name) {
-      Object.values(views).forEach(el => el.classList.remove('active'));
-      views[name].classList.add('active');
+      ['step-validation', 'step-upsell', 'step-upload', 'step-success'].forEach(id => {
+        document.getElementById(id).classList.remove('active');
+      });
+      document.getElementById('step-' + name).classList.add('active');
     }
 
     function resetView() {
       els.email.value = "";
       els.valErr.style.display = 'none';
-      showView('val');
+      showView('validation');
     }
 
-    // --- VALIDAÇÃO DE DIGITAÇÃO ---
+    // Verifica erros comuns de digitação
     function checkTypos(email) {
-      const typos = [
-        '@gmial', '@gamil', '@gmal', '@gmai.', '@gmaill', '@g-mail', 
-        '@hotmial', '@hotmil', '@hormail', '@hotnail', '@hotmaill', 
-        '@outlok', '@otlook', '@yaho.', '@yahooo', '@icoud', 
-        '.cmo', '.con', '.coom', '.combr', '.br.com', 'gmail.com.br'
-      ];
-      for (let t of typos) {
-        if (email.includes(t)) return t;
-      }
+      const typos = ['@gmial', '@gamil', '@gmal', '@hotmial', '@hotmil', '@outlok', '.cmo', '.combr', 'gmail.com.br'];
+      for (let t of typos) { if (email.includes(t)) return t; }
       return null;
     }
 
-    // --- LÓGICA DE VALIDAÇÃO DO ALUNO (Frontend -> Apps Script) ---
+    // --- LÓGICA DE IDENTIFICAÇÃO ---
     async function validateUser() {
       const email = els.email.value.trim().toLowerCase();
       els.valErr.style.display = 'none';
       els.email.classList.remove('error');
 
-      // 1. Validação simples local
+      // Verificações básicas
       if (!email || !email.includes('@') || !email.includes('.')) {
-        els.valErr.innerText = "⚠️ E-mail inválido.";
+        els.valErr.innerHTML = "⚠️ Por favor, digite um e-mail válido.";
         els.valErr.style.display = 'block';
         return;
       }
 
       const typo = checkTypos(email);
       if (typo) {
-        els.valErr.innerHTML = `⚠️ Erro de digitação comum: <strong>${typo}</strong>? Corrija e tente novamente.`;
+        els.valErr.innerHTML = `⚠️ Parece haver um errinho: <strong>${typo}</strong>? Verifique a digitação.`;
         els.valErr.style.display = 'block';
         return;
       }
 
-      // 2. Loading...
+      // Efeito de carregamento
       els.btnVal.disabled = true;
-      els.btnVal.innerText = "Verificando...";
+      els.btnVal.innerHTML = "Buscando aluno...";
 
       try {
-        // 3. Consulta a Planilha
+        // Pergunta pra planilha: "Esse aluno existe?"
         const res = await fetch(`${API_URL}?email=${encodeURIComponent(email)}`);
         const data = await res.json();
 
         if (data.valid) {
-          // SUCESSO: Aluno existe
+          // SUCESSO: Achou!
           currentStudentName = data.name; 
           currentStudentEmail = email;
           
-          // Mostra apenas o primeiro nome para ficar pessoal
+          // Mostra só o primeiro nome pra ser mais pessoal
           els.nameDisplay.innerText = currentStudentName.split(' ')[0]; 
           showView('upload');
         } else {
-          // ERRO: Não existe
-          document.getElementById('displayEmailUpsell').innerText = email;
+          // ERRO: Não achou
+          els.upsellEmail.innerText = email;
           showView('upsell');
         }
 
       } catch (err) {
         console.error(err);
-        els.valErr.innerText = "❌ Erro ao conectar. Tente novamente.";
+        els.valErr.innerHTML = "❌ Erro de conexão. Verifique sua internet e tente novamente.";
         els.valErr.style.display = 'block';
       } finally {
         els.btnVal.disabled = false;
-        els.btnVal.innerText = "Validar Acesso";
+        els.btnVal.innerHTML = "Liberar Envio de Vídeo";
       }
     }
 
-    // --- LÓGICA DE UPLOAD (TUS) ---
+    // --- LÓGICA DE UPLOAD ---
     els.file.addEventListener("change", (e) => {
       const file = e.target.files[0];
       if (!file) return;
 
-      // Prepara interface
+      // Prepara a tela de progresso
       els.prog.style.display = 'block';
       els.upErr.style.display = 'none';
-      // Esconde o botão para evitar clique duplo
-      document.querySelector("label[for='fileInput']").style.display = 'none'; 
+      document.querySelector("label[for='fileInput']").style.display = 'none'; // Esconde botão pra não clicar 2x
 
       const upload = new tus.Upload(file, {
         endpoint: TUS_ENDPOINT,
-        chunkSize: 10485760, // 10MB
+        chunkSize: 10485760, // 10MB por pedaço
         metadata: {
           filename: file.name,
           filetype: file.type,
-          // AQUI ESTÁ O SEGREDO: Usamos os dados validados anteriormente
+          // Enviamos os dados que já validamos antes
           student_name: currentStudentName,
           student_email: currentStudentEmail,
           lesson: currentLesson,
           upload_date: new Date().toISOString()
         },
         onError: (error) => {
-          console.error("Failed because: " + error);
-          els.upErr.innerText = "❌ Falha no envio. Verifique sua conexão.";
+          console.error("Erro TUS: " + error);
+          els.upErr.innerHTML = "❌ Ocorreu uma falha no envio. Verifique sua internet.";
           els.upErr.style.display = 'block';
-          // Mostra o botão de novo para ele tentar novamente
+          // Mostra o botão de novo
           document.querySelector("label[for='fileInput']").style.display = 'flex'; 
         },
         onProgress: (bytesUploaded, bytesTotal) => {
