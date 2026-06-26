@@ -44,21 +44,16 @@
 
   /* Card */
   .an-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:8px;margin-bottom:12px;scroll-margin-top:12px;}
-  .an-thumb{position:relative;width:100%;padding-top:56.25%;border-radius:10px;overflow:hidden;background:var(--anchor-deep);cursor:pointer;}
-  .an-thumb img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;border:0;display:block;}
-  .an-thumb iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0;}
-  .an-num{position:absolute;top:8px;left:8px;z-index:2;background:rgba(232,122,133,.96);color:#fff;font-size:11px;font-weight:700;letter-spacing:.03em;padding:3px 9px;border-radius:999px;}
-  .an-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:2;width:54px;height:54px;border-radius:50%;background:rgba(232,122,133,.95);display:flex;align-items:center;justify-content:center;transition:transform .15s;}
-  .an-thumb:hover .an-play{transform:translate(-50%,-50%) scale(1.07);}
-  .an-play svg{margin-left:3px;}
-  .an-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(45,34,73,0) 55%,rgba(45,34,73,.35) 100%);}
+  .an-media{position:relative;width:100%;padding-top:56.25%;border-radius:10px;overflow:hidden;background:var(--anchor-deep);}
+  .an-media iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
 
-  .an-foot{padding:9px 6px 4px;}
-  .an-foot h2{font-size:14.5px;font-weight:700;color:var(--anchor);line-height:1.3;margin:0 0 8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
-  .an-meta{display:flex;align-items:center;justify-content:space-between;gap:8px 12px;flex-wrap:wrap;min-height:36px;}
+  .an-foot{display:flex;align-items:center;gap:10px;padding:9px 6px 3px;}
+  .an-info{flex:1 1 auto;min-width:0;}
+  .an-foot h2{font-size:14.5px;font-weight:700;color:var(--anchor);line-height:1.3;margin:0 0 4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+  .an-numlabel{display:inline-block;background:var(--coral);color:#fff;font-size:11px;font-weight:700;padding:1px 7px;border-radius:6px;margin-right:6px;}
   .an-date{display:inline-flex;align-items:center;gap:5px;font-size:12px;line-height:1;color:var(--text-soft);font-weight:600;}
   .an-date svg{flex:0 0 auto;}
-  .an-aula{display:inline-flex;align-items:center;gap:7px;background:var(--surface);color:var(--anchor);text-decoration:none;border-radius:9px;padding:0 14px;height:36px;font-size:12.5px;line-height:1;font-weight:700;transition:background .15s,color .15s;}
+  .an-aula{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;background:var(--surface);color:var(--anchor);text-decoration:none;border-radius:9px;padding:0 12px;height:34px;font-size:12px;line-height:1;font-weight:700;white-space:nowrap;transition:background .15s,color .15s;}
   .an-aula:hover{background:var(--anchor);color:#fff;}
   .an-aula svg{flex:0 0 auto;}
 
@@ -165,8 +160,7 @@
       .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
   }
 
-  var SVG_PLAY = "<svg width='24' height='24' viewBox='0 0 24 24' fill='#fff'><path d='M8 5v14l11-7z'/></svg>";
-  var SVG_DATA = "<svg width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='4' width='18' height='18' rx='2'/><line x1='16' y1='2' x2='16' y2='6'/><line x1='8' y1='2' x2='8' y2='6'/><line x1='3' y1='10' x2='21' y2='10'/></svg>";
+  var SVG_DATA ="<svg width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='4' width='18' height='18' rx='2'/><line x1='16' y1='2' x2='16' y2='6'/><line x1='8' y1='2' x2='8' y2='6'/><line x1='3' y1='10' x2='21' y2='10'/></svg>";
   var SVG_AULA = "<svg width='15' height='15' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z'/><path d='M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z'/></svg>";
 
   function montarCard(item){
@@ -174,33 +168,23 @@
     card.className = "an-card";
     card.id = "card-" + item.videoId;
 
-    var thumb = document.createElement("div");
-    thumb.className = "an-thumb";
-    thumb.innerHTML =
-      "<span class='an-num'>#" + item.numero + "</span>" +
-      "<img loading='lazy' src='https://i.ytimg.com/vi/" + encodeURIComponent(item.videoId) + "/hqdefault.jpg' " +
-      "alt='" + escapar(item.atividade) + "' " +
-      "onerror=\"this.onerror=null;this.src='https://i.ytimg.com/vi/" + encodeURIComponent(item.videoId) + "/mqdefault.jpg';\">" +
-      "<div class='an-shade'></div>" +
-      "<div class='an-play'>" + SVG_PLAY + "</div>";
-    thumb.addEventListener("click", function(){
-      thumb.innerHTML =
-        "<iframe src='https://www.youtube-nocookie.com/embed/" + encodeURIComponent(item.videoId) +
-        "?autoplay=1&rel=0&modestbranding=1&playsinline=1' allowfullscreen " +
-        "allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'></iframe>";
-      thumb.style.cursor = "default";
-    });
+    var media = document.createElement("div");
+    media.className = "an-media";
+    media.innerHTML =
+      "<iframe loading='lazy' src='https://www.youtube-nocookie.com/embed/" + encodeURIComponent(item.videoId) +
+      "?rel=0&modestbranding=1&playsinline=1' allowfullscreen " +
+      "allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'></iframe>";
 
     var foot = document.createElement("div");
     foot.className = "an-foot";
     foot.innerHTML =
-      "<h2>" + escapar(item.atividade || "Análise") + "</h2>" +
-      "<div class='an-meta'>" +
-        (item.dataEnvio ? "<span class='an-date'>" + SVG_DATA + "Enviado em " + escapar(item.dataEnvio) + "</span>" : "<span></span>") +
-        (item.aulaLink ? "<a class='an-aula' href='" + escapar(item.aulaLink) + "' target='_blank' rel='noopener'>" + SVG_AULA + "Ver a atividade proposta</a>" : "") +
-      "</div>";
+      "<div class='an-info'>" +
+        "<h2><span class='an-numlabel'>#" + item.numero + "</span>" + escapar(item.atividade || "Análise") + "</h2>" +
+        (item.dataEnvio ? "<span class='an-date'>" + SVG_DATA + "Enviado em " + escapar(item.dataEnvio) + "</span>" : "") +
+      "</div>" +
+      (item.aulaLink ? "<a class='an-aula' href='" + escapar(item.aulaLink) + "' target='_blank' rel='noopener'>" + SVG_AULA + "Ver atividade</a>" : "");
 
-    card.appendChild(thumb);
+    card.appendChild(media);
     card.appendChild(foot);
     return card;
   }
