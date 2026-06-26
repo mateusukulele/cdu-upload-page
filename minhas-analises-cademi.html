@@ -1,129 +1,294 @@
-/**
- * ============================================================
- * publicarAnaliseConcluida — gatilho de "Concluído" da página Minhas Análises
- * ------------------------------------------------------------
- * ARQUIVO NOVO E INDEPENDENTE. Não altera nenhum dos seus scripts.
- * Cole num arquivo .gs novo do MESMO projeto Apps Script e instale
- * um acionador onEdit próprio para a função publicarAnaliseConcluida
- * (o Sheets permite vários acionadores onEdit ao mesmo tempo).
- *
- * COMO INSTALAR O ACIONADOR (uma única vez):
- *   Editor do Apps Script > ícone do relógio (Acionadores) >
- *   Adicionar acionador >
- *     Função: publicarAnaliseConcluida
- *     Implantação: Head
- *     Origem do evento: Da planilha
- *     Tipo de evento: Ao editar
- *   Salvar e autorizar.
- *
- * O QUE FAZ:
- *   Ao marcar o checkbox da coluna I (9) na aba Dashboard:
- *     - lê atividade, data de envio, link da análise e ID Drive da linha
- *     - acha o ID Cademi do aluno na aba Recebimento (join pelo ID Drive)
- *     - publica no worker cdu-analises para aparecer na página do aluno
- *   Ao DESMARCAR o checkbox: remove a análise da página.
- * ============================================================
- */
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Minhas Análises</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Montserrat',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:transparent;}
 
-var ANALISES_WORKER_URL = "https://cdu-analises.mateusaugusto91.workers.dev";
-var ANALISES_SENHA = "ukulele-publica-2026";
+  .an-wrap{
+    --anchor:#443468;--anchor-deep:#2D2249;--coral:#E87A85;--coral-text:#4D1A20;
+    --text:#1F1A2B;--text-soft:#5C5A70;--surface:#ECEAF1;--card:#fff;
+    --ok:#1F8C7A;--erro:#B83A2E;
+    max-width:980px;margin:0 auto;padding:12px;color:var(--text);line-height:1.6;
+  }
+  .an-wrap *{box-sizing:border-box;}
 
-var ANALISES_ABA_DASH = "Dashboard";
-var ANALISES_ABA_RECEB = "Recebimento";
-var ANALISES_COL_CHECK = 9;     // coluna I = checkbox "Concluído"
-var ANALISES_LINHA_INICIO = 3;  // os dados começam na linha 3
+  /* Cabeçalho */
+  .an-hero{position:relative;background:linear-gradient(135deg,var(--anchor),var(--anchor-deep));border-radius:16px;padding:20px;color:#fff;margin-bottom:16px;overflow:hidden;}
+  .an-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--anchor),var(--coral));}
+  .an-hero .eyebrow{display:inline-block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--coral);font-weight:700;margin-bottom:6px;}
+  .an-hero h1{margin:0;font-size:clamp(19px,4.6vw,27px);font-weight:700;line-height:1.18;color:#fff;}
+  .an-hero p{margin:6px 0 0;font-size:13.5px;color:rgba(255,255,255,.82);font-weight:400;}
 
-// Colunas da aba Dashboard (1 = A)
-var DASH_COL_DATA = 1;       // A  Data de Envio
-var DASH_COL_ATIVIDADE = 4;  // D  Atividade
-var DASH_COL_LINK = 7;       // G  Link da Análise (YouTube)
-var DASH_COL_IDDRIVE = 19;   // S  ID Drive (chave do join)
+  /* Layout duas colunas (desktop) / empilhado (mobile) */
+  .an-layout{display:flex;flex-direction:column;gap:14px;}
+  .an-main{min-width:0;}
 
-// Colunas da aba Recebimento (1 = A)
-var RECEB_COL_IDCADEMI = 8;  // H  ID Cademi
-var RECEB_COL_IDDRIVE = 23;  // W  ID Drive
+  /* Índice */
+  .an-index{background:var(--card);border:1px solid #ECEAF1;border-radius:16px;box-shadow:0 8px 24px rgba(68,52,104,.08);overflow:hidden;}
+  .an-index>summary{list-style:none;cursor:pointer;padding:14px 16px;font-weight:700;font-size:14px;color:var(--anchor);display:flex;align-items:center;justify-content:space-between;}
+  .an-index>summary::-webkit-details-marker{display:none;}
+  .an-index>summary::after{content:'▾';color:var(--coral);font-size:13px;}
+  .an-index[open]>summary::after{content:'▴';}
+  .an-index ul{list-style:none;margin:0;padding:6px;max-height:60vh;overflow:auto;}
+  .an-index li{padding:9px 10px;border-radius:10px;cursor:pointer;font-size:12.5px;color:var(--text);transition:background .12s;display:flex;gap:8px;align-items:baseline;}
+  .an-index li:hover{background:var(--surface);}
+  .an-index li .num{flex:0 0 auto;font-weight:700;color:var(--coral);}
+  .an-index li .tit{flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .an-index li .dt{flex:0 0 auto;color:var(--text-soft);font-size:11px;}
 
-function publicarAnaliseConcluida(e) {
-  if (!e || !e.range) return;
-  var sh = e.range.getSheet();
-  if (sh.getName() !== ANALISES_ABA_DASH) return;
-  if (e.range.getColumn() !== ANALISES_COL_CHECK) return;
-  var linha = e.range.getRow();
-  if (linha < ANALISES_LINHA_INICIO) return;
+  /* Card de análise */
+  .an-card{background:var(--card);border:1px solid #ECEAF1;border-radius:18px;padding:14px;margin-bottom:14px;box-shadow:0 8px 24px rgba(68,52,104,.08);scroll-margin-top:14px;}
+  .an-badge{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:4px 11px;border-radius:999px;background:var(--surface);color:var(--anchor);margin:0 0 10px;}
+  .an-thumb{position:relative;width:100%;padding-top:56.25%;border-radius:12px;overflow:hidden;background:var(--anchor-deep);cursor:pointer;}
+  .an-thumb img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;border:0;display:block;}
+  .an-thumb iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0;}
+  .an-thumb .an-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:62px;height:62px;border-radius:50%;background:rgba(232,122,133,.92);display:flex;align-items:center;justify-content:center;transition:transform .15s,background .15s;box-shadow:0 6px 18px rgba(45,34,73,.35);}
+  .an-thumb:hover .an-play{transform:translate(-50%,-50%) scale(1.06);background:var(--coral);}
+  .an-thumb .an-play svg{margin-left:3px;}
+  .an-thumb .an-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(45,34,73,0) 45%,rgba(45,34,73,.45) 100%);}
 
-  var marcado = e.range.getValue() === true;
+  .an-card h2{font-size:16px;font-weight:700;color:var(--anchor);margin:13px 2px 4px;line-height:1.3;}
+  .an-date{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--text-soft);font-weight:600;margin:0 2px 10px;}
+  .an-date svg{flex:0 0 auto;}
+  .an-aula{display:inline-flex;align-items:center;gap:8px;background:var(--surface);color:var(--anchor);text-decoration:none;border-radius:11px;padding:11px 15px;font-size:13.5px;font-weight:700;transition:background .15s,color .15s;}
+  .an-aula:hover{background:var(--anchor);color:#fff;}
+  .an-aula svg{flex:0 0 auto;}
 
-  var dataEnvio = sh.getRange(linha, DASH_COL_DATA).getValue();
-  var atividade = sh.getRange(linha, DASH_COL_ATIVIDADE).getValue();
-  var rawLink   = sh.getRange(linha, DASH_COL_LINK).getValue();
-  var idDrive   = sh.getRange(linha, DASH_COL_IDDRIVE).getValue();
+  /* Estados */
+  .an-state{background:var(--card);border:1px solid #ECEAF1;border-radius:18px;padding:30px 20px;text-align:center;box-shadow:0 8px 24px rgba(68,52,104,.08);}
+  .an-state h2{font-size:18px;font-weight:700;color:var(--anchor);margin:0 0 6px;}
+  .an-state.erro h2{color:var(--erro);}
+  .an-state p{font-size:14px;color:var(--text-soft);margin:0;}
+  .an-spin{display:inline-block;width:26px;height:26px;border:3px solid var(--surface);border-top-color:var(--coral);border-radius:50%;animation:angira .8s linear infinite;margin-bottom:12px;}
+  @keyframes angira{to{transform:rotate(360deg);}}
+  .an-emoji{font-size:34px;line-height:1;margin-bottom:10px;}
+  .an-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--coral);color:#fff;border:0;border-radius:12px;padding:12px 18px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;margin-top:14px;transition:filter .15s;}
+  .an-btn:hover{filter:brightness(.95);}
 
-  if (!idDrive) return;
+  .an-hide{display:none !important;}
 
-  var idCademi = buscarIdCademiPorIdDrive_(idDrive);
-  if (!idCademi) return;
+  /* Paginação */
+  .an-pag{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px;margin:6px 0 4px;}
+  .an-pag button{font-family:inherit;font-size:14px;font-weight:700;min-width:40px;height:40px;padding:0 12px;border-radius:11px;border:1.5px solid var(--surface);background:var(--card);color:var(--anchor);cursor:pointer;transition:all .15s;}
+  .an-pag button:hover:not(:disabled){border-color:var(--coral);color:var(--coral);}
+  .an-pag button.ativo{background:linear-gradient(135deg,var(--anchor),var(--anchor-deep));border-color:transparent;color:#fff;}
+  .an-pag button:disabled{opacity:.4;cursor:default;}
+  .an-conta{text-align:center;font-size:12.5px;color:var(--text-soft);margin-top:2px;}
 
-  var payload = {
-    senha: ANALISES_SENHA,
-    idCademi: String(idCademi),
-    rawLink: String(rawLink || ""),
-    atividade: limparAtividadeAnalises_(atividade),
-    dataEnvioBr: formatarDataBrAnalises_(dataEnvio),
-    ts: dataParaTimestampAnalises_(dataEnvio),
-    acao: marcado ? "adicionar" : "remover"
-  };
+  @media (min-width:680px){
+    .an-layout{flex-direction:row;align-items:flex-start;}
+    .an-index{flex:0 0 250px;position:sticky;top:12px;}
+    .an-index>summary{display:none;}
+    .an-main{flex:1 1 auto;}
+  }
+</style>
+</head>
+<body>
+<div class="an-wrap">
 
-  // Marcou mas ainda não colou o link da análise: não há vídeo para mostrar.
-  if (marcado && !payload.rawLink) return;
+  <header class="an-hero">
+    <span class="eyebrow">Devolutivas para você</span>
+    <h1>Minhas Análises</h1>
+    <p id="an-sub">Aqui ficam as análises em vídeo que gravei para os seus envios.</p>
+  </header>
 
-  try {
-    UrlFetchApp.fetch(ANALISES_WORKER_URL + "/publicar", {
-      method: "post",
-      contentType: "application/json",
-      payload: JSON.stringify(payload),
-      muteHttpExceptions: true
+  <div id="an-carregando" class="an-state">
+    <div class="an-spin"></div>
+    <p>Carregando as suas análises...</p>
+  </div>
+
+  <div id="an-vazio" class="an-state an-hide">
+    <div class="an-emoji">🎶</div>
+    <h2>Ainda não há análises por aqui</h2>
+    <p>Assim que eu terminar a análise de um envio seu, ela aparece nesta página.</p>
+  </div>
+
+  <div id="an-erro" class="an-state erro an-hide">
+    <h2>Não conseguimos carregar as suas análises</h2>
+    <p>Pode ter sido uma oscilação na conexão. Tente novamente em instantes.</p>
+    <button class="an-btn" onclick="location.reload()">Tentar de novo</button>
+  </div>
+
+  <div id="an-conteudo" class="an-layout an-hide">
+    <details id="an-index" class="an-index" open>
+      <summary>Ver todas as análises</summary>
+      <ul id="an-index-list"></ul>
+    </details>
+    <div class="an-main">
+      <div id="an-lista"></div>
+      <div id="an-pag" class="an-pag an-hide"></div>
+      <div id="an-conta" class="an-conta"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var WORKER = "https://cdu-analises.mateusaugusto91.workers.dev";
+  var POR_PAGINA = 4;
+
+  var p = new URLSearchParams(location.search);
+  var idAluno = p.get("cuser_id") || "";
+
+  var listaEl = document.getElementById("an-lista");
+  var pagEl = document.getElementById("an-pag");
+  var contaEl = document.getElementById("an-conta");
+  var indexListEl = document.getElementById("an-index-list");
+  var conteudoEl = document.getElementById("an-conteudo");
+  var subEl = document.getElementById("an-sub");
+
+  var analises = [];      // ordem de exibição (mais novo primeiro)
+  var paginaAtual = 1;
+
+  function mostraEstado(id){
+    ["an-carregando","an-vazio","an-erro"].forEach(function(x){
+      document.getElementById(x).classList.add("an-hide");
     });
-  } catch (err) {
-    // Silencioso de propósito: nunca trava o seu fluxo normal da planilha.
+    conteudoEl.classList.add("an-hide");
+    if(id) document.getElementById(id).classList.remove("an-hide");
+    else conteudoEl.classList.remove("an-hide");
   }
-}
 
-// Acha o ID Cademi na aba Recebimento, casando pelo ID Drive.
-function buscarIdCademiPorIdDrive_(idDrive) {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var receb = ss.getSheetByName(ANALISES_ABA_RECEB);
-  if (!receb || receb.getLastRow() < 2) return "";
-  var n = receb.getLastRow() - 1;
-  var ids = receb.getRange(2, RECEB_COL_IDDRIVE, n, 1).getValues();
-  var alvo = String(idDrive).trim();
-  for (var i = 0; i < n; i++) {
-    if (String(ids[i][0]).trim() === alvo) {
-      return receb.getRange(i + 2, RECEB_COL_IDCADEMI).getValue();
+  function escapar(t){
+    return String(t==null?"":t)
+      .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  }
+
+  var SVG_PLAY = "<svg width='26' height='26' viewBox='0 0 24 24' fill='#fff'><path d='M8 5v14l11-7z'/></svg>";
+  var SVG_DATA = "<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#5C5A70' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='4' width='18' height='18' rx='2'/><line x1='16' y1='2' x2='16' y2='6'/><line x1='8' y1='2' x2='8' y2='6'/><line x1='3' y1='10' x2='21' y2='10'/></svg>";
+  var SVG_AULA = "<svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z'/><path d='M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z'/></svg>";
+
+  function montarCard(item){
+    var card = document.createElement("section");
+    card.className = "an-card";
+    card.id = "card-" + item.videoId;
+
+    var badge = "<span class='an-badge'>Análise #" + item.numero + "</span>";
+
+    var thumb = document.createElement("div");
+    thumb.className = "an-thumb";
+    thumb.innerHTML =
+      "<img loading='lazy' src='https://i.ytimg.com/vi/" + encodeURIComponent(item.videoId) + "/hqdefault.jpg' " +
+      "alt='" + escapar(item.atividade) + "' " +
+      "onerror=\"this.onerror=null;this.src='https://i.ytimg.com/vi/" + encodeURIComponent(item.videoId) + "/mqdefault.jpg';\">" +
+      "<div class='an-shade'></div>" +
+      "<div class='an-play'>" + SVG_PLAY + "</div>";
+    thumb.addEventListener("click", function(){
+      thumb.innerHTML =
+        "<iframe src='https://www.youtube-nocookie.com/embed/" + encodeURIComponent(item.videoId) +
+        "?autoplay=1&rel=0&modestbranding=1&playsinline=1' allowfullscreen " +
+        "allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'></iframe>";
+      thumb.style.cursor = "default";
+    });
+
+    var corpo = document.createElement("div");
+    corpo.innerHTML =
+      badge +
+      "<h2>" + escapar(item.atividade || "Análise") + "</h2>" +
+      (item.dataEnvio ? "<div class='an-date'>" + SVG_DATA + "Enviado em " + escapar(item.dataEnvio) + "</div>" : "") +
+      (item.aulaLink ? "<div><a class='an-aula' href='" + escapar(item.aulaLink) + "' target='_blank' rel='noopener'>" + SVG_AULA + "Voltar para a aula</a></div>" : "");
+
+    card.appendChild(thumb);
+    card.appendChild(corpo);
+    return card;
+  }
+
+  function totalPaginas(){
+    return Math.max(1, Math.ceil(analises.length / POR_PAGINA));
+  }
+
+  function renderPagina(scrollTopo){
+    listaEl.innerHTML = "";
+    var ini = (paginaAtual - 1) * POR_PAGINA;
+    var fatia = analises.slice(ini, ini + POR_PAGINA);
+    fatia.forEach(function(item){ listaEl.appendChild(montarCard(item)); });
+    renderPaginacao();
+    contaEl.textContent = analises.length + (analises.length === 1 ? " análise no total" : " análises no total");
+    if(scrollTopo !== false){ try{ window.scrollTo({ top: 0, behavior: "smooth" }); }catch(e){ window.scrollTo(0,0); } }
+  }
+
+  function botaoPag(rotulo, destino, opcoes){
+    opcoes = opcoes || {};
+    var b = document.createElement("button");
+    b.innerHTML = rotulo;
+    if(opcoes.desabilitado) b.disabled = true;
+    if(opcoes.ativo) b.classList.add("ativo");
+    if(!opcoes.desabilitado && !opcoes.ativo){
+      b.addEventListener("click", function(){ paginaAtual = destino; renderPagina(); });
     }
+    return b;
   }
-  return "";
-}
 
-function limparAtividadeAnalises_(at) {
-  if (!at) return "";
-  return String(at).replace(/^Atividade\s*\|\s*/i, "").trim();
-}
+  function renderPaginacao(){
+    var total = totalPaginas();
+    pagEl.innerHTML = "";
+    if(total <= 1){ pagEl.classList.add("an-hide"); return; }
+    pagEl.classList.remove("an-hide");
+    pagEl.appendChild(botaoPag("&lsaquo;", paginaAtual - 1, { desabilitado: paginaAtual === 1 }));
+    for(var i = 1; i <= total; i++){
+      pagEl.appendChild(botaoPag(String(i), i, { ativo: i === paginaAtual }));
+    }
+    pagEl.appendChild(botaoPag("&rsaquo;", paginaAtual + 1, { desabilitado: paginaAtual === total }));
+  }
 
-function formatarDataBrAnalises_(v) {
-  var d = (v instanceof Date) ? v : parseDataAnalises_(v);
-  if (!d) return String(v || "");
-  return Utilities.formatDate(d, "America/Sao_Paulo", "dd/MM/yyyy");
-}
+  function renderIndice(){
+    indexListEl.innerHTML = "";
+    analises.forEach(function(item, pos){
+      var li = document.createElement("li");
+      li.innerHTML =
+        "<span class='num'>#" + item.numero + "</span>" +
+        "<span class='tit'>" + escapar(item.atividade || "Análise") + "</span>" +
+        (item.dataEnvio ? "<span class='dt'>" + escapar(item.dataEnvio) + "</span>" : "");
+      li.addEventListener("click", function(){ irParaAnalise(pos); });
+      indexListEl.appendChild(li);
+    });
+  }
 
-function dataParaTimestampAnalises_(v) {
-  var d = (v instanceof Date) ? v : parseDataAnalises_(v);
-  return d ? d.getTime() : 0;
-}
+  function irParaAnalise(pos){
+    var pagina = Math.floor(pos / POR_PAGINA) + 1;
+    if(pagina !== paginaAtual){ paginaAtual = pagina; renderPagina(false); }
+    var item = analises[pos];
+    var alvo = document.getElementById("card-" + item.videoId);
+    if(alvo){ try{ alvo.scrollIntoView({ behavior: "smooth", block: "start" }); }catch(e){ alvo.scrollIntoView(); } }
+  }
 
-function parseDataAnalises_(txt) {
-  if (!txt) return null;
-  var s = String(txt).trim();
-  var m = s.match(/(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2}))?/);
-  if (!m) return null;
-  return new Date(+m[3], +m[2] - 1, +m[1], m[4] ? +m[4] : 0, m[5] ? +m[5] : 0);
-}
+  function carregar(){
+    if(!idAluno){ mostraEstado("an-erro"); return; }
+    fetch(WORKER + "/analises?id=" + encodeURIComponent(idAluno))
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        if(!d || !d.ok){ mostraEstado("an-erro"); return; }
+        var lista = d.analises || [];
+        if(!lista.length){ mostraEstado("an-vazio"); return; }
+
+        // numera por ordem de envio (mais antiga = #1)
+        lista.sort(function(a,b){ return (a.ts||0) - (b.ts||0); });
+        lista.forEach(function(item, i){ item.numero = i + 1; });
+        // exibe da mais nova para a mais antiga
+        lista.reverse();
+        analises = lista;
+
+        subEl.textContent = "Você já recebeu " + analises.length +
+          (analises.length === 1 ? " análise. As mais recentes aparecem primeiro." : " análises. As mais recentes aparecem primeiro.");
+
+        mostraEstado(null);
+        paginaAtual = 1;
+        renderIndice();
+        renderPagina(false);
+      })
+      .catch(function(){ mostraEstado("an-erro"); });
+  }
+
+  carregar();
+})();
+</script>
+</body>
+</html>
