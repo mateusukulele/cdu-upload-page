@@ -1,229 +1,129 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Minhas Análises</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
-<style>
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:'Montserrat',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:transparent;}
+/**
+ * ============================================================
+ * publicarAnaliseConcluida — gatilho de "Concluído" da página Minhas Análises
+ * ------------------------------------------------------------
+ * ARQUIVO NOVO E INDEPENDENTE. Não altera nenhum dos seus scripts.
+ * Cole num arquivo .gs novo do MESMO projeto Apps Script e instale
+ * um acionador onEdit próprio para a função publicarAnaliseConcluida
+ * (o Sheets permite vários acionadores onEdit ao mesmo tempo).
+ *
+ * COMO INSTALAR O ACIONADOR (uma única vez):
+ *   Editor do Apps Script > ícone do relógio (Acionadores) >
+ *   Adicionar acionador >
+ *     Função: publicarAnaliseConcluida
+ *     Implantação: Head
+ *     Origem do evento: Da planilha
+ *     Tipo de evento: Ao editar
+ *   Salvar e autorizar.
+ *
+ * O QUE FAZ:
+ *   Ao marcar o checkbox da coluna I (9) na aba Dashboard:
+ *     - lê atividade, data de envio, link da análise e ID Drive da linha
+ *     - acha o ID Cademi do aluno na aba Recebimento (join pelo ID Drive)
+ *     - publica no worker cdu-analises para aparecer na página do aluno
+ *   Ao DESMARCAR o checkbox: remove a análise da página.
+ * ============================================================
+ */
 
-  .an-wrap{
-    --anchor:#443468;--anchor-deep:#2D2249;--coral:#E87A85;--coral-text:#4D1A20;
-    --text:#1F1A2B;--text-soft:#5C5A70;--surface:#ECEAF1;--card:#fff;
-    --ok:#1F8C7A;--erro:#B83A2E;
-    max-width:760px;margin:0 auto;padding:12px;color:var(--text);line-height:1.6;
-  }
-  .an-wrap *{box-sizing:border-box;}
+var ANALISES_WORKER_URL = "https://cdu-analises.mateusaugusto91.workers.dev";
+var ANALISES_SENHA = "ukulele-publica-2026";
 
-  /* Cabeçalho */
-  .an-hero{position:relative;background:linear-gradient(135deg,var(--anchor),var(--anchor-deep));border-radius:16px;padding:20px;color:#fff;margin-bottom:16px;overflow:hidden;}
-  .an-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--anchor),var(--coral));}
-  .an-hero .eyebrow{display:inline-block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--coral);font-weight:700;margin-bottom:6px;}
-  .an-hero h1{margin:0;font-size:clamp(19px,4.6vw,27px);font-weight:700;line-height:1.18;color:#fff;}
-  .an-hero p{margin:6px 0 0;font-size:13.5px;color:rgba(255,255,255,.82);font-weight:400;}
+var ANALISES_ABA_DASH = "Dashboard";
+var ANALISES_ABA_RECEB = "Recebimento";
+var ANALISES_COL_CHECK = 9;     // coluna I = checkbox "Concluído"
+var ANALISES_LINHA_INICIO = 3;  // os dados começam na linha 3
 
-  /* Card de análise */
-  .an-card{background:var(--card);border:1px solid #ECEAF1;border-radius:18px;padding:14px;margin-bottom:14px;box-shadow:0 8px 24px rgba(68,52,104,.08);}
-  .an-thumb{position:relative;width:100%;padding-top:56.25%;border-radius:12px;overflow:hidden;background:var(--anchor-deep);cursor:pointer;}
-  .an-thumb img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;border:0;display:block;}
-  .an-thumb iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0;}
-  .an-thumb .an-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:62px;height:62px;border-radius:50%;background:rgba(232,122,133,.92);display:flex;align-items:center;justify-content:center;transition:transform .15s,background .15s;box-shadow:0 6px 18px rgba(45,34,73,.35);}
-  .an-thumb:hover .an-play{transform:translate(-50%,-50%) scale(1.06);background:var(--coral);}
-  .an-thumb .an-play svg{margin-left:3px;}
-  .an-thumb .an-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(45,34,73,0) 45%,rgba(45,34,73,.45) 100%);}
+// Colunas da aba Dashboard (1 = A)
+var DASH_COL_DATA = 1;       // A  Data de Envio
+var DASH_COL_ATIVIDADE = 4;  // D  Atividade
+var DASH_COL_LINK = 7;       // G  Link da Análise (YouTube)
+var DASH_COL_IDDRIVE = 19;   // S  ID Drive (chave do join)
 
-  .an-card h2{font-size:16px;font-weight:700;color:var(--anchor);margin:13px 2px 4px;line-height:1.3;}
-  .an-date{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--text-soft);font-weight:600;margin:0 2px 4px;}
-  .an-date svg{flex:0 0 auto;}
+// Colunas da aba Recebimento (1 = A)
+var RECEB_COL_IDCADEMI = 8;  // H  ID Cademi
+var RECEB_COL_IDDRIVE = 23;  // W  ID Drive
 
-  /* Estados */
-  .an-state{background:var(--card);border:1px solid #ECEAF1;border-radius:18px;padding:30px 20px;text-align:center;box-shadow:0 8px 24px rgba(68,52,104,.08);}
-  .an-state h2{font-size:18px;font-weight:700;color:var(--anchor);margin:0 0 6px;}
-  .an-state.erro h2{color:var(--erro);}
-  .an-state p{font-size:14px;color:var(--text-soft);margin:0;}
-  .an-spin{display:inline-block;width:26px;height:26px;border:3px solid var(--surface);border-top-color:var(--coral);border-radius:50%;animation:angira .8s linear infinite;margin-bottom:12px;}
-  @keyframes angira{to{transform:rotate(360deg);}}
-  .an-emoji{font-size:34px;line-height:1;margin-bottom:10px;}
-  .an-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--coral);color:#fff;border:0;border-radius:12px;padding:12px 18px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;margin-top:14px;transition:filter .15s;}
-  .an-btn:hover{filter:brightness(.95);}
+function publicarAnaliseConcluida(e) {
+  if (!e || !e.range) return;
+  var sh = e.range.getSheet();
+  if (sh.getName() !== ANALISES_ABA_DASH) return;
+  if (e.range.getColumn() !== ANALISES_COL_CHECK) return;
+  var linha = e.range.getRow();
+  if (linha < ANALISES_LINHA_INICIO) return;
 
-  .an-hide{display:none !important;}
+  var marcado = e.range.getValue() === true;
 
-  /* Paginação */
-  .an-pag{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px;margin:6px 0 4px;}
-  .an-pag button{font-family:inherit;font-size:14px;font-weight:700;min-width:40px;height:40px;padding:0 12px;border-radius:11px;border:1.5px solid var(--surface);background:var(--card);color:var(--anchor);cursor:pointer;transition:all .15s;}
-  .an-pag button:hover:not(:disabled){border-color:var(--coral);color:var(--coral);}
-  .an-pag button.ativo{background:linear-gradient(135deg,var(--anchor),var(--anchor-deep));border-color:transparent;color:#fff;}
-  .an-pag button:disabled{opacity:.4;cursor:default;}
-  .an-pag .an-seta{font-weight:700;}
-  .an-conta{text-align:center;font-size:12.5px;color:var(--text-soft);margin-top:2px;}
-</style>
-</head>
-<body>
-<div class="an-wrap">
+  var dataEnvio = sh.getRange(linha, DASH_COL_DATA).getValue();
+  var atividade = sh.getRange(linha, DASH_COL_ATIVIDADE).getValue();
+  var rawLink   = sh.getRange(linha, DASH_COL_LINK).getValue();
+  var idDrive   = sh.getRange(linha, DASH_COL_IDDRIVE).getValue();
 
-  <header class="an-hero">
-    <span class="eyebrow">Devolutivas para você</span>
-    <h1>Minhas Análises</h1>
-    <p>Aqui ficam as análises em vídeo que gravei para os seus envios. As mais recentes aparecem primeiro.</p>
-  </header>
+  if (!idDrive) return;
 
-  <div id="an-carregando" class="an-state">
-    <div class="an-spin"></div>
-    <p>Carregando as suas análises...</p>
-  </div>
+  var idCademi = buscarIdCademiPorIdDrive_(idDrive);
+  if (!idCademi) return;
 
-  <div id="an-vazio" class="an-state an-hide">
-    <div class="an-emoji">🎶</div>
-    <h2>Ainda não há análises por aqui</h2>
-    <p>Assim que eu terminar a análise de um envio seu, ela aparece nesta página.</p>
-  </div>
+  var payload = {
+    senha: ANALISES_SENHA,
+    idCademi: String(idCademi),
+    rawLink: String(rawLink || ""),
+    atividade: limparAtividadeAnalises_(atividade),
+    dataEnvioBr: formatarDataBrAnalises_(dataEnvio),
+    ts: dataParaTimestampAnalises_(dataEnvio),
+    acao: marcado ? "adicionar" : "remover"
+  };
 
-  <div id="an-erro" class="an-state erro an-hide">
-    <h2>Não conseguimos carregar as suas análises</h2>
-    <p>Pode ter sido uma oscilação na conexão. Tente novamente em instantes.</p>
-    <button class="an-btn" onclick="location.reload()">Tentar de novo</button>
-  </div>
+  // Marcou mas ainda não colou o link da análise: não há vídeo para mostrar.
+  if (marcado && !payload.rawLink) return;
 
-  <div id="an-lista"></div>
-  <div id="an-pag" class="an-pag an-hide"></div>
-  <div id="an-conta" class="an-conta an-hide"></div>
-
-</div>
-
-<script>
-(function(){
-  var WORKER = "https://cdu-analises.mateusaugusto91.workers.dev";
-  var POR_PAGINA = 4;
-
-  var p = new URLSearchParams(location.search);
-  var idAluno = p.get("cuser_id") || "";
-
-  var listaEl = document.getElementById("an-lista");
-  var pagEl = document.getElementById("an-pag");
-  var contaEl = document.getElementById("an-conta");
-
-  var analises = [];
-  var paginaAtual = 1;
-
-  function mostraEstado(id){
-    ["an-carregando","an-vazio","an-erro"].forEach(function(x){
-      document.getElementById(x).classList.add("an-hide");
+  try {
+    UrlFetchApp.fetch(ANALISES_WORKER_URL + "/publicar", {
+      method: "post",
+      contentType: "application/json",
+      payload: JSON.stringify(payload),
+      muteHttpExceptions: true
     });
-    if(id) document.getElementById(id).classList.remove("an-hide");
+  } catch (err) {
+    // Silencioso de propósito: nunca trava o seu fluxo normal da planilha.
   }
+}
 
-  function escapar(t){
-    return String(t==null?"":t)
-      .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
-  }
-
-  // SVGs reutilizados
-  var SVG_PLAY = "<svg width='26' height='26' viewBox='0 0 24 24' fill='#fff'><path d='M8 5v14l11-7z'/></svg>";
-  var SVG_DATA = "<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#5C5A70' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='4' width='18' height='18' rx='2'/><line x1='16' y1='2' x2='16' y2='6'/><line x1='8' y1='2' x2='8' y2='6'/><line x1='3' y1='10' x2='21' y2='10'/></svg>";
-
-  function montarCard(item){
-    var card = document.createElement("section");
-    card.className = "an-card";
-
-    var thumb = document.createElement("div");
-    thumb.className = "an-thumb";
-    thumb.innerHTML =
-      "<img loading='lazy' src='https://i.ytimg.com/vi/" + encodeURIComponent(item.videoId) + "/hqdefault.jpg' " +
-      "alt='" + escapar(item.atividade) + "' " +
-      "onerror=\"this.onerror=null;this.src='https://i.ytimg.com/vi/" + encodeURIComponent(item.videoId) + "/mqdefault.jpg';\">" +
-      "<div class='an-shade'></div>" +
-      "<div class='an-play'>" + SVG_PLAY + "</div>";
-
-    thumb.addEventListener("click", function(){
-      thumb.innerHTML =
-        "<iframe src='https://www.youtube-nocookie.com/embed/" + encodeURIComponent(item.videoId) +
-        "?autoplay=1&rel=0&modestbranding=1&playsinline=1' allowfullscreen " +
-        "allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'></iframe>";
-      thumb.style.cursor = "default";
-    });
-
-    var titulo = document.createElement("h2");
-    titulo.textContent = item.atividade || "Análise";
-
-    var card_inner_data = "";
-    if(item.dataEnvio){
-      card_inner_data = "<div class='an-date'>" + SVG_DATA + "Enviado em " + escapar(item.dataEnvio) + "</div>";
+// Acha o ID Cademi na aba Recebimento, casando pelo ID Drive.
+function buscarIdCademiPorIdDrive_(idDrive) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var receb = ss.getSheetByName(ANALISES_ABA_RECEB);
+  if (!receb || receb.getLastRow() < 2) return "";
+  var n = receb.getLastRow() - 1;
+  var ids = receb.getRange(2, RECEB_COL_IDDRIVE, n, 1).getValues();
+  var alvo = String(idDrive).trim();
+  for (var i = 0; i < n; i++) {
+    if (String(ids[i][0]).trim() === alvo) {
+      return receb.getRange(i + 2, RECEB_COL_IDCADEMI).getValue();
     }
-
-    card.appendChild(thumb);
-    card.appendChild(titulo);
-    if(card_inner_data){
-      var d = document.createElement("div");
-      d.innerHTML = card_inner_data;
-      card.appendChild(d.firstChild);
-    }
-    return card;
   }
+  return "";
+}
 
-  function totalPaginas(){
-    return Math.max(1, Math.ceil(analises.length / POR_PAGINA));
-  }
+function limparAtividadeAnalises_(at) {
+  if (!at) return "";
+  return String(at).replace(/^Atividade\s*\|\s*/i, "").trim();
+}
 
-  function renderPagina(){
-    listaEl.innerHTML = "";
-    var ini = (paginaAtual - 1) * POR_PAGINA;
-    var fatia = analises.slice(ini, ini + POR_PAGINA);
-    fatia.forEach(function(item){ listaEl.appendChild(montarCard(item)); });
-    renderPaginacao();
-    contaEl.textContent = analises.length + (analises.length === 1 ? " análise no total" : " análises no total");
-    contaEl.classList.remove("an-hide");
-    try{ window.scrollTo({ top: 0, behavior: "smooth" }); }catch(e){ window.scrollTo(0,0); }
-  }
+function formatarDataBrAnalises_(v) {
+  var d = (v instanceof Date) ? v : parseDataAnalises_(v);
+  if (!d) return String(v || "");
+  return Utilities.formatDate(d, "America/Sao_Paulo", "dd/MM/yyyy");
+}
 
-  function botaoPag(rotulo, destino, opcoes){
-    opcoes = opcoes || {};
-    var b = document.createElement("button");
-    b.innerHTML = rotulo;
-    if(opcoes.classe) b.className = opcoes.classe;
-    if(opcoes.desabilitado) b.disabled = true;
-    if(opcoes.ativo) b.classList.add("ativo");
-    if(!opcoes.desabilitado && !opcoes.ativo){
-      b.addEventListener("click", function(){ paginaAtual = destino; renderPagina(); });
-    }
-    return b;
-  }
+function dataParaTimestampAnalises_(v) {
+  var d = (v instanceof Date) ? v : parseDataAnalises_(v);
+  return d ? d.getTime() : 0;
+}
 
-  function renderPaginacao(){
-    var total = totalPaginas();
-    pagEl.innerHTML = "";
-    if(total <= 1){ pagEl.classList.add("an-hide"); return; }
-    pagEl.classList.remove("an-hide");
-
-    pagEl.appendChild(botaoPag("<span class='an-seta'>&lsaquo;</span>", paginaAtual - 1, { desabilitado: paginaAtual === 1 }));
-    for(var i = 1; i <= total; i++){
-      pagEl.appendChild(botaoPag(String(i), i, { ativo: i === paginaAtual }));
-    }
-    pagEl.appendChild(botaoPag("<span class='an-seta'>&rsaquo;</span>", paginaAtual + 1, { desabilitado: paginaAtual === total }));
-  }
-
-  function carregar(){
-    if(!idAluno){ mostraEstado("an-erro"); return; }
-    fetch(WORKER + "/analises?id=" + encodeURIComponent(idAluno))
-      .then(function(r){ return r.json(); })
-      .then(function(d){
-        if(!d || !d.ok){ mostraEstado("an-erro"); return; }
-        analises = d.analises || [];
-        analises.sort(function(a,b){ return (b.ts||0) - (a.ts||0); });
-        if(!analises.length){ mostraEstado("an-vazio"); return; }
-        mostraEstado(null);
-        paginaAtual = 1;
-        renderPagina();
-      })
-      .catch(function(){ mostraEstado("an-erro"); });
-  }
-
-  carregar();
-})();
-</script>
-</body>
-</html>
+function parseDataAnalises_(txt) {
+  if (!txt) return null;
+  var s = String(txt).trim();
+  var m = s.match(/(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2}))?/);
+  if (!m) return null;
+  return new Date(+m[3], +m[2] - 1, +m[1], m[4] ? +m[4] : 0, m[5] ? +m[5] : 0);
+}
