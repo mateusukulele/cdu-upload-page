@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Boas-vindas</title>
+<script src="https://core.cademi.com.br/assets/js/remote.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:transparent;}
+.bv{--roxo:#443468;--roxo-fundo:#2D2249;--coral:#E87A85;--coral-texto:#4D1A20;--coral-suave:#FBEAEC;--texto:#1F1A2B;--texto-suave:#5C5A70;--superficie:#ECEAF1;--fundo:#F5F4F7;color:var(--texto);max-width:860px;margin:0 auto;padding:12px;line-height:1.6;}
+.bv *{box-sizing:border-box;}
+.bv-wrap{display:flex;flex-direction:column;gap:16px;}
+.bv-card{background:#fff;border:1px solid var(--superficie);border-radius:18px;padding:18px;box-shadow:0 1px 3px rgba(31,26,43,.06);}
+.bv-video{position:relative;width:100%;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#000;}
+.bv-video iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+.bv h2{font-size:19px;font-weight:700;color:var(--roxo)!important;margin:0 0 10px;}
+.bv p{margin:0 0 10px;font-size:14.5px;color:var(--texto)!important;}
+.bv-cta{display:flex;align-items:center;justify-content:center;gap:9px;text-decoration:none!important;background:var(--coral)!important;color:#fff!important;padding:15px 20px;border-radius:12px;font-weight:700;font-size:15px;margin-top:6px;transition:transform .15s,filter .15s;}
+.bv-cta:hover{transform:translateY(-1px);filter:brightness(1.04);}
+.bv-center{text-align:center;}
+.bv-muted{font-size:13.5px;color:var(--texto-suave);}
+.bv-hide{display:none!important;}
+.bv-spin{display:inline-block;width:24px;height:24px;border:3px solid var(--superficie);border-top-color:var(--coral);border-radius:50%;animation:bvgira .8s linear infinite;}
+@keyframes bvgira{to{transform:rotate(360deg);}}
+.bv-debug{background:#1F1A2B;color:#7CF0C8;font:12px/1.5 ui-monospace,Menlo,monospace;padding:12px 14px;border-radius:10px;white-space:pre-wrap;word-break:break-word;}
+</style>
+</head>
+<body>
+<div class="bv"><main class="bv-wrap">
+
+  <section id="bv-carregando" class="bv-card bv-center"><div class="bv-spin"></div><p class="bv-muted" style="margin-top:12px;">Preparando as suas boas-vindas...</p></section>
+
+  <pre id="bv-debug" class="bv-debug bv-hide"></pre>
+
+  <div id="bv-pagante" class="bv-hide">
+    <section class="bv-card"><div class="bv-video"><iframe src="https://player.vimeo.com/video/1208129293" loading="lazy" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div></section>
+  </div>
+
+  <div id="bv-gratuito" class="bv-hide">
+    <section class="bv-card"><div class="bv-video"><iframe src="https://player.vimeo.com/video/1208129296" loading="lazy" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div></section>
+    <section class="bv-card">
+      <h2>Continue de onde você começou</h2>
+      <p>Você está no Módulo Iniciante 0, que é liberado para todo mundo aqui na plataforma.</p>
+      <p>Com o acesso completo você libera os próximos módulos, mais músicas usando os mesmos acordes e a análise personalizada dos seus vídeos, feita pela nossa equipe.</p>
+      <p>Toque no botão abaixo para ver como liberar tudo isso.</p>
+      <a class="bv-cta" href="https://pay.hotmart.com/N106662510K?checkoutMode=10" target="_blank" rel="noopener">Quero liberar meu acesso completo</a>
+    </section>
+  </div>
+
+</main></div>
+
+<script>
+(function () {
+  var WORKER = 'https://cademi-validador.mateusaugusto91.workers.dev';
+  var PAGOS = ['625018', '626023', '626022', '626020']; // D0A1 pago, Clube Basic, Clube Premium, Fundamental
+
+  var p = new URLSearchParams(location.search);
+  var chave = p.get('cuser_id') || p.get('cuser_email');
+  var DEBUG = p.get('debug') === '1';
+
+  function dbg(m){ if(!DEBUG) return; var e=document.getElementById('bv-debug'); if(!e) return; e.classList.remove('bv-hide'); e.textContent += m + '\n'; }
+  function mostra(id){ ['bv-carregando','bv-pagante','bv-gratuito'].forEach(function(x){ var e=document.getElementById(x); if(e) e.classList.add('bv-hide'); }); var alvo=document.getElementById(id); if(alvo) alvo.classList.remove('bv-hide'); }
+
+  dbg('chave = ' + (chave || '(vazio)'));
+  if (!chave) { mostra('bv-gratuito'); return; }
+
+  fetch(WORKER + '/?aluno=' + encodeURIComponent(chave))
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      dbg('resposta = ' + JSON.stringify(d));
+      var ids = (d && d.ids) || [];
+      var ehPagante = PAGOS.some(function(id){ return ids.indexOf(id) !== -1; });
+      mostra(ehPagante ? 'bv-pagante' : 'bv-gratuito');
+    })
+    .catch(function(e){ dbg('erro = ' + e); mostra('bv-gratuito'); });
+})();
+</script>
+</body>
+</html>
