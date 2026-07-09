@@ -284,6 +284,11 @@ dialog.lightbox img{width:100%;height:auto;border-radius:16px;box-shadow:0 30px 
 <body>
 
 <!-- ===== PORTAO CONDICIONAL (adicionado) ===== -->
+<div id="uke-loading" style="position:fixed;inset:0;z-index:99999;background:#F5F4F7;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#5C5A70;">
+  <style>@keyframes ukespin{to{transform:rotate(360deg);}}</style>
+  <div style="width:30px;height:30px;border:3px solid #ECEAF1;border-top-color:#E87A85;border-radius:50%;animation:ukespin .8s linear infinite;"></div>
+  <p style="margin:0;font-size:14px;font-weight:600;">Carregando os seus pr&oacute;ximos passos...</p>
+</div>
 <div id="uke-pagante" style="display:none;">
   <style>
     #uke-pagante{max-width:860px;margin:0 auto;padding:12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;}
@@ -829,20 +834,26 @@ document.querySelectorAll('.vid').forEach(function(el){
 
 </div><!-- /uke-sales -->
 <script>
-/* PORTAO: Clube ou FUKE -> mostra o video (pagante). Senao -> mostra a pagina de vendas. */
+/* PORTAO: Clube ou FUKE -> mostra o video (pagante). Senao -> mostra a pagina de vendas.
+   A tela "carregando" fica por cima ate decidir, pra pagante nao ver a venda piscar. */
 (function(){
   var WORKER='https://cademi-validador.mateusaugusto91.workers.dev';
   var PAGOS=['626023','626022','626020']; // Clube Basic, Clube Premium, FUKE (NAO inclui D0A1)
   var pagante=document.getElementById('uke-pagante');
   var sales=document.getElementById('uke-sales');
-  function verPagante(){ if(sales)sales.style.display='none'; if(pagante)pagante.style.display='block'; }
+  var loading=document.getElementById('uke-loading');
+  var pronto=false;
+  function fim(){ pronto=true; if(loading)loading.style.display='none'; }
+  function verPagante(){ if(sales)sales.style.display='none'; if(pagante)pagante.style.display='block'; fim(); }
+  var t=setTimeout(function(){ if(!pronto) fim(); },4000); // rede de seguranca: nunca trava
   var p=new URLSearchParams(location.search);
   var chave=p.get('cuser_id')||p.get('cuser_email');
-  if(!chave) return; // sem aluno identificado -> mantem a pagina de vendas
+  if(!chave){ fim(); return; }
   fetch(WORKER+'/?aluno='+encodeURIComponent(chave)).then(function(r){return r.json();}).then(function(d){
+    clearTimeout(t); if(pronto) return;
     var ids=(d&&d.ids)||[];
-    if(PAGOS.some(function(id){return ids.indexOf(id)!==-1;})) verPagante();
-  }).catch(function(){});
+    if(PAGOS.some(function(id){return ids.indexOf(id)!==-1;})) verPagante(); else fim();
+  }).catch(function(){ clearTimeout(t); if(!pronto) fim(); });
 })();
 </script>
 
