@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Como funciona o Intercâmbio de Vídeos</title>
+<script src="https://core.cademi.com.br/assets/js/remote.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:transparent;}
+.bv{--roxo:#443468;--roxo-fundo:#2D2249;--coral:#E87A85;--coral-texto:#4D1A20;--coral-suave:#FBEAEC;--texto:#1F1A2B;--texto-suave:#5C5A70;--superficie:#ECEAF1;--fundo:#F5F4F7;--verde:#1F8C7A;color:var(--texto);max-width:860px;margin:0 auto;padding:12px;line-height:1.6;}
+.bv *{box-sizing:border-box;}
+.bv-wrap{display:flex;flex-direction:column;gap:16px;}
+.bv-hero{position:relative;background:linear-gradient(135deg,var(--roxo),var(--roxo-fundo))!important;border-radius:18px;padding:20px;color:#fff!important;overflow:hidden;}
+.bv-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--roxo),var(--coral));}
+.bv-hero .bv-eyebrow{display:inline-block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--coral)!important;font-weight:700;margin-bottom:6px;}
+.bv-hero h1{margin:0;font-size:clamp(19px,4.6vw,28px);font-weight:700;line-height:1.18;color:#fff!important;}
+.bv-card{background:#fff;border:1px solid var(--superficie);border-radius:18px;padding:18px;box-shadow:0 1px 3px rgba(31,26,43,.06);}
+.bv-video{position:relative;width:100%;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#000;}
+.bv-video iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+.bv-card--venda{background:linear-gradient(180deg,#fff,var(--fundo));}
+.bv-h2{font-size:19px;font-weight:700;color:var(--roxo)!important;margin:0 0 12px;line-height:1.3;}
+.bv-card--venda p{margin:0 0 12px;font-size:14.5px;color:var(--texto)!important;text-align:justify;}
+.bv-card--venda p:last-of-type{margin-bottom:16px;}
+.bv-cta{display:flex;align-items:center;justify-content:center;gap:9px;text-align:center;text-decoration:none!important;background:var(--verde)!important;color:#fff!important;padding:16px 22px;border-radius:14px;font-weight:700;font-size:15px;line-height:1.3;word-break:break-word;cursor:pointer;border:0;width:100%;animation:bvpulse 1.9s ease-in-out infinite;transition:filter .15s,transform .12s;}
+.bv-cta:hover{filter:brightness(1.05);transform:translateY(-1px);}
+@keyframes bvpulse{0%{box-shadow:0 0 0 0 rgba(31,140,122,.45);}70%{box-shadow:0 0 0 16px rgba(31,140,122,0);}100%{box-shadow:0 0 0 0 rgba(31,140,122,0);}}
+@media(prefers-reduced-motion:reduce){.bv-cta{animation:none;}}
+.bv-center{text-align:center;}
+.bv-muted{font-size:13.5px;color:var(--texto-suave);}
+.bv-hide{display:none!important;}
+.bv-spin{display:inline-block;width:24px;height:24px;border:3px solid var(--superficie);border-top-color:var(--coral);border-radius:50%;animation:bvgira .8s linear infinite;}
+@keyframes bvgira{to{transform:rotate(360deg);}}
+.bv-modal{position:fixed;inset:0;background:rgba(45,34,73,.55);display:none;align-items:flex-start;justify-content:center;padding:24px 14px;z-index:100;overflow-y:auto;}
+.bv-modal.on{display:flex;}
+.bv-modal__card{background:#fff;border-radius:20px;max-width:26rem;width:100%;padding:22px;position:relative;box-shadow:0 30px 70px -20px rgba(0,0,0,.5);}
+.bv-modal__x{position:absolute;top:.7rem;right:.7rem;width:2rem;height:2rem;border:0;border-radius:999px;background:var(--fundo);color:var(--texto-suave);font-size:18px;cursor:pointer;}
+.bv-modal h3{font-size:1.2rem;color:var(--roxo);text-align:center;margin:0 0 4px;}
+.bv-modal .sub{text-align:center;color:var(--texto-suave);font-size:13px;margin:0 0 16px;}
+.bv-field{margin-bottom:12px;}
+.bv-field label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--texto-suave);margin:0 0 5px 3px;}
+.bv-field input{width:100%;padding:12px 14px;border:1px solid var(--superficie);border-radius:12px;background:var(--fundo);font:inherit;font-size:15px;color:var(--texto);}
+.bv-field input:focus{outline:0;border-color:var(--roxo);background:#fff;}
+.bv-phone{display:flex;gap:8px;}
+.bv-phone select{flex-shrink:0;max-width:44%;border:1px solid var(--superficie);border-radius:12px;background:var(--fundo);font:inherit;font-size:13px;color:var(--texto);padding:12px 6px;}
+.bv-phone input{flex:1;min-width:0;}
+.bv-err{color:#D93A3A;font-size:11px;font-weight:600;margin:4px 0 0 3px;display:none;}
+.bv-err.on{display:block;}
+</style>
+</head>
+<body>
+
+<span id="cd-nome" style="display:none">{nome}</span>
+<span id="cd-nome-completo" style="display:none">{nome_completo}</span>
+<span id="cd-email" style="display:none">{email}</span>
+
+<div class="bv"><main class="bv-wrap">
+
+  <section id="bv-carregando" class="bv-card bv-center"><div class="bv-spin"></div><p class="bv-muted" style="margin-top:12px;">Carregando...</p></section>
+
+  <div id="bv-pagante" class="bv-hide">
+    <header class="bv-hero"><span class="bv-eyebrow">Passo a passo</span><h1>Como funciona o Intercâmbio de Vídeos</h1></header>
+    <section class="bv-card"><div class="bv-video"><iframe src="https://player.vimeo.com/video/1208129295" loading="lazy" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div></section>
+  </div>
+
+  <div id="bv-gratuito" class="bv-hide">
+    <header class="bv-hero"><span class="bv-eyebrow">Passo a passo</span><h1>Como funciona o Intercâmbio de Vídeos</h1></header>
+    <section class="bv-card"><div class="bv-video"><iframe src="https://player.vimeo.com/video/1208129294" loading="lazy" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div></section>
+    <section class="bv-card bv-card--venda">
+      <h2 class="bv-h2">O Intercâmbio de Vídeos faz parte do acesso completo</h2>
+      <p>Você acabou de ver como o Intercâmbio de Vídeos funciona. Ele faz parte do acesso completo do Do Zero à Primeira Música, onde você grava as suas atividades, envia por aqui e recebe a minha análise personalizada de cada uma.</p>
+      <p>Com o acesso completo você também abre o Módulo 2 e ganha mais cinco músicas para tocar, todas usando os acordes e a batida que você já está aprendendo.</p>
+      <p>São até cinco vídeos das suas atividades para eu assistir e te dar um retorno pensado na sua evolução, além das músicas novas. Quando quiser dar esse próximo passo, é só tocar no botão abaixo.</p>
+      <button id="bv-oferta" class="bv-cta" type="button">Quero acesso completo ao curso Do Zero à 1ª Música + Intercâmbio de Vídeos Bônus!</button>
+    </section>
+  </div>
+
+</main></div>
+
+<div class="bv-modal" id="bv-modal">
+  <div class="bv-modal__card">
+    <button class="bv-modal__x" type="button" onclick="bvFecharModal()" aria-label="Fechar">&times;</button>
+    <h3>Falta pouco!</h3>
+    <p class="sub">Confirme seus dados para liberar o seu acesso.</p>
+    <form id="lead" novalidate>
+      <div class="bv-field"><label for="nome">Nome completo</label><input id="nome" name="name" type="text" autocomplete="name" placeholder="Seu nome e sobrenome"><p class="bv-err" id="e-nome">Insira nome e sobrenome.</p></div>
+      <div class="bv-field"><label for="email">Melhor e-mail</label><input id="email" name="email" type="email" autocomplete="email" inputmode="email" spellcheck="false" placeholder="seu@email.com"><p class="bv-err" id="e-email">Verifique o e-mail.</p></div>
+      <div class="bv-field"><label for="wa">WhatsApp</label>
+        <div class="bv-phone">
+          <select id="ddi" aria-label="Código do país">
+            <option value="55" selected>Brasil +55</option>
+            <option value="351">Portugal +351</option>
+            <option value="1">EUA/Canadá +1</option>
+            <option value="244">Angola +244</option>
+            <option value="258">Moçambique +258</option>
+            <option value="34">Espanha +34</option>
+            <option value="44">Reino Unido +44</option>
+            <option value="">Outro país</option>
+          </select>
+          <input id="wa" name="tel" type="tel" autocomplete="tel" inputmode="numeric" placeholder="(00) 00000-0000">
+        </div>
+        <p class="bv-err" id="e-wa">Número com DDD.</p>
+      </div>
+      <button class="bv-cta" type="submit" style="margin-top:4px;">Ir para o pagamento</button>
+    </form>
+  </div>
+</div>
+
+<script>
+(function () {
+  var WORKER = 'https://cademi-validador.mateusaugusto91.workers.dev';
+  var PAGOS = ['625018', '626023', '626022', '626020']; // D0A1 pago, Clube Basic, Clube Premium, Fundamental
+  var CHECKOUT = 'https://pay.hotmart.com/N106662510K?checkoutMode=10';
+
+  var p = new URLSearchParams(location.search);
+  function cdVar(id){ var e=document.getElementById(id); var v=e?(e.textContent||'').trim():''; return (v && v.indexOf('{')<0)?v:''; }
+  var CADEMI = {
+    nome:  p.get('cuser_name') || p.get('cuser_fname') || cdVar('cd-nome-completo') || cdVar('cd-nome') || '',
+    email: p.get('cuser_email') || cdVar('cd-email') || '',
+    tel:   (p.get('cuser_phone') || '').replace(/\D/g,''),
+    uid:   p.get('cuser_id') || ''
+  };
+
+  var modal = document.getElementById('bv-modal');
+  var ddi = document.getElementById('ddi'), waIn = document.getElementById('wa'), emailIn = document.getElementById('email'), nomeIn = document.getElementById('nome');
+
+  function mostra(id){ ['bv-carregando','bv-pagante','bv-gratuito'].forEach(function(x){ var e=document.getElementById(x); if(e) e.classList.add('bv-hide'); }); var a=document.getElementById(id); if(a) a.classList.remove('bv-hide'); }
+  function emailOk(v){ return /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(v); }
+  function maskWa(){
+    var v=waIn.value.replace(/\D/g,'');
+    if(ddi.value==='55'){ v=v.slice(0,11);
+      if(v.length>10) v=v.replace(/(\d{2})(\d{5})(\d{0,4})/,'($1) $2-$3');
+      else if(v.length>6) v=v.replace(/(\d{2})(\d{4})(\d{0,4})/,'($1) $2-$3');
+      else if(v.length>2) v=v.replace(/(\d{2})(\d{0,5})/,'($1) $2');
+      waIn.value=v;
+    } else { waIn.value=v.slice(0,15); }
+  }
+  waIn.addEventListener('input', maskWa);
+  ddi.addEventListener('change', function(){ waIn.value=''; });
+
+  function leadValido(){
+    var nome=nomeIn.value.trim(), email=emailIn.value.trim(), tel=waIn.value.replace(/\D/g,''), br=ddi.value==='55';
+    if(nome.split(' ').filter(Boolean).length<2) return false;
+    if(!emailOk(email)) return false;
+    if(br ? !(tel.length===10||tel.length===11) : tel.length<6) return false;
+    return true;
+  }
+  window.bvFecharModal = function(){ modal.classList.remove('on'); };
+  function abrirModal(){ modal.classList.add('on'); }
+
+  function enviar(){
+    var nome=nomeIn.value.trim(), email=emailIn.value.trim(), tel=waIn.value.replace(/\D/g,'');
+    try{ if(window.parent && window.parent!==window){ window.parent.postMessage({__cdu:'lead', nome:nome, email:email, wa:waIn.value, ddi:ddi.value}, '*'); } }catch(_){}
+    var url;
+    try{
+      url=new URL(CHECKOUT);
+      if(nome) url.searchParams.set('name', nome);
+      if(email) url.searchParams.set('email', email);
+      if(tel) url.searchParams.set('phonenumber', tel);
+      if(ddi.value) url.searchParams.set('phoneac', ddi.value);
+      if(CADEMI.uid) url.searchParams.set('xcod', CADEMI.uid);
+      url=url.toString();
+    }catch(_){ url=CHECKOUT; }
+    window.open(url,'_blank');
+    window.bvFecharModal();
+  }
+
+  function openCheckout(ev){
+    if(ev) ev.preventDefault();
+    if(CADEMI.nome && !nomeIn.value) nomeIn.value=CADEMI.nome;
+    if(CADEMI.email && !emailIn.value) emailIn.value=CADEMI.email;
+    if(CADEMI.tel && !waIn.value){ var num=CADEMI.tel; if(num.length>11 && num.indexOf('55')===0){ ddi.value='55'; num=num.slice(2); } waIn.value=num; maskWa(); }
+    if(CADEMI.email && leadValido()){ enviar(); return; }
+    abrirModal();
+  }
+  document.getElementById('bv-oferta').addEventListener('click', openCheckout);
+
+  document.getElementById('lead').addEventListener('submit', function(e){
+    e.preventDefault();
+    var nome=nomeIn.value.trim(), email=emailIn.value.trim(), tel=waIn.value.replace(/\D/g,''), br=ddi.value==='55', ok=true;
+    function mark(id,c){ var el=document.getElementById(id); if(el) el.classList.toggle('on',!c); if(!c) ok=false; }
+    mark('e-nome', nome.split(' ').filter(Boolean).length>=2);
+    mark('e-email', emailOk(email));
+    mark('e-wa', br ? (tel.length===10||tel.length===11) : tel.length>=6);
+    if(!ok) return;
+    enviar();
+  });
+  modal.addEventListener('click', function(e){ if(e.target===modal) window.bvFecharModal(); });
+
+  var chave = p.get('cuser_id') || p.get('cuser_email');
+  if(!chave){ mostra('bv-gratuito'); return; }
+  fetch(WORKER + '/?aluno=' + encodeURIComponent(chave))
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      var ids=(d && d.ids) || [];
+      var ehPagante = PAGOS.some(function(id){ return ids.indexOf(id) !== -1; });
+      mostra(ehPagante ? 'bv-pagante' : 'bv-gratuito');
+    })
+    .catch(function(){ mostra('bv-gratuito'); });
+})();
+</script>
+</body>
+</html>
