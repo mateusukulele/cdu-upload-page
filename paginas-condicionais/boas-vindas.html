@@ -37,10 +37,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <body>
 <div class="bv"><main class="bv-wrap">
 
+  <!-- Carregando -->
   <section id="bv-carregando" class="bv-card bv-center"><div class="bv-spin"></div><p class="bv-muted" style="margin-top:12px;">Preparando as suas boas-vindas...</p></section>
 
   <pre id="bv-debug" class="bv-debug bv-hide"></pre>
 
+  <!-- PAGANTE: titulo proprio + video -->
   <div id="bv-pagante" class="bv-hide">
     <header class="bv-hero">
       <span class="bv-eyebrow">Comece por aqui</span>
@@ -49,6 +51,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     <section class="bv-card"><div class="bv-video"><iframe src="https://player.vimeo.com/video/1208129293" loading="lazy" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div></section>
   </div>
 
+  <!-- GRATUITO: titulo proprio + video + mini pagina de vendas -->
   <div id="bv-gratuito" class="bv-hide">
     <header class="bv-hero">
       <span class="bv-eyebrow">Comece por aqui</span>
@@ -60,7 +63,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
       <p>No seu acesso gratuito você aprende a tocar a sua primeira música com as aulas liberadas aqui pra você, e chegar até aqui já é uma conquista e tanto.</p>
       <p>Com o acesso completo do Do Zero à Primeira Música, você abre o Módulo 2 e ganha mais cinco músicas para tocar, todas usando os acordes e a batida que você vai ver aqui no Módulo 1. É a continuação natural do que você começou, no seu tempo.</p>
       <p>Além das músicas novas, você também ganha, de bônus, a oportunidade de enviar até cinco vídeos de atividades propostas aqui dentro para o intercâmbio de vídeos, um espaço para acompanhar a sua evolução de perto. Eu vou assistir seu vídeo e te dar uma análise personalizada!</p>
-      <a class="bv-cta" href="https://pay.hotmart.com/N106662510K?checkoutMode=10" target="_blank" rel="noopener">Quero acesso completo ao curso Do Zero à 1ª Música + Intercâmbio de Vídeos Bônus!</a>
+      <a class="bv-cta" id="bv-oferta" href="https://pay.hotmart.com/N106662510K?checkoutMode=10" target="_blank" rel="noopener">Quero acesso completo ao curso Do Zero à 1ª Música + Intercâmbio de Vídeos Bônus!</a>
     </section>
   </div>
 
@@ -69,14 +72,49 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <script>
 (function () {
   var WORKER = 'https://cademi-validador.mateusaugusto91.workers.dev';
+  // IDs validadores que contam como pagante (Dicionario etc. NAO entram).
+  // Produto novo que de mais que o Modulo 0: adicione o id aqui.
   var PAGOS = ['625018', '626023', '626022', '626020']; // D0A1 pago, Clube Basic, Clube Premium, Fundamental
+
   var p = new URLSearchParams(location.search);
   var chave = p.get('cuser_id') || p.get('cuser_email');
   var DEBUG = p.get('debug') === '1';
+
   function dbg(m){ if(!DEBUG) return; var e=document.getElementById('bv-debug'); if(!e) return; e.classList.remove('bv-hide'); e.textContent += m + '\n'; }
   function mostra(id){ ['bv-carregando','bv-pagante','bv-gratuito'].forEach(function(x){ var e=document.getElementById(x); if(e) e.classList.add('bv-hide'); }); var alvo=document.getElementById(id); if(alvo) alvo.classList.remove('bv-hide'); }
+
+  // ---- Oferta: checkout Hotmart prepopulado + envio do lead pro GTM (via pai) ----
+  var CHECKOUT = 'https://pay.hotmart.com/N106662510K?checkoutMode=10';
+  function irCheckout(ev){
+    if (ev) ev.preventDefault();
+    var nome = p.get('cuser_name') || p.get('cuser_fname') || '';
+    var email = p.get('cuser_email') || '';
+    var tel = (p.get('cuser_phone') || '').replace(/\D/g,'');
+    var uid = p.get('cuser_id') || '';
+    var ddi = '', num = tel;
+    if (num.length > 11 && num.indexOf('55') === 0) { ddi = '55'; num = num.slice(2); }
+    // manda o lead pro pai (Cademi) -> GTM first-party
+    try { if (window.parent && window.parent !== window) window.parent.postMessage({__cdu:'lead', nome:nome, email:email, wa:num, ddi:ddi||'55'}, '*'); } catch(_){}
+    // monta a URL da Hotmart ja prepopulada
+    var url;
+    try {
+      url = new URL(CHECKOUT);
+      if (nome) url.searchParams.set('name', nome);
+      if (email) url.searchParams.set('email', email);
+      if (num) url.searchParams.set('phonenumber', num);
+      if (ddi) url.searchParams.set('phoneac', ddi);
+      if (uid) url.searchParams.set('xcod', uid);
+      url = url.toString();
+    } catch(_){ url = CHECKOUT; }
+    window.open(url, '_blank');
+    return false;
+  }
+  var _oferta = document.getElementById('bv-oferta');
+  if (_oferta) _oferta.addEventListener('click', irCheckout);
+
   dbg('chave = ' + (chave || '(vazio)'));
   if (!chave) { mostra('bv-gratuito'); return; }
+
   fetch(WORKER + '/?aluno=' + encodeURIComponent(chave))
     .then(function(r){ return r.json(); })
     .then(function(d){
