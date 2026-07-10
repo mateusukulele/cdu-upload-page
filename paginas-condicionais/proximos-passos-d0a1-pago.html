@@ -283,27 +283,6 @@ dialog.lightbox img{width:100%;height:auto;border-radius:16px;box-shadow:0 30px 
 </head>
 <body>
 
-<!-- ===== PORTAO CONDICIONAL (adicionado) ===== -->
-<div id="uke-loading" style="position:fixed;inset:0;z-index:99999;background:#F5F4F7;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#5C5A70;">
-  <style>@keyframes ukespin{to{transform:rotate(360deg);}}</style>
-  <div style="width:30px;height:30px;border:3px solid #ECEAF1;border-top-color:#E87A85;border-radius:50%;animation:ukespin .8s linear infinite;"></div>
-  <p style="margin:0;font-size:14px;font-weight:600;">Carregando os seus pr&oacute;ximos passos...</p>
-</div>
-<div id="uke-pagante" style="display:none;">
-  <style>
-    #uke-pagante{max-width:860px;margin:0 auto;padding:12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;}
-    #uke-pagante .uke-hero{position:relative;background:linear-gradient(135deg,#443468,#2D2249);border-radius:18px;padding:20px;color:#fff;overflow:hidden;margin-bottom:16px;}
-    #uke-pagante .uke-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#443468,#E87A85);}
-    #uke-pagante .uke-eyebrow{display:inline-block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#E87A85;font-weight:700;margin-bottom:6px;}
-    #uke-pagante h1{margin:0;font-size:clamp(19px,4.6vw,28px);font-weight:700;line-height:1.18;color:#fff;}
-    #uke-pagante .uke-card{background:#fff;border:1px solid #ECEAF1;border-radius:18px;padding:18px;box-shadow:0 1px 3px rgba(31,26,43,.06);}
-    #uke-pagante .uke-video{position:relative;width:100%;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#000;}
-    #uke-pagante .uke-video iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
-  </style>
-  <header class="uke-hero"><span class="uke-eyebrow">Passo a passo</span><h1>Seus pr&oacute;ximos passos!</h1></header>
-  <section class="uke-card"><div class="uke-video"><iframe src="https://player.vimeo.com/video/1208130153" loading="lazy" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div></section>
-</div>
-<div id="uke-sales">
 
 
 <!-- Variaveis da Cademi: substituidas ao servir a pagina dinamica (ficam ocultas).
@@ -831,31 +810,6 @@ document.querySelectorAll('.vid').forEach(function(el){
 <!-- ===== Depend&#234;ncia obrigat&#243;ria da P&#225;gina Din&#226;mica da Cademi (comunica&#231;&#227;o/resize do iframe) ===== -->
 <script src="https://core.cademi.com.br/assets/js/remote.js"></script>
 
-
-</div><!-- /uke-sales -->
-<script>
-/* PORTAO: Clube ou FUKE -> mostra o video (pagante). Senao -> mostra a pagina de vendas.
-   A tela "carregando" fica por cima ate decidir, pra pagante nao ver a venda piscar. */
-(function(){
-  var WORKER='https://cademi-validador.mateusaugusto91.workers.dev';
-  var PAGOS=['625018']; // SO D0A1 PAGO ve os proximos passos (FUKE/Clube/gratuito -> pagina de vendas)
-  var pagante=document.getElementById('uke-pagante');
-  var sales=document.getElementById('uke-sales');
-  var loading=document.getElementById('uke-loading');
-  var pronto=false;
-  function fim(){ pronto=true; if(loading)loading.style.display='none'; }
-  function verPagante(){ if(sales)sales.style.display='none'; if(pagante)pagante.style.display='block'; fim(); }
-  var t=setTimeout(function(){ if(!pronto) fim(); },4000); // rede de seguranca: nunca trava
-  var p=new URLSearchParams(location.search);
-  var chave=p.get('cuser_id')||p.get('cuser_email');
-  if(!chave){ fim(); return; }
-  fetch(WORKER+'/?aluno='+encodeURIComponent(chave)).then(function(r){return r.json();}).then(function(d){
-    clearTimeout(t); if(pronto) return;
-    var ids=(d&&d.ids)||[];
-    if(PAGOS.some(function(id){return ids.indexOf(id)!==-1;})) verPagante(); else fim();
-  }).catch(function(){ clearTimeout(t); if(!pronto) fim(); });
-})();
-</script>
 
 </body>
 </html>
