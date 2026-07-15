@@ -63,15 +63,27 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     <section class="bv-card"><div class="bv-video"><iframe src="https://player.vimeo.com/video/1208129295" loading="lazy" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div></section>
   </div>
 
+  <div id="bv-d0a1" class="bv-hide">
+    <header class="bv-hero"><span class="bv-eyebrow">Passo a passo</span><h1>Como funciona o Intercâmbio de Vídeos</h1></header>
+    <section class="bv-card"><div class="bv-video"><iframe src="https://player.vimeo.com/video/1208129294" loading="lazy" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div></section>
+    <section class="bv-card bv-card--venda">
+      <h2 class="bv-h2">Ative o envio dos seus vídeos e receba a minha análise</h2>
+      <p>Você acabou de ver como o Intercâmbio de Vídeos funciona. Com ele você grava as suas atividades, envia por aqui e recebe a minha análise pessoal de cada uma, com a correção certa para a sua evolução andar mais rápido.</p>
+      <p>Você já está com o curso, e ativar o envio é o passo que traz a minha ajuda direto para a sua prática. São até cinco vídeos das suas atividades para eu assistir e comentar um por um.</p>
+      <p>Por R$47 você começa hoje a enviar os seus vídeos e a acompanhar a sua evolução de perto.</p>
+      <button id="bv-oferta-d0a1" class="bv-cta" type="button">Quero ativar o envio dos meus vídeos por R$47</button>
+    </section>
+  </div>
+
   <div id="bv-gratuito" class="bv-hide">
     <header class="bv-hero"><span class="bv-eyebrow">Passo a passo</span><h1>Como funciona o Intercâmbio de Vídeos</h1></header>
     <section class="bv-card"><div class="bv-video"><iframe src="https://player.vimeo.com/video/1208129294" loading="lazy" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div></section>
     <section class="bv-card bv-card--venda">
-      <h2 class="bv-h2">O Intercâmbio de Vídeos faz parte do acesso completo</h2>
-      <p>Você acabou de ver como o Intercâmbio de Vídeos funciona. Ele faz parte do acesso completo do Do Zero à Primeira Música, onde você grava as suas atividades, envia por aqui e recebe a minha análise personalizada de cada uma.</p>
-      <p>Com o acesso completo você também abre o Módulo 2 e ganha mais cinco músicas para tocar, todas usando os acordes e a batida que você já está aprendendo.</p>
-      <p>São até cinco vídeos das suas atividades para eu assistir e te dar um retorno pensado na sua evolução, além das músicas novas. Quando quiser dar esse próximo passo, é só tocar no botão abaixo.</p>
-      <button id="bv-oferta" class="bv-cta" type="button">Quero acesso completo ao curso Do Zero à 1ª Música + Intercâmbio de Vídeos Bônus!</button>
+      <h2 class="bv-h2">O Intercâmbio de Vídeos faz parte do curso Do Zero à 1ª Música</h2>
+      <p>Você acabou de ver como o Intercâmbio de Vídeos funciona. Ele faz parte do curso Do Zero à 1ª Música, onde você grava as suas atividades, envia por aqui e recebe a minha análise pessoal de cada uma.</p>
+      <p>Com o acesso aos Módulos 1 e 2 você também aprende cinco músicas usando os mesmos dois acordes e uma batida simples, ampliando o seu repertório para tocar mais.</p>
+      <p>São até cinco vídeos das suas atividades para eu assistir e te dar um retorno pensado na sua evolução, além das músicas novas. Por R$97 você leva os Módulos 1 e 2 com o envio incluído.</p>
+      <button id="bv-oferta" class="bv-cta" type="button">Quero o Do Zero à 1ª Música com o Intercâmbio de Vídeos por R$97</button>
     </section>
   </div>
 
@@ -109,8 +121,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <script>
 (function () {
   var WORKER = 'https://cademi-validador.mateusaugusto91.workers.dev';
-  var PAGOS = ['625018', '626023', '626022', '626020']; // D0A1 pago, Clube Basic, Clube Premium, Fundamental
-  var CHECKOUT = 'https://pay.hotmart.com/N106662510K?checkoutMode=10';
+  var PAGOS_VIDEO = ['631964', '626020', '626022', '626023']; // INT, FUKE, Clube Premium, Clube Basic -> ve o video
+  var ID_D0A1 = '625018'; // Do Zero a 1 pago (sem envio) -> oferta R$47
+  var CK_R97 = 'https://pay.hotmart.com/N106662510K?off=qffada3t&checkoutMode=10'; // gratuito: curso + intercambio
+  var CK_R47 = 'https://pay.hotmart.com/N106662510K?off=nrjxzjdc&checkoutMode=10'; // D0A1: upgrade do envio
+  var checkoutAtivo = CK_R97;
 
   var p = new URLSearchParams(location.search);
   function cdVar(id){ var e=document.getElementById(id); var v=e?(e.textContent||'').trim():''; return (v && v.indexOf('{')<0)?v:''; }
@@ -124,7 +139,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   var modal = document.getElementById('bv-modal');
   var ddi = document.getElementById('ddi'), waIn = document.getElementById('wa'), emailIn = document.getElementById('email'), nomeIn = document.getElementById('nome');
 
-  function mostra(id){ ['bv-carregando','bv-pagante','bv-gratuito'].forEach(function(x){ var e=document.getElementById(x); if(e) e.classList.add('bv-hide'); }); var a=document.getElementById(id); if(a) a.classList.remove('bv-hide'); }
+  function mostra(id){ ['bv-carregando','bv-pagante','bv-d0a1','bv-gratuito'].forEach(function(x){ var e=document.getElementById(x); if(e) e.classList.add('bv-hide'); }); var a=document.getElementById(id); if(a) a.classList.remove('bv-hide'); }
   function emailOk(v){ return /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(v); }
   function maskWa(){
     var v=waIn.value.replace(/\D/g,'');
@@ -153,27 +168,29 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     try{ if(window.parent && window.parent!==window){ window.parent.postMessage({__cdu:'lead', nome:nome, email:email, wa:waIn.value, ddi:ddi.value}, '*'); } }catch(_){}
     var url;
     try{
-      url=new URL(CHECKOUT);
+      url=new URL(checkoutAtivo);
       if(nome) url.searchParams.set('name', nome);
       if(email) url.searchParams.set('email', email);
       if(tel) url.searchParams.set('phonenumber', tel);
       if(ddi.value) url.searchParams.set('phoneac', ddi.value);
       if(CADEMI.uid) url.searchParams.set('xcod', CADEMI.uid);
       url=url.toString();
-    }catch(_){ url=CHECKOUT; }
+    }catch(_){ url=checkoutAtivo; }
     window.open(url,'_blank');
     window.bvFecharModal();
   }
 
-  function openCheckout(ev){
+  function openCheckout(ev, checkout){
     if(ev) ev.preventDefault();
+    if(checkout) checkoutAtivo = checkout;
     if(CADEMI.nome && !nomeIn.value) nomeIn.value=CADEMI.nome;
     if(CADEMI.email && !emailIn.value) emailIn.value=CADEMI.email;
     if(CADEMI.tel && !waIn.value){ var num=CADEMI.tel; if(num.length>11 && num.indexOf('55')===0){ ddi.value='55'; num=num.slice(2); } waIn.value=num; maskWa(); }
     if(CADEMI.email && leadValido()){ enviar(); return; }
     abrirModal();
   }
-  document.getElementById('bv-oferta').addEventListener('click', openCheckout);
+  var btnG=document.getElementById('bv-oferta'); if(btnG) btnG.addEventListener('click', function(ev){ openCheckout(ev, CK_R97); });
+  var btnD=document.getElementById('bv-oferta-d0a1'); if(btnD) btnD.addEventListener('click', function(ev){ openCheckout(ev, CK_R47); });
 
   document.getElementById('lead').addEventListener('submit', function(e){
     e.preventDefault();
@@ -193,8 +210,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     .then(function(r){ return r.json(); })
     .then(function(d){
       var ids=(d && d.ids) || [];
-      var ehPagante = PAGOS.some(function(id){ return ids.indexOf(id) !== -1; });
-      mostra(ehPagante ? 'bv-pagante' : 'bv-gratuito');
+      if(PAGOS_VIDEO.some(function(id){ return ids.indexOf(id) !== -1; })){ mostra('bv-pagante'); }
+      else if(ids.indexOf(ID_D0A1) !== -1){ checkoutAtivo = CK_R47; mostra('bv-d0a1'); }
+      else { checkoutAtivo = CK_R97; mostra('bv-gratuito'); }
     })
     .catch(function(){ mostra('bv-gratuito'); });
 })();
