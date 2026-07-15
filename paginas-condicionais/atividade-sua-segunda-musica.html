@@ -816,15 +816,14 @@ document.querySelectorAll('.vid').forEach(function(el){
 </div><!-- /uke-sales -->
 <script>
 (function(){
-  var WORKER='https://cademi-validador.mateusaugusto91.workers.dev';
-  var PAGOS=['626020','626022','625018'];/* FUKE, Clube Premium, D0A1 pago */
+  // v2 (reforma jul/2026): todo aluno passa pelo motor /validar do #uke-pagante.
+  // Ele ja devolve o upload (INT / FUKE / Clube Premium) ou o bloqueio certo do worker
+  // (D0A1 -> do-zero R$47, gratuito -> so-gratuito R$97, resto -> fallback).
+  // O portao externo p/ #uke-sales (venda do Fundamental) fica desativado nesta atividade.
   var pagante=document.getElementById('uke-pagante'),sales=document.getElementById('uke-sales'),loading=document.getElementById('uke-loading');
-  var pronto=false;function fim(){pronto=true;if(loading)loading.style.display='none';}
-  function verPagante(){if(sales)sales.style.display='none';if(pagante)pagante.style.display='block';fim();}
-  var t=setTimeout(function(){if(!pronto)fim();},4000);
-  var p=new URLSearchParams(location.search);var chave=p.get('cuser_id')||p.get('cuser_email');
-  if(!chave){fim();return;}
-  fetch(WORKER+'/?aluno='+encodeURIComponent(chave)).then(function(r){return r.json();}).then(function(d){clearTimeout(t);if(pronto)return;var ids=(d&&d.ids)||[];if(PAGOS.some(function(id){return ids.indexOf(id)!==-1;}))verPagante();else fim();}).catch(function(){clearTimeout(t);if(!pronto)fim();});
+  if(sales)sales.style.display='none';
+  if(loading)loading.style.display='none';
+  if(pagante)pagante.style.display='block';
 })();
 </script>
 </body>
