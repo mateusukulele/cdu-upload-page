@@ -300,9 +300,14 @@ dialog.lightbox img{width:100%;height:auto;border-radius:16px;box-shadow:0 30px 
     <div class="video">
       <vturb-smartplayer id="vid-6a7cb40c3d841985b7781462" style="display:block;margin:0 auto;width:100%"></vturb-smartplayer>
       <script type="text/javascript">
-        var s=document.createElement("script");
-        s.src="https://scripts.converteai.net/8684569c-af6a-4351-94a5-45eb00e4ba43/players/6a7cb40c3d841985b7781462/v4/player.js";
-        s.async=true;document.head.appendChild(s);
+        /* Injecao adiada: ver o portao no fim do arquivo. O player.js ja vem no
+           <link rel="preload">, entao a chamada abaixo so paga parse/exec. */
+        window.ukeCarregarVSL=function(){
+          if(window.__ukeVSLcarregada)return;window.__ukeVSLcarregada=true;
+          var s=document.createElement("script");
+          s.src="https://scripts.converteai.net/8684569c-af6a-4351-94a5-45eb00e4ba43/players/6a7cb40c3d841985b7781462/v4/player.js";
+          s.async=true;document.head.appendChild(s);
+        };
       </script>
     </div>
 
@@ -824,6 +829,29 @@ document.querySelectorAll('.vid').forEach(function(el){
 <!-- ===== Depend&#234;ncia obrigat&#243;ria da P&#225;gina Din&#226;mica da Cademi (comunica&#231;&#227;o/resize do iframe) ===== -->
 <script src="https://core.cademi.com.br/assets/js/remote.js"></script>
 
+
+<script>
+/* PORTAO DE AUDIO (aula 9041097).
+   O codigo-pai da Cademi redireciona pra listagem quem TEM Clube Basic/Premium ou FUKE,
+   mas o iframe desta pagina ja carregou antes do redirect acontecer — e o autoplay do
+   VTurb tocava audio pra quem nem devia estar aqui. O player so entra depois de confirmar
+   que o aluno NAO e Clube/FUKE (ou se o Worker nao responder). */
+(function(){
+  var WORKER='https://cademi-validador.mateusaugusto91.workers.dev';
+  var CLUBE_FUKE=['626023','626022','626020'];
+  var decidido=false;
+  function liberar(){ if(decidido)return; decidido=true; if(window.ukeCarregarVSL)window.ukeCarregarVSL(); }
+  var t=setTimeout(liberar,4000);
+  var p=new URLSearchParams(location.search);
+  var chave=p.get('cuser_id')||p.get('cuser_email');
+  if(!chave){ liberar(); return; }
+  fetch(WORKER+'/?aluno='+encodeURIComponent(chave)).then(function(r){return r.json();}).then(function(d){
+    clearTimeout(t);
+    var ids=(d&&d.ids)||[];
+    if(!CLUBE_FUKE.some(function(id){return ids.indexOf(id)!==-1;})) liberar();
+  }).catch(function(){ clearTimeout(t); liberar(); });
+})();
+</script>
 
 </body>
 </html>
