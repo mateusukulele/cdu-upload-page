@@ -100,42 +100,46 @@ input.livre{min-height:0;padding:13px 12px;display:block}
 .carregando{text-align:center;padding:40px 0;color:var(--text-soft);font-size:15px}
 
 /* ===== INICIO CSS ROTINA (o build recorta daqui) ===== */
+/* Nomes com prefixo próprio de propósito: a classe `.barra` já existe no template, na
+   barra de progresso do questionário, e a regra de lá pintava estes segmentos de coral
+   por especificidade. Colisão de nome de classe custou uma publicação. */
 .rot-titulo{font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--text-soft);margin:20px 0 8px}
+.rot-titulo.solto{margin-top:24px}
 .semana{margin:0;padding-left:20px;font-size:14.5px}
 .semana li{margin-bottom:6px}
 .semana li b{color:var(--anchor)}
 .semana li i{font-style:normal;color:var(--text-soft);font-size:13.5px}
 
-/* Seletor de dia. No dia a dia o aluno não compara cinco dias: ele quer o de hoje.
-   Por isso o padrão é um dia por vez, e a comparação some. Na impressão volta tudo. */
-.dias-tabs{display:flex;gap:7px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:2px 0 8px;margin:0 -2px}
+/* Seletor de dia. No dia a dia o aluno não compara cinco dias: ele quer o de hoje. */
+.dias-tabs{display:flex;gap:7px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:2px 2px 8px;margin:0 -2px}
 .dias-tabs::-webkit-scrollbar{height:0}
-.chip{flex:0 0 auto;border:1.5px solid var(--linha);background:#fff;border-radius:999px;
-  padding:8px 14px;font:inherit;font-size:13.5px;font-weight:700;color:var(--text-soft);cursor:pointer;white-space:nowrap}
+.chip{flex:0 0 auto;border:1.5px solid #C0B4DC;background:#fff;border-radius:999px;
+  padding:9px 15px;font:inherit;font-size:13.5px;font-weight:700;color:var(--anchor);cursor:pointer;white-space:nowrap;
+  transition:background .12s,border-color .12s,color .12s}
+.chip:hover{border-color:var(--anchor)}
 .chip[aria-selected=true]{background:var(--anchor);border-color:var(--anchor);color:#fff}
-.chip.coringa{border-style:dashed;border-color:var(--coral);color:var(--coral-text)}
-.chip.extra{border-style:dashed;border-color:#C0B4DC;color:var(--anchor)}
-.chip.extra[aria-selected=true]{background:var(--anchor);border-style:solid;color:#fff}
-.chip.coringa[aria-selected=true]{background:var(--coral);border-style:solid;color:#fff}
+/* Os dias de pegar leve têm identidade própria: coral, com o texto escuro da marca, que
+   é o par legível. Branco sobre coral fica em 2,8:1 e não passa. */
+.chip.leve{border-color:var(--coral);color:var(--coral-text)}
+.chip.leve:hover{border-color:#D25F6C}
+.chip.leve[aria-selected=true]{background:var(--coral);border-color:var(--coral);color:var(--coral-text)}
 
 .painel{border:1px solid var(--linha);border-radius:14px;padding:14px;background:#FCFBFE}
 .painel.oculto{display:none}
 .painel h4{font-size:16px;color:var(--anchor);margin-bottom:2px}
 .painel .quando{font-size:13.5px;color:var(--text-soft);margin:0 0 12px}
-.barra{display:flex;height:12px;border-radius:99px;overflow:hidden;margin-bottom:12px;background:var(--surface)}
-.barra i{display:block;height:100%}
-.b-aq{background:#C0B4DC}.b-ap{background:var(--anchor)}.b-pr{background:#8A79B8}.b-dv{background:var(--coral)}
+.proporcao{display:flex;height:14px;border-radius:99px;overflow:hidden;margin-bottom:14px;background:var(--surface)}
+.proporcao span{display:block;height:100%}
+.bl-aq{background:#B9A7E0}.bl-ap{background:#443468}.bl-pr{background:#7E68B5}.bl-dv{background:#E8A0A8}
 .blista{list-style:none;margin:0;padding:0}
 .blista li{display:flex;gap:11px;align-items:baseline;padding:9px 0;border-top:1px dashed var(--linha)}
 .blista li:first-child{border-top:0}
-.blista .pt{flex:0 0 10px;height:10px;border-radius:3px;align-self:center}
+.blista .pt{flex:0 0 11px;height:11px;border-radius:3px;align-self:center}
 .blista .min{flex:0 0 58px;font-weight:700;font-size:15px;color:var(--anchor)}
 .blista .txt b{display:block;font-size:14.5px}
 .blista .txt small{display:block;font-size:12.5px;color:var(--text-soft);margin-top:1px}
 .blista .txt em{display:block;font-size:12.5px;color:var(--text-soft);font-style:normal;margin-top:3px}
 
-/* Dropdown do que se lê uma vez. O resumo já entrega a resposta, então fechado não
-   esconde informação: esconde explicação. */
 details.dobra{border:1px solid var(--linha);border-radius:14px;margin-bottom:14px;background:#fff}
 details.dobra>summary{list-style:none;cursor:pointer;padding:14px 16px;font-weight:700;font-size:15px;color:var(--anchor);
   display:flex;justify-content:space-between;align-items:center;gap:10px}
@@ -160,13 +164,13 @@ details.dobra .corpo{padding:0 16px 16px}
   /* No papel não existe "dia de hoje": vale a comparação. Todos os painéis aparecem e
      todas as dobras abrem, senão a ficha impressa sai pela metade. */
   .dias-tabs{display:none !important}
+  .proporcao span{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .painel.oculto{display:block !important}
   .painel{break-inside:avoid;margin-bottom:10px}
   details.dobra>summary::after{content:'' !important}
   details.dobra .corpo{display:block !important}
   .blocos div{background:#fff;border:1px solid #E7E3EF;break-inside:avoid}
   .roteiro,.semana,.blista{break-inside:avoid}
-  .barra i{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .rodape-impresso{display:block !important;margin-top:14px;font-size:10.5px;color:#6E6A85;text-align:center}
   /* Impressão pedida pelo botão: só a rotina e o rodapé. Ctrl+P direto continua
      imprimindo a ficha inteira, para quem quiser. */
@@ -504,13 +508,13 @@ function rotina(){
 /* Barra de proporção: mostra o formato do dia antes de qualquer número. */
 function barraDia(d){
   const tot=d.aq+d.ap+d.pr+d.dv;
-  return `<div class="barra" role="presentation">${[['aq',d.aq],['ap',d.ap],['pr',d.pr],['dv',d.dv]]
-    .filter(x=>x[1]>0).map(([k,n])=>`<i class="b-${k}" style="width:${(n/tot*100).toFixed(1)}%"></i>`).join('')}</div>`;
+  return `<div class="proporcao" role="presentation">${[['aq',d.aq],['ap',d.ap],['pr',d.pr],['dv',d.dv]]
+    .filter(x=>x[1]>0).map(([k,n])=>`<span class="bl-${k}" style="width:${(n/tot*100).toFixed(1)}%"></span>`).join('')}</div>`;
 }
 function itemBloco(k,n,pass){
   if(!n) return '';
   const b=BLOCO[k];
-  return `<li><span class="pt b-${k}"></span><span class="min">${n} min</span>
+  return `<li><span class="pt bl-${k}"></span><span class="min">${n} min</span>
     <span class="txt"><b>${b.nome}</b><small>${b.oque}</small>
     ${pass?`<em>Duas passadas: ${pass[0]} min, 1 minuto de pausa de verdade, e mais ${pass[1]} min.</em>`:''}</span></li>`;
 }
@@ -546,29 +550,34 @@ function rotinaHTML(){
     ${r.dias===3?'<p class="sub" style="margin:8px 0 0">Evita os três colados. E vale saber: 2 dias por semana mantêm você tocando, 3 ou mais já começam a andar de verdade.</p>':''}
     ${r.seisEmDiante?'<p class="sub" style="margin:8px 0 0">Do sexto dia em diante, só Dia Livre ou Dia Leve. Aqui o Livre deixa de ser opção e vira recomendação: é ele que impede a rotina de virar obrigação.</p>':''}
 
-    <p class="rot-titulo">Hoje é qual dia?</p>
+    <p class="rot-titulo">Rotina recomendada</p>
     <div class="dias-tabs" id="diasTabs">${todos.map((d,i)=>{
       const fora=extras.some(x=>x.k===d.k);
-      return `<button class="chip ${fora?(d.k==='leve'?'coringa':'extra'):''}" data-dia="${d.k}" aria-selected="${i===0}">${d.nome}</button>`;}).join('')}</div>
-    ${todos.map((d,i)=>painelDia(d,i,extras.some(x=>x.k===d.k)?NOTA_EXTRA[d.k]:'')).join('')}
-    <p class="sub" style="margin:12px 0 0">${r.livreNaSemana
-      ?'O <b>Dia Leve</b> não entra na semana de propósito: ninguém agenda estar cansado. Ele fica ali como carta de troca, para o dia em que a semana desandar.'
-      :'Os dois últimos não entram na sua semana de propósito. O <b>Dia Leve</b> é a carta de troca para quando você chega acabado, e o <b>Dia Livre</b> é para quando não bate vontade de estudar. Nenhum dos dois é furar o plano.'}</p>
+      return `<button class="chip ${fora?'leve':''} ${fora?'g-leve':'g-rec'}" data-dia="${d.k}" aria-selected="${i===0}">${d.nome}</button>`;
+    }).slice(0,usados.length).join('')}</div>
 
-    <details class="dobra" style="margin-top:14px"><summary><span>Como saber que estou no bloco certo<small>A diferença entre Aprendizado e Prática é a que mais confunde</small></span></summary>
-      <div class="corpo">
-        <ul class="blista">${['aq','ap','pr','dv'].map(k=>
-          `<li><span class="pt b-${k}"></span><span class="txt"><b>${BLOCO[k].nome}</b><small>${BLOCO[k].oque}</small><em>Você sabe que está aqui quando: ${BLOCO[k].sinal}</em></span></li>`).join('')}</ul>
-        <p class="sub" style="margin:12px 0 0">A aula nova entra no bloco de Aprendizado. Os seus ${r.min} minutos comportam ela, é para isso que esse bloco existe. E se você já tiver assistido antes, no ônibus ou lavando louça, melhor ainda: aí os ${r.min} minutos inteiros ficam com o ukulele na mão.</p>
-      </div>
-    </details>
+    <p class="rot-titulo solto">Para os dias de pegar mais leve</p>
+    <p class="sub" style="margin:0 0 8px">Estes dois não entram na sua semana de propósito, e usar um deles não é furar o plano.</p>
+    <div class="dias-tabs" id="diasTabsLeve">${extras.map(d=>
+      `<button class="chip leve g-leve" data-dia="${d.k}" aria-selected="false">${d.nome}</button>`).join('')}</div>
+
+    ${todos.map((d,i)=>painelDia(d,i,extras.some(x=>x.k===d.k)?NOTA_EXTRA[d.k]:'')).join('')}
+
+    <p class="rot-titulo solto">O que é cada bloco?</p>
+    <p class="sub" style="margin:0 0 10px">A diferença entre Aprendizado e Prática é a que mais confunde, e é a que mais muda o resultado.</p>
+    <ul class="blista">${['aq','ap','pr','dv'].map(k=>
+      `<li><span class="pt bl-${k}"></span><span class="txt"><b>${BLOCO[k].nome}</b><small>${BLOCO[k].oque}</small><em>Você sabe que está aqui quando: ${BLOCO[k].sinal}</em></span></li>`).join('')}</ul>
+    <p class="sub" style="margin:12px 0 0">A aula nova entra no bloco de Aprendizado. Os seus ${r.min} minutos comportam ela, é para isso que esse bloco existe. E se você já tiver assistido antes, no ônibus ou lavando louça, melhor ainda: aí os ${r.min} minutos inteiros ficam com o ukulele na mão.</p>
   </section>`;
 }
+/* Dois grupos de pílulas, um painel só visível: escolher em qualquer grupo apaga a
+   seleção do outro, senão ficariam dois dias marcados ao mesmo tempo. */
 function ligarRotina(){
-  const tabs=document.getElementById('diasTabs'); if(!tabs) return;
-  tabs.querySelectorAll('.chip').forEach(c=>{
+  const chips=[...document.querySelectorAll('#diasTabs .chip, #diasTabsLeve .chip')];
+  if(!chips.length) return;
+  chips.forEach(c=>{
     c.onclick=()=>{
-      tabs.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-selected',x===c));
+      chips.forEach(x=>x.setAttribute('aria-selected',x===c));
       document.querySelectorAll('.painel[data-dia]').forEach(p=>
         p.classList.toggle('oculto',p.dataset.dia!==c.dataset.dia));
     };
