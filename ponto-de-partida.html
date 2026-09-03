@@ -105,26 +105,44 @@ input.livre{min-height:0;padding:13px 12px;display:block}
 .semana li{margin-bottom:6px}
 .semana li b{color:var(--anchor)}
 .semana li i{font-style:normal;color:var(--text-soft);font-size:13.5px}
-.grade-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:6px}
-.grade{width:100%;border-collapse:collapse;font-size:14px;min-width:430px}
-.grade th,.grade td{border:1px solid var(--linha);padding:8px 6px;text-align:center}
-.grade thead th{background:var(--anchor);color:#fff;font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-weight:700}
-.grade tbody th{text-align:left;background:var(--surface);font-weight:700;color:var(--anchor);font-size:13.5px;min-width:132px}
-.grade tbody th small{display:block;font-weight:400;color:var(--text-soft);font-size:12px}
-.grade td{font-weight:700;color:var(--text)}
-.grade td.zero{color:#B7B2C6;font-weight:400}
-.grade td em{display:block;font-style:normal;font-weight:400;font-size:11.5px;color:var(--text-soft);margin-top:2px}
-.grade tr.coringa th{background:#FFF1F3;color:var(--coral-text)}
-.grade tr.coringa td{background:#FFF9FA}
-.quando{margin:10px 0 0;font-size:13.5px;color:var(--text-soft)}
-.quando li{margin-bottom:5px;list-style:none}
-.quando b{color:var(--anchor)}
-.blocos{display:grid;gap:10px}
-.blocos div{background:var(--surface);border-radius:10px;padding:11px 13px}
-.blocos b{display:block;font-size:14px;color:var(--anchor);margin-bottom:3px}
-.blocos small{display:block;font-size:13px;color:var(--text);margin-bottom:4px}
-.blocos em{display:block;font-size:12.5px;color:var(--text-soft);font-style:normal}
-.blocos em::before{content:'Você sabe que está aqui quando: '}
+
+/* Seletor de dia. No dia a dia o aluno não compara cinco dias: ele quer o de hoje.
+   Por isso o padrão é um dia por vez, e a comparação some. Na impressão volta tudo. */
+.dias-tabs{display:flex;gap:7px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:2px 0 8px;margin:0 -2px}
+.dias-tabs::-webkit-scrollbar{height:0}
+.chip{flex:0 0 auto;border:1.5px solid var(--linha);background:#fff;border-radius:999px;
+  padding:8px 14px;font:inherit;font-size:13.5px;font-weight:700;color:var(--text-soft);cursor:pointer;white-space:nowrap}
+.chip[aria-selected=true]{background:var(--anchor);border-color:var(--anchor);color:#fff}
+.chip.coringa{border-style:dashed;border-color:var(--coral);color:var(--coral-text)}
+.chip.coringa[aria-selected=true]{background:var(--coral);border-style:solid;color:#fff}
+
+.painel{border:1px solid var(--linha);border-radius:14px;padding:14px;background:#FCFBFE}
+.painel.oculto{display:none}
+.painel h4{font-size:16px;color:var(--anchor);margin-bottom:2px}
+.painel .quando{font-size:13.5px;color:var(--text-soft);margin:0 0 12px}
+.barra{display:flex;height:12px;border-radius:99px;overflow:hidden;margin-bottom:12px;background:var(--surface)}
+.barra i{display:block;height:100%}
+.b-aq{background:#C0B4DC}.b-ap{background:var(--anchor)}.b-pr{background:#8A79B8}.b-dv{background:var(--coral)}
+.blista{list-style:none;margin:0;padding:0}
+.blista li{display:flex;gap:11px;align-items:baseline;padding:9px 0;border-top:1px dashed var(--linha)}
+.blista li:first-child{border-top:0}
+.blista .pt{flex:0 0 10px;height:10px;border-radius:3px;align-self:center}
+.blista .min{flex:0 0 58px;font-weight:700;font-size:15px;color:var(--anchor)}
+.blista .txt b{display:block;font-size:14.5px}
+.blista .txt small{display:block;font-size:12.5px;color:var(--text-soft);margin-top:1px}
+.blista .txt em{display:block;font-size:12.5px;color:var(--text-soft);font-style:normal;margin-top:3px}
+
+/* Dropdown do que se lê uma vez. O resumo já entrega a resposta, então fechado não
+   esconde informação: esconde explicação. */
+details.dobra{border:1px solid var(--linha);border-radius:14px;margin-bottom:14px;background:#fff}
+details.dobra>summary{list-style:none;cursor:pointer;padding:14px 16px;font-weight:700;font-size:15px;color:var(--anchor);
+  display:flex;justify-content:space-between;align-items:center;gap:10px}
+details.dobra>summary::-webkit-details-marker{display:none}
+details.dobra>summary::after{content:'ver';font-size:12.5px;font-weight:700;color:var(--text-soft);text-transform:uppercase;letter-spacing:.06em}
+details.dobra[open]>summary::after{content:'fechar'}
+details.dobra>summary small{display:block;font-weight:400;font-size:13px;color:var(--text-soft);margin-top:2px}
+details.dobra>summary>span{min-width:0}
+details.dobra .corpo{padding:0 16px 16px}
 
 @media print{
   .nav,.progresso,.upload,.no-print,.treino,.dica-auto,.dicas{display:none !important}
@@ -137,14 +155,16 @@ input.livre{min-height:0;padding:13px 12px;display:block}
   .atv-pill{background:#fff;color:var(--anchor);border:1px solid var(--anchor);padding:2px 8px}
   /* A tabela é o coração da ficha impressa. `overflow-x:auto` corta o que passa da
      largura no papel, então na impressão ela volta a ser um bloco normal. */
-  .grade-wrap{overflow:visible}
-  .grade{min-width:0;font-size:11px;break-inside:avoid}
-  .grade th,.grade td{padding:5px 4px}
-  .grade thead th{background:#fff !important;color:var(--anchor) !important;border-bottom:2px solid var(--anchor);-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .grade tbody th{background:#fff !important}
-  .grade tr.coringa th,.grade tr.coringa td{background:#F6F4FA !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  /* No papel não existe "dia de hoje": vale a comparação. Todos os painéis aparecem e
+     todas as dobras abrem, senão a ficha impressa sai pela metade. */
+  .dias-tabs{display:none !important}
+  .painel.oculto{display:block !important}
+  .painel{break-inside:avoid;margin-bottom:10px}
+  details.dobra>summary::after{content:'' !important}
+  details.dobra .corpo{display:block !important}
   .blocos div{background:#fff;border:1px solid #E7E3EF;break-inside:avoid}
-  .roteiro,.semana,.quando{break-inside:avoid}
+  .roteiro,.semana,.blista{break-inside:avoid}
+  .barra i{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .rodape-impresso{display:block !important;margin-top:14px;font-size:10.5px;color:#6E6A85;text-align:center}
   @page{size:A4;margin:14mm}
 }
@@ -469,20 +489,33 @@ function rotina(){
 /* ---------- ROTINA: o que o aluno lê ----------
    Tudo daqui é sugestão, e o texto tem que soar assim. Plano escolhido pelo aluno é
    cumprido; plano mandado é abandonado. */
-function cel(n,pass){
-  if(!n) return '<td class="zero">—</td>';
-  return `<td>${n} min${pass?`<em>${pass[0]} + pausa + ${pass[1]}</em>`:''}</td>`;
+/* Barra de proporção: mostra o formato do dia antes de qualquer número. */
+function barraDia(d){
+  const tot=d.aq+d.ap+d.pr+d.dv;
+  return `<div class="barra" role="presentation">${[['aq',d.aq],['ap',d.ap],['pr',d.pr],['dv',d.dv]]
+    .filter(x=>x[1]>0).map(([k,n])=>`<i class="b-${k}" style="width:${(n/tot*100).toFixed(1)}%"></i>`).join('')}</div>`;
 }
-function linhaGrade(d,coringa){
-  return `<tr class="${coringa?'coringa':''}">
-    <th>${d.nome}<small>${d.sub}</small></th>
-    ${cel(d.aq,null)}${cel(d.ap,d.apPassadas)}${cel(d.pr,d.prPassadas)}${cel(d.dv,null)}
-  </tr>`;
+function itemBloco(k,n,pass){
+  if(!n) return '';
+  const b=BLOCO[k];
+  return `<li><span class="pt b-${k}"></span><span class="min">${n} min</span>
+    <span class="txt"><b>${b.nome}</b><small>${b.oque}</small>
+    ${pass?`<em>Duas passadas: ${pass[0]} min, 1 minuto de pausa de verdade, e mais ${pass[1]} min.</em>`:''}</span></li>`;
+}
+function painelDia(d,i,coringa){
+  return `<div class="painel ${i===0?'':'oculto'}" data-dia="${d.k}">
+    <h4>${d.nome}</h4>
+    <p class="quando">${d.quando}</p>
+    ${barraDia(d)}
+    <ul class="blista">${itemBloco('aq',d.aq,null)}${itemBloco('ap',d.ap,d.apPassadas)}${itemBloco('pr',d.pr,d.prPassadas)}${itemBloco('dv',d.dv,null)}</ul>
+    ${coringa?'<p class="quando" style="margin:12px 0 0">Chegou o dia e você está acabado? Troca o que estava marcado por este. Isso não é furar o plano. Furar o plano é não pegar o ukulele.</p>':''}
+  </div>`;
 }
 function rotinaHTML(){
   const r=rotina(); if(!r) return '';
   const usados=[];
   r.receita.forEach(d=>{ if(!usados.some(x=>x.k===d.k)) usados.push(d); });
+  const todos=usados.concat([r.leve]);
   return `
   <section class="atv-card"><span class="atv-pill">A sua rotina</span>
     <p class="destino">${r.dias===5?'5 dias ou mais':r.dias+' dias'} por semana, ${r.min} minutos por dia</p>
@@ -494,21 +527,30 @@ function rotinaHTML(){
     ${r.dias===3?'<p class="sub" style="margin:8px 0 0">Evita os três colados. E vale saber: 2 dias por semana mantêm você tocando, 3 ou mais já começam a andar de verdade.</p>':''}
     ${r.seisEmDiante?'<p class="sub" style="margin:8px 0 0">Do sexto dia em diante, só Dia Livre ou Dia Leve. Aqui o Livre deixa de ser opção e vira recomendação: é ele que impede a rotina de virar obrigação.</p>':''}
 
-    <p class="rot-titulo">Os seus ${r.min} minutos, dia por dia</p>
-    <div class="grade-wrap"><table class="grade">
-      <thead><tr><th>Tipo de dia</th>${['aq','ap','pr','dv'].map(k=>`<th>${BLOCO[k].nome}</th>`).join('')}</tr></thead>
-      <tbody>${usados.map(d=>linhaGrade(d,false)).join('')}${linhaGrade(r.leve,true)}</tbody>
-    </table></div>
-    <p class="sub" style="margin:0 0 4px">Onde aparece <b>+ pausa +</b>, são duas passadas com 1 minuto de pausa de verdade no meio: solta o ukulele, sacode a mão. O minuto sai de dentro do próprio bloco, o dia não cresce.</p>
+    <p class="rot-titulo">Hoje é qual dia?</p>
+    <div class="dias-tabs" id="diasTabs">${todos.map((d,i)=>
+      `<button class="chip ${d.k==='leve'?'coringa':''}" data-dia="${d.k}" aria-selected="${i===0}">${d.nome}</button>`).join('')}</div>
+    ${todos.map((d,i)=>painelDia(d,i,d.k==='leve')).join('')}
+    <p class="sub" style="margin:12px 0 0">O <b>Dia Leve</b> não entra na semana de propósito: ninguém agenda estar cansado. Ele fica ali como carta de troca, para o dia em que a semana desandar.</p>
 
-    <p class="rot-titulo">Quando usar cada um</p>
-    <ul class="quando">${usados.concat([r.leve]).map(d=>`<li><b>${d.nome}:</b> ${d.quando}</li>`).join('')}</ul>
-    <p class="sub" style="margin:12px 0 0">A última linha da tabela é a sua carta de troca. Chegou o dia e você está acabado? Troca o que estava marcado por um Dia Leve. Isso não é furar o plano. Furar o plano é não pegar o ukulele.</p>
-
-    <p class="rot-titulo">O que é cada bloco</p>
-    <div class="blocos">${['aq','ap','pr','dv'].map(k=>`<div><b>${BLOCO[k].nome}</b><small>${BLOCO[k].oque}</small><em>${BLOCO[k].sinal}</em></div>`).join('')}</div>
-    <p class="sub" style="margin:12px 0 0">A aula nova entra no bloco de Aprendizado. Os seus ${r.min} minutos comportam ela, é para isso que esse bloco existe. E se você já tiver assistido antes, no ônibus ou lavando louça, melhor ainda: aí os ${r.min} minutos inteiros ficam com o ukulele na mão.</p>
+    <details class="dobra" style="margin-top:14px"><summary><span>Como saber que estou no bloco certo<small>A diferença entre Aprendizado e Prática é a que mais confunde</small></span></summary>
+      <div class="corpo">
+        <ul class="blista">${['aq','ap','pr','dv'].map(k=>
+          `<li><span class="pt b-${k}"></span><span class="txt"><b>${BLOCO[k].nome}</b><small>${BLOCO[k].oque}</small><em>Você sabe que está aqui quando: ${BLOCO[k].sinal}</em></span></li>`).join('')}</ul>
+        <p class="sub" style="margin:12px 0 0">A aula nova entra no bloco de Aprendizado. Os seus ${r.min} minutos comportam ela, é para isso que esse bloco existe. E se você já tiver assistido antes, no ônibus ou lavando louça, melhor ainda: aí os ${r.min} minutos inteiros ficam com o ukulele na mão.</p>
+      </div>
+    </details>
   </section>`;
+}
+function ligarRotina(){
+  const tabs=document.getElementById('diasTabs'); if(!tabs) return;
+  tabs.querySelectorAll('.chip').forEach(c=>{
+    c.onclick=()=>{
+      tabs.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-selected',x===c));
+      document.querySelectorAll('.painel[data-dia]').forEach(p=>
+        p.classList.toggle('oculto',p.dataset.dia!==c.dataset.dia));
+    };
+  });
 }
 
 function corpoHTML(q){
@@ -753,19 +795,20 @@ function renderResultado(){
       ${oQueEleContou()?`<p style="margin-top:8px">${oQueEleContou()}</p>`:''}</div>
 
     ${acima?'':`
-    <section class="atv-card"><span class="atv-pill">Por onde começar</span>
-      <p class="destino">Comece pelo <b>${cur.nome}</b></p>
-      <p class="destino-sub">${cur.sub}</p>
-      ${url?`<a class="btn" style="text-decoration:none;margin-bottom:12px" href="${url}" target="_top">Ir para o ${cur.nome}</a>`:''}
-      <p class="sub" style="margin:0">Os módulos abrem todos de uma vez, então você entra por onde precisa e volta quando quiser.</p>
-    </section>`}
+    <details class="dobra" open><summary><span>Por onde começar<small>${cur.nome} · ${cur.sub}</small></span></summary>
+      <div class="corpo">
+        ${url?`<a class="btn" style="text-decoration:none;margin-bottom:12px" href="${url}" target="_top">Ir para o ${cur.nome}</a>`:''}
+        <p class="sub" style="margin:0">Os módulos abrem todos de uma vez, então você entra por onde precisa e volta quando quiser. Este é o seu ponto de entrada, não uma cerca: nada impede você de olhar o resto.</p>
+      </div>
+    </details>`}
 
     ${!pedeVideo()?'':(e.videoOk?`
-    <section class="atv-card" style="border-color:var(--ok)"><span class="atv-pill" style="background:var(--ok);color:#fff">Vídeo recebido</span>
-      <p class="enunciado" style="margin-bottom:6px">Você já enviou o seu vídeo.</p>
-      <p class="sub" style="margin:0 0 14px">A sua análise fica disponível em até 3 dias úteis depois do envio, na aba Minhas Análises, junto com as análises das suas atividades.</p>
-      <a class="btn no-print" style="text-decoration:none" href="${MINHAS_ANALISES}" target="_top">Ir para Minhas Análises</a>
-    </section>`:`
+    <details class="dobra"><summary><span>Vídeo recebido<small>A sua análise sai em até 3 dias úteis, em Minhas Análises</small></span></summary>
+      <div class="corpo">
+        <p class="sub" style="margin:0 0 12px">Ela aparece junto com as análises das suas atividades.</p>
+        <a class="btn no-print" style="text-decoration:none" href="${MINHAS_ANALISES}" target="_top">Ir para Minhas Análises</a>
+      </div>
+    </details>`:`
     <section class="atv-card no-print" style="border-color:var(--coral)"><span class="atv-pill">Falta o seu vídeo</span>
       <p class="sub" style="margin:0 0 12px">Você deixou o vídeo para depois. Ele é o que me deixa ver o que resposta nenhuma mostra, e quando der é por aqui.</p>
       <button class="btn" id="gravarAgora">Gravar e enviar agora</button>
@@ -773,12 +816,11 @@ function renderResultado(){
 
     ${rotinaHTML()}
 
-    <section class="atv-card no-print"><span class="atv-pill">Mudou alguma coisa?</span>
-      <p class="sub" style="margin:0 0 12px">Se você respondeu alguma coisa no automático, dá para trocar uma resposta sem refazer tudo.</p>
-      <div class="opts" id="corrigir">
+    <details class="dobra no-print"><summary><span>Mudou alguma coisa?<small>Trocar uma resposta sem refazer tudo</small></span></summary>
+      <div class="corpo"><div class="opts" id="corrigir">
         ${visiveis().map((q,i)=>`<label class="opt" data-i="${i}"><span>${q.enunciado.length>62?q.enunciado.slice(0,62)+'...':q.enunciado}</span></label>`).join('')}
-      </div>
-    </section>
+      </div></div>
+    </details>
 
     <div class="nav no-print">
       <button class="btn" id="imprimir">Salvar em PDF</button>
@@ -786,6 +828,7 @@ function renderResultado(){
     ${REFAZER?'<p style="text-align:center;margin-top:14px"><button class="btn-texto" id="refazer">Refazer o nivelamento do zero (provisório, para teste)</button></p>':''}
     <p class="rodape-impresso">Ponto de Partida · Clube do Ukulele${PRIMEIRO?' · '+PRIMEIRO:''} · ${new Date().toLocaleDateString('pt-BR')}</p>`;
 
+  ligarRotina();
   document.getElementById('imprimir').onclick=()=>window.print();
   const gr=document.getElementById('gravarAgora');
   if(gr) gr.onclick=()=>{ if(e.videoOk) return; e.videoAdiado=false;e.finalizado=false;e.i=visiveis().length;render(); };
