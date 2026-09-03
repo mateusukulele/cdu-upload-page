@@ -686,6 +686,17 @@ addEventListener('keydown',ev=>{
    {email} pelos dados do aluno. Isso re-serializa o body inteiro e apaga todo ouvinte já
    ligado. Por isso a peça só monta no `load`, que vem depois do ready: aí o que o remote.js
    reescreve é só o "Carregando", e nada do que a gente ligou se perde. */
+/* O `remote.js` troca o body inteiro em algum ponto depois do carregamento, para
+   preencher {nome} e {email}. Isso clona o nosso `#palco` e os botões visíveis ficam
+   sem handler nenhum: a página aparece e não responde a clique. Depender da ordem de
+   `ready` e `load` não resolveu, porque a troca chega depois dos dois. Então a gente
+   observa: se o `#palco` do documento deixar de ser o nosso, montamos de novo nele.
+   Renderizar não dispara isso, porque aí o nó continua sendo o mesmo. */
+new MutationObserver(()=>{
+  const p=document.getElementById('palco');
+  if(p&&p!==palco){ palco=p; render(); }
+}).observe(document.documentElement,{childList:true,subtree:true});
+
 if(document.readyState==='complete') render();
 else addEventListener('load',render);
 })();
