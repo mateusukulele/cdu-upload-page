@@ -56,11 +56,7 @@ input.livre{min-height:0;padding:13px 12px;display:block}
 .contador{font-size:13px;color:var(--text-soft);text-align:right;margin-top:4px;display:flex;justify-content:space-between;gap:10px}
 .dica-teclado{font-size:12.5px;color:var(--text-soft)}
 
-.acordes{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;background:#FAF9FD;border:1px solid var(--linha);border-radius:14px;padding:16px 14px;margin-bottom:14px}
-.acorde{text-align:center}
-.acorde svg{display:block;margin:0 auto}
-.acorde b{display:block;font-size:13.5px;margin-top:5px;color:var(--anchor)}
-.acorde small{display:block;font-size:12px;color:var(--text-soft)}
+.treino{margin-bottom:14px;border-radius:14px;overflow:hidden}
 
 .progresso{display:flex;align-items:center;gap:10px;margin-bottom:12px}
 .barra{flex:1;height:8px;border-radius:99px;background:#DED7EE;overflow:hidden}
@@ -194,24 +190,22 @@ const Q=[
 
 {id:'NM1',bloco:'N',mede:'Nível',tipo:'radio',
  se:s=>[4,5].includes(s.resp.N1)&&!afinaNao(s),
- acordes:['C','Am','F','G'],
- batidas:[{arq:'img/pop1.png',nome:'Batida Pop 1'}],
- contexto:'Estes são os quatro acordes mágicos no tom de C, e são eles que fecham o Ukulele Fundamental. O desenho embaixo é a Batida Pop 1.',
- enunciado:'Pega o ukulele e toca C, Am, F, G com essa batida. Hoje, na sua mão, isso:',
- opcoes:[{t:'Sai do começo ao fim, sem travar',v:'sai'},
-         {t:'Sai, mas eu travo em alguma troca',v:'trava'},
+ treino:{b:'eyJ2IjoxLCJuIjoiVm9jw6ogY29uc2VndWUgdG9jYXIgZXNzYSBzZXF1w6puY2lhLCBjb20gZXNzYSBiYXRpZGEsIHNlbSB0cmF2YXI_IiwiYnBtIjo5MCwiYSI6WyJDIiwiQW0iLCJGIiwiRyJdLCJmIjp7fSwiYyI6MSwiYiI6eyJjb21wYXNzbyI6IjQvNCIsInN1aW5nYWRvIjpmYWxzZSwidGVtcG9zIjpbeyJkaXYiOjIsImdlc3RvcyI6W3siZyI6ImJhaXhvIiwiZiI6MX0seyJnIjoiIiwiZiI6MX1dfSx7ImRpdiI6MiwiZ2VzdG9zIjpbeyJnIjoiYmFpeG8iLCJmIjoxfSx7ImciOiJjaW1hIiwiZiI6MX1dfSx7ImRpdiI6MiwiZ2VzdG9zIjpbeyJnIjoiIiwiZiI6MX0seyJnIjoiY2ltYSIsImYiOjF9XX0seyJkaXYiOjIsImdlc3RvcyI6W3siZyI6ImJhaXhvIiwiZiI6MX0seyJnIjoiIiwiZiI6MX1dfV19LCJvIjoiVGVzdGUgZG9zIDQgYWNvcmRlcyBtw6FnaWNvcyBlbSBDIiwieCI6IlBhcmEgZGl6ZXIgcXVlIFwiY29uc2VndWVcIiwgbyB2YWxvciBtw61uaW1vIGRlIEJQTSDDqSA5MC4gVm9jw6ogcG9kZSB0cmVpbmFyIHVtIHBvdWNvIGNvbSBlbGUgYSB1bWEgdmVsb2NpZGFkZSBtZW5vciwgbWFzIHBhcmEgXCJwYXNzYXJcIiBwcmVjaXNhIGRlIGNvbnNlZ3VpciBhIDkwYnBtLiIsImciOjB9',titulo:'Teste dos 4 acordes mágicos em C'},
+ contexto:'Estes são os quatro acordes mágicos no tom de C, com a Batida Pop 1, e é neles que o Ukulele Fundamental termina. O metrônomo está em 90, que é a velocidade que conta como "consigo". Pode treinar mais devagar à vontade antes de responder.',
+ enunciado:'Pega o ukulele e toca junto. Hoje, na sua mão, isso:',
+ opcoes:[{t:'Sai a 90, do começo ao fim, sem travar',v:'sai'},
+         {t:'Sai, mas só mais devagar que 90',v:'trava'},
          {t:'Os acordes saem, essa batida é que não',v:'sem_batida'},
          {t:'Ainda não sai',v:'nao_sai'}]},
 
 {id:'NM2',bloco:'N',mede:'Nível',tipo:'radio',
  se:s=>s.resp.NM1==='sai',
- acordes:['G','Em','C','D'],
- batidas:[{arq:'img/pop1.png',nome:'Batida Pop 1'},{arq:'img/pop2.png',nome:'Batida Pop 2'}],
- contexto:'São os mesmos quatro acordes mágicos, agora no tom de G. E aqui são as duas batidas: a Pop 1 e a Pop 2.',
- enunciado:'Toca G, Em, C, D com uma batida e depois com a outra. Hoje, na sua mão, isso:',
- opcoes:[{t:'Sai com as duas batidas, sem travar',v:'sai'},
-         {t:'Sai com uma delas; com a outra ainda não',v:'uma'},
-         {t:'Os acordes saem, as batidas nesse tom é que não',v:'sem_batida'},
+ treino:{b:'eyJ2IjoxLCJuIjoiVm9jw6ogY29uc2VndWUgdG9jYXIgZXNzYSBzZXF1w6puY2lhLCBjb20gZXNzYSBiYXRpZGEsIHNlbSB0cmF2YXI_IiwiYnBtIjo5MCwiYSI6WyJHIiwiRW0iLCJDIiwiRCJdLCJmIjp7IkVtIjoiMC40LjMuMiJ9LCJjIjoxLCJiIjp7ImNvbXBhc3NvIjoiNC80Iiwic3VpbmdhZG8iOmZhbHNlLCJ0ZW1wb3MiOlt7ImRpdiI6NCwiZ2VzdG9zIjpbeyJnIjoiYmFpeG8iLCJmIjoxfSx7ImciOiIiLCJmIjoxfSx7ImciOiIiLCJmIjoxfSx7ImciOiIiLCJmIjoxfV19LHsiZGl2Ijo0LCJnZXN0b3MiOlt7ImciOiJiYWl4byIsImYiOjF9LHsiZyI6IiIsImYiOjF9LHsiZyI6IiIsImYiOjF9LHsiZyI6ImNpbWEiLCJmIjoxfV19LHsiZGl2Ijo0LCJnZXN0b3MiOlt7ImciOiIiLCJmIjoxfSx7ImciOiJjaW1hIiwiZiI6MX0seyJnIjoiYmFpeG8iLCJmIjoxfSx7ImciOiIiLCJmIjoxfV19LHsiZGl2Ijo0LCJnZXN0b3MiOlt7ImciOiJiYWl4byIsImYiOjF9LHsiZyI6IiIsImYiOjF9LHsiZyI6IiIsImYiOjF9LHsiZyI6IiIsImYiOjF9XX1dfSwibyI6IlRlc3RlIGRvcyA0IGFjb3JkZXMgbcOhZ2ljb3MgZW0gRyIsIngiOiJQYXJhIGRpemVyIHF1ZSBcImNvbnNlZ3VlXCIsIG8gdmFsb3IgbcOtbmltbyBkZSBCUE0gw6kgOTAuIFZvY8OqIHBvZGUgdHJlaW5hciB1bSBwb3VjbyBjb20gZWxlIGEgdW1hIHZlbG9jaWRhZGUgbWVub3IsIG1hcyBwYXJhIFwicGFzc2FyXCIgcHJlY2lzYSBkZSBjb25zZWd1aXIgYSA5MGJwbS4iLCJnIjowLCJzIjowfQ',titulo:'Teste dos 4 acordes mágicos em G'},
+ contexto:'São os mesmos quatro acordes mágicos, agora no tom de G e com a Batida Pop 2. O metrônomo continua em 90.',
+ enunciado:'Toca junto de novo. Hoje, na sua mão, isso:',
+ opcoes:[{t:'Sai a 90, do começo ao fim, sem travar',v:'sai'},
+         {t:'Sai, mas só mais devagar que 90',v:'trava'},
+         {t:'Os acordes saem, essa batida é que não',v:'sem_batida'},
          {t:'Nesse tom eu ainda não toquei',v:'nunca'}]},
 
 {id:'X3',bloco:'X',mede:'Contexto',tipo:'texto',max:200,opcional:true,se:s=>acimaDoMapa(s),
@@ -337,48 +331,27 @@ function perfilVideo(){
 }
 function pedeToque(){return perfilVideo()==='toca'||perfilVideo()==='passou';}
 
-/* ---------- diagramas de acorde ----------
-   Casas na ordem das cordas do ukulele, g C E A. 0 é corda solta.
-   Quatro dedos na mesma casa viram pestana: uma barra, não quatro pontos. */
-const FORMAS={
-  C:{casas:[0,0,0,3],nome:'C',pt:'Dó maior'},
-  Am:{casas:[2,0,0,0],nome:'Am',pt:'Lá menor'},
-  F:{casas:[2,0,1,0],nome:'F',pt:'Fá maior'},
-  G:{casas:[0,2,3,2],nome:'G',pt:'Sol maior'},
-  Em:{casas:[0,4,3,2],nome:'Em',pt:'Mi menor'},
-  D:{casas:[2,2,2,0],nome:'D',pt:'Ré maior'},
-  Cm7:{casas:[3,3,3,3],nome:'Cm7',pt:'Dó menor com sétima'}
-};
-function svgAcorde(k){
-  const f=FORMAS[k]; if(!f) return '';
-  const L=16,T=22,DX=22,DY=24,NC=4,NF=4,W=L*2+DX*3,H=T+DY*NF+10;
-  const x=i=>L+DX*i, y=n=>T+DY*n;
-  let g='';
-  for(let i=0;i<NC;i++) g+=`<line x1="${x(i)}" y1="${T}" x2="${x(i)}" y2="${y(NF)}" stroke="#8E85A8" stroke-width="1.2"/>`;
-  for(let n=1;n<=NF;n++) g+=`<line x1="${L}" y1="${y(n)}" x2="${L+DX*3}" y2="${y(n)}" stroke="#C9C2DA" stroke-width="1.2"/>`;
-  g+=`<line x1="${L-1}" y1="${T}" x2="${L+DX*3+1}" y2="${T}" stroke="#443468" stroke-width="4" stroke-linecap="round"/>`;
-  const uniq=[...new Set(f.casas)];
-  if(uniq.length===1&&uniq[0]>0){
-    const cy=y(uniq[0])-DY/2;
-    g+=`<rect x="${x(0)-8}" y="${cy-8}" width="${DX*3+16}" height="16" rx="8" fill="#443468"/>`;
-  }else{
-    f.casas.forEach((c,i)=>{
-      if(c>0) g+=`<circle cx="${x(i)}" cy="${y(c)-DY/2}" r="7.5" fill="#443468"/>`;
-      else g+=`<circle cx="${x(i)}" cy="${T-9}" r="4.2" fill="none" stroke="#8E85A8" stroke-width="1.4"/>`;
-    });
-  }
-  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="diagrama de acorde"><g>${g}</g></svg>`;
-}
-/* O desenho da batida é arte que o Mateus gera no gerador de batidas. Enquanto o
-   arquivo não existe, o lugar dele aparece nomeado em vez de quebrar a página. */
-function batidaHTML(b){
-  return `<figure class="batida"><img src="${b.arq}" alt="desenho da ${b.nome}"
-    onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'faltando',textContent:'falta a arte: ${b.arq}'}))">
-    <figcaption>${b.nome}</figcaption></figure>`;
-}
-function acordesHTML(lista){
-  return `<div class="acordes">${lista.map(k=>{const f=FORMAS[k];
-    return `<div class="acorde">${svgAcorde(k)}<b>${f.nome}</b><small>${f.pt}</small></div>`;}).join('')}</div>`;
+/* ---------- widget de treino ----------
+   Quadro do gerador de batidas (oficina.clubedoukulele.com), que mostra os acordes, o
+   desenho da batida e um metrônomo. Ele manda a própria altura por postMessage, e é o
+   `ligarTreino()` que escuta. O `preconnect` paga DNS, TCP e TLS antes de o quadro
+   precisar, porque esta origem é nova para quem abre a peça.
+
+   `loading="eager"` de propósito: aqui o quadro é o assunto da tela, não algo abaixo da
+   dobra. E ele só aparece quando a pergunta aparece. */
+const ORIGEM_TREINO='https://oficina.clubedoukulele.com';
+try{const l=document.createElement('link');l.rel='preconnect';l.href=ORIGEM_TREINO;document.head.appendChild(l);}catch(x){}
+addEventListener('message',ev=>{
+  if(ev.origin!==ORIGEM_TREINO) return;
+  const d=ev.data; if(!d||d.cdu!=='treino-altura'||!(d.h>0)) return;
+  document.querySelectorAll('iframe[data-cdu-treino]').forEach(q=>{
+    if(q.contentWindow===ev.source) q.style.height=d.h+'px';
+  });
+});
+function treinoHTML(t){
+  return `<div class="treino"><iframe data-cdu-treino src="${ORIGEM_TREINO}/treino?b=${t.b}"
+    title="${t.titulo}" loading="eager" scrolling="no" allow="autoplay"
+    style="width:100%;height:500px;border:0;display:block;background:transparent"></iframe></div>`;
 }
 
 const ROTEIRO_VIDEO={
@@ -503,7 +476,7 @@ function renderPergunta(){
     <div class="progresso"><div class="barra"><i style="width:${pct}%"></i></div><span>${e.i+1} de ${vis.length}</span></div>
     <div class="atv-hero"><span class="eyebrow">${NOMEB[q.bloco]}</span><h2>${HERO[q.bloco]}</h2></div>
     <section class="atv-card pergunta">
-      ${q.acordes?acordesHTML(q.acordes):''}
+      ${q.treino?treinoHTML(q.treino):''}
       ${q.contexto?`<p class="contexto">${q.contexto}</p>`:''}
       <p class="enunciado">${q.enunciado}</p>
       ${q.sub?`<p class="sub">${q.sub}</p>`:''}
