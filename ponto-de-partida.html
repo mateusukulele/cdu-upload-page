@@ -110,24 +110,13 @@ input.livre{min-height:0;padding:13px 12px;display:block}
 .semana li b{color:var(--anchor)}
 .semana li i{font-style:normal;color:var(--text-soft);font-size:13.5px}
 
-/* Seletor de dia. No dia a dia o aluno não compara cinco dias: ele quer o de hoje. */
-.dias-tabs{display:flex;gap:7px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:2px 2px 8px;margin:0 -2px}
-.dias-tabs::-webkit-scrollbar{height:0}
-.chip{flex:0 0 auto;border:1.5px solid #C0B4DC;background:#fff;border-radius:999px;
-  padding:9px 15px;font:inherit;font-size:13.5px;font-weight:700;color:var(--anchor);cursor:pointer;white-space:nowrap;
-  transition:background .12s,border-color .12s,color .12s}
-.chip:hover{border-color:var(--anchor)}
-.chip[aria-selected=true]{background:var(--anchor);border-color:var(--anchor);color:#fff}
-/* Os dias de pegar leve têm identidade própria: coral, com o texto escuro da marca, que
-   é o par legível. Branco sobre coral fica em 2,8:1 e não passa. */
-.chip.leve{border-color:var(--coral);color:var(--coral-text)}
-.chip.leve:hover{border-color:#D25F6C}
-.chip.leve[aria-selected=true]{background:var(--coral);border-color:var(--coral);color:var(--coral-text)}
-
 .painel{border:1px solid var(--linha);border-radius:14px;padding:14px;background:#FCFBFE}
-.painel.oculto{display:none}
-.painel h4{font-size:16px;color:var(--anchor);margin-bottom:2px}
-.painel .quando{font-size:13.5px;color:var(--text-soft);margin:0 0 12px}
+.painel{margin-bottom:12px}
+.painel h4{font-size:17px;color:var(--anchor);margin-bottom:6px}
+.painel h4 span{display:block;font-size:12.5px;font-weight:400;color:var(--text-soft);margin-top:1px}
+.painel .porque{font-size:13.5px;color:var(--text);margin:0 0 14px;padding:10px 12px;background:var(--surface);border-radius:10px}
+.painel .quando{font-size:13.5px;color:var(--text-soft);margin:0 0 8px}
+.painel .quando b{color:var(--anchor)}
 .proporcao{display:flex;height:14px;border-radius:99px;overflow:hidden;margin-bottom:14px;background:var(--surface)}
 .proporcao span{display:block;height:100%}
 .bl-aq{background:#B9A7E0}.bl-ap{background:#443468}.bl-pr{background:#7E68B5}.bl-dv{background:#E8A0A8}
@@ -163,10 +152,9 @@ details.dobra .corpo{padding:0 16px 16px}
      largura no papel, então na impressão ela volta a ser um bloco normal. */
   /* No papel não existe "dia de hoje": vale a comparação. Todos os painéis aparecem e
      todas as dobras abrem, senão a ficha impressa sai pela metade. */
-  .dias-tabs{display:none !important}
   .proporcao span{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .painel.oculto{display:block !important}
   .painel{break-inside:avoid;margin-bottom:10px}
+  .painel .porque{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   details.dobra>summary::after{content:'' !important}
   details.dobra .corpo{display:block !important}
   .blocos div{background:#fff;border:1px solid #E7E3EF;break-inside:avoid}
@@ -438,6 +426,16 @@ const GRADE={
  45:{avanco:{ap:23,pr:11,dv:7}, equilibrado:{ap:14,pr:16,dv:11},reforco:{ap:0,pr:29,dv:12},leve:{ap:0,pr:12,dv:29},livre:{ap:0,pr:0,dv:41}}
 };
 
+/* O "porquê" de cada dia. Sem isso a lista de minutos parece arbitrária, e plano que
+   parece arbitrário não é cumprido. Cada um sai de um princípio da spec, não de gosto. */
+const PORQUE={
+  avanco:'O Aprendizado é o maior bloco do dia porque é o único que exige a sua cabeça inteira, e ela rende mais no começo. A Prática vem logo atrás para firmar o que acabou de entrar, e a Diversão fecha o dia, curta.',
+  equilibrado:'Nenhum bloco manda neste dia. É o de manter as três frentes andando juntas, sem cobrar demais de nenhuma delas. Serve para a maior parte das semanas.',
+  reforco:'Não tem Aprendizado nenhum, e isso é de propósito: hoje você não aprende, você firma. Por isso a Prática ocupa quase tudo. É este dia que faz o que você viu ontem virar seu.',
+  livre:'Só Diversão, e nada para corrigir. Não é folga: é o que mantém a rotina de pé, porque quem só estuda acaba parando de estudar.',
+  leve:'A Diversão é a maior parte porque o objetivo do dia não é avançar, é você pegar o ukulele. A Prática entra curta, só para a mão não esfriar de todo.'
+};
+
 const DIA={
   avanco:{nome:'Dia de Avanço',sub:'dia de encarar coisa nova',quando:'Tem aula nova, ou um trecho que trava.'},
   equilibrado:{nome:'Dia Equilibrado',sub:'o dia padrão',quando:'Um pouco de cada coisa.'},
@@ -522,10 +520,11 @@ const NOTA_EXTRA={
   leve:'Chegou o dia e você está acabado? Troca o que estava marcado por este. Isso não é furar o plano. Furar o plano é não pegar o ukulele.',
   livre:'Este não entra na sua semana porque, com poucos dias, cada sessão conta muito. Mas ele existe para quando não bate vontade de estudar, ou quando você só quer tocar por tocar depois de um tempo puxado. Tocar sem cobrança é melhor que não pegar o ukulele.'
 };
-function painelDia(d,i,nota){
-  return `<div class="painel ${i===0?'':'oculto'}" data-dia="${d.k}">
-    <h4>${d.nome}</h4>
-    <p class="quando">${d.quando}</p>
+function painelDia(d,nota){
+  return `<div class="painel" data-dia="${d.k}">
+    <h4>${d.nome}<span>${d.sub}</span></h4>
+    <p class="quando"><b>Quando usar:</b> ${d.quando}</p>
+    <p class="porque">${PORQUE[d.k]}</p>
     ${barraDia(d)}
     <ul class="blista">${itemBloco('aq',d.aq,null)}${itemBloco('ap',d.ap,d.apPassadas)}${itemBloco('pr',d.pr,d.prPassadas)}${itemBloco('dv',d.dv,null)}</ul>
     ${nota?`<p class="quando" style="margin:12px 0 0">${nota}</p>`:''}
@@ -546,22 +545,16 @@ function rotinaHTML(){
 
     <p class="rot-titulo">A sua semana</p>
     <ol class="semana">${r.receita.map(d=>`<li><b>${d.nome}</b> <i>${d.sub}</i></li>`).join('')}</ol>
-    ${r.dias===2?'<p class="sub" style="margin:8px 0 0">Espaça os dois. Quarta e sábado rendem mais que sábado e domingo: o ganho está no intervalo, não na soma dos minutos.</p>':''}
     ${r.dias===3?'<p class="sub" style="margin:8px 0 0">Evita os três colados. E vale saber: 2 dias por semana mantêm você tocando, 3 ou mais já começam a andar de verdade.</p>':''}
     ${r.seisEmDiante?'<p class="sub" style="margin:8px 0 0">Do sexto dia em diante, só Dia Livre ou Dia Leve. Aqui o Livre deixa de ser opção e vira recomendação: é ele que impede a rotina de virar obrigação.</p>':''}
 
     <p class="rot-titulo">Rotina recomendada</p>
-    <div class="dias-tabs" id="diasTabs">${todos.map((d,i)=>{
-      const fora=extras.some(x=>x.k===d.k);
-      return `<button class="chip ${fora?'leve':''} ${fora?'g-leve':'g-rec'}" data-dia="${d.k}" aria-selected="${i===0}">${d.nome}</button>`;
-    }).slice(0,usados.length).join('')}</div>
+    <p class="sub" style="margin:0 0 12px">Duas coisas valem para todos os dias. O <b>Aquecimento</b> aparece em todos, inclusive nos de pegar leve: mão fria com movimento novo é a causa mais comum de dor. E toda sessão <b>termina em Diversão</b>, porque a memória do estudo é a última coisa que aconteceu, não a média do dia.</p>
+    ${usados.map(d=>painelDia(d,'')).join('')}
 
     <p class="rot-titulo solto">Para os dias de pegar mais leve</p>
-    <p class="sub" style="margin:0 0 8px">Estes dois não entram na sua semana de propósito, e usar um deles não é furar o plano.</p>
-    <div class="dias-tabs" id="diasTabsLeve">${extras.map(d=>
-      `<button class="chip leve g-leve" data-dia="${d.k}" aria-selected="false">${d.nome}</button>`).join('')}</div>
-
-    ${todos.map((d,i)=>painelDia(d,i,extras.some(x=>x.k===d.k)?NOTA_EXTRA[d.k]:'')).join('')}
+    <p class="sub" style="margin:0 0 12px">Estes não entram na sua semana de propósito, e usar um deles não é furar o plano. Ninguém agenda estar cansado nem sem vontade, e é justamente por isso que eles existem: furar o plano é não pegar o ukulele.</p>
+    ${extras.map(d=>painelDia(d,NOTA_EXTRA[d.k])).join('')}
 
     <p class="rot-titulo solto">O que é cada bloco?</p>
     <p class="sub" style="margin:0 0 10px">A diferença entre Aprendizado e Prática é a que mais confunde, e é a que mais muda o resultado.</p>
@@ -570,19 +563,9 @@ function rotinaHTML(){
     <p class="sub" style="margin:12px 0 0">A aula nova entra no bloco de Aprendizado. Os seus ${r.min} minutos comportam ela, é para isso que esse bloco existe. E se você já tiver assistido antes, no ônibus ou lavando louça, melhor ainda: aí os ${r.min} minutos inteiros ficam com o ukulele na mão.</p>
   </section>`;
 }
-/* Dois grupos de pílulas, um painel só visível: escolher em qualquer grupo apaga a
-   seleção do outro, senão ficariam dois dias marcados ao mesmo tempo. */
-function ligarRotina(){
-  const chips=[...document.querySelectorAll('#diasTabs .chip, #diasTabsLeve .chip')];
-  if(!chips.length) return;
-  chips.forEach(c=>{
-    c.onclick=()=>{
-      chips.forEach(x=>x.setAttribute('aria-selected',x===c));
-      document.querySelectorAll('.painel[data-dia]').forEach(p=>
-        p.classList.toggle('oculto',p.dataset.dia!==c.dataset.dia));
-    };
-  });
-}
+/* O seletor de dia saiu: agora todos os dias ficam abertos, um abaixo do outro.
+   A função continua existindo, vazia, porque o resultado a chama. */
+function ligarRotina(){}
 
 function corpoHTML(q){
   const r=e.resp[q.id];
