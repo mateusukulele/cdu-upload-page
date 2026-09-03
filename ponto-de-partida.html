@@ -411,12 +411,17 @@ function podeAvancar(q){
 }
 
 /* ---------- RENDER ---------- */
-const palco=document.getElementById('palco');
+let palco=document.getElementById('palco');
 const HERO={A:'Primeiro, um pouco da sua história',N:'O ukulele nas suas mãos',X:'Você passou do Mapa do Iniciante',R:'Seu tempo, do jeito que ele é',O:'Onde você quer chegar'};
 const NOMEB={A:'Chegada',N:'Onde você está',X:'Acima do Mapa',R:'Rotina',O:'Objetivo e você'};
 let avancoTimer=null, vis=[];
 
 function render(){
+  /* O `remote.js` troca o body inteiro no ready do jQuery, e a referência guardada lá em
+     cima vira um nó solto: o innerHTML ia para um elemento fora do documento e a página
+     ficava em branco, com `getElementById` devolvendo null logo em seguida. Pegar o palco
+     de novo a cada render é o que segura isso. */
+  palco=document.getElementById('palco')||palco;
   salvar();
   vis=visiveis();
   if(e.finalizado){renderResultado();return;}
