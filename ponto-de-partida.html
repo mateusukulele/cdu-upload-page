@@ -530,7 +530,7 @@ function finalizar(){
 }
 
 function renderResultado(){
-  const d=decidir(),cur=curso(),acima=d.saida==='passou';
+  const d=decidir(),cur=curso(),acima=d.saida==='passou',perfil=perfilVideo();
   if(!d.saida){ e.finalizado=false;e.i=0;render();return; }
   const rot=(e.resp.R1&&e.resp.R2)?e.resp.R1+' dias por semana, '+e.resp.R2+' minutos por dia':'';
   const url=acima?'':(URL_CURSO[d.saida]||'');
@@ -551,9 +551,9 @@ function renderResultado(){
     </section>`}
 
     <section class="atv-card" style="border-color:var(--coral)"><span class="atv-pill">Agora eu quero te conhecer</span>
-      <p class="enunciado" style="margin-bottom:6px">Grava um vídeo curto para mim. ${d.saida==='i0'?'Não precisa tocar nada.':'No fim dele você toca.'}</p>
+      <p class="enunciado" style="margin-bottom:6px">Grava um vídeo curto para mim. ${perfil==='zero'?'Não precisa tocar nada.':'No fim dele você toca.'}</p>
       <p class="sub" style="margin:0 0 14px">Pode ser pelo celular, do jeito que der. Uns três minutos bastam, e é a coisa que mais me ajuda a te ajudar.</p>
-      <ol class="roteiro">${ROTEIRO_VIDEO[d.saida].map(l=>'<li>'+l+'</li>').join('')}</ol>
+      <ol class="roteiro">${ROTEIRO_VIDEO[perfil].map(l=>'<li>'+l+'</li>').join('')}</ol>
       <div class="upload">O bloco de envio do vídeo entra aqui.</div>
     </section>
 
