@@ -106,7 +106,7 @@ input.livre{min-height:0;padding:13px 12px;display:block}
 .semana li b{color:var(--anchor)}
 .semana li i{font-style:normal;color:var(--text-soft);font-size:13.5px}
 .grade-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:6px}
-.grade{width:100%;border-collapse:collapse;font-size:14px;min-width:340px}
+.grade{width:100%;border-collapse:collapse;font-size:14px;min-width:430px}
 .grade th,.grade td{border:1px solid var(--linha);padding:8px 6px;text-align:center}
 .grade thead th{background:var(--anchor);color:#fff;font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-weight:700}
 .grade tbody th{text-align:left;background:var(--surface);font-weight:700;color:var(--anchor);font-size:13.5px;min-width:132px}
@@ -127,14 +127,28 @@ input.livre{min-height:0;padding:13px 12px;display:block}
 .blocos em::before{content:'Você sabe que está aqui quando: '}
 
 @media print{
-  .nav,.progresso,.upload,.no-print{display:none !important}
+  .nav,.progresso,.upload,.no-print,.treino,.dica-auto,.dicas{display:none !important}
   body{background:#fff}
   .atv-wrap{max-width:100%;padding:0}
-  .atv-card,.res-hero{break-inside:avoid;box-shadow:none}
-  .res-hero{background:#fff;color:var(--text);border:2px solid var(--anchor)}
-  .res-hero p{color:var(--text-soft)}
-  @page{size:A4;margin:16mm}
+  .atv-card{border:1px solid #C9C2DA;box-shadow:none;padding:12px 14px;margin-bottom:10px;break-inside:avoid}
+  .res-hero{background:#fff;color:var(--text);border:2px solid var(--anchor);padding:14px;break-inside:avoid}
+  .res-hero h2{color:var(--anchor)}
+  .res-hero p,.res-hero .eyebrow{color:var(--text-soft)}
+  .atv-pill{background:#fff;color:var(--anchor);border:1px solid var(--anchor);padding:2px 8px}
+  /* A tabela é o coração da ficha impressa. `overflow-x:auto` corta o que passa da
+     largura no papel, então na impressão ela volta a ser um bloco normal. */
+  .grade-wrap{overflow:visible}
+  .grade{min-width:0;font-size:11px;break-inside:avoid}
+  .grade th,.grade td{padding:5px 4px}
+  .grade thead th{background:#fff !important;color:var(--anchor) !important;border-bottom:2px solid var(--anchor);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .grade tbody th{background:#fff !important}
+  .grade tr.coringa th,.grade tr.coringa td{background:#F6F4FA !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .blocos div{background:#fff;border:1px solid #E7E3EF;break-inside:avoid}
+  .roteiro,.semana,.quando{break-inside:avoid}
+  .rodape-impresso{display:block !important;margin-top:14px;font-size:10.5px;color:#6E6A85;text-align:center}
+  @page{size:A4;margin:14mm}
 }
+.rodape-impresso{display:none}
 </style>
 </head>
 <body>
@@ -482,7 +496,7 @@ function rotinaHTML(){
 
     <p class="rot-titulo">Os seus ${r.min} minutos, dia por dia</p>
     <div class="grade-wrap"><table class="grade">
-      <thead><tr><th>Tipo de dia</th><th>Aquec.</th><th>Aprend.</th><th>Prática</th><th>Diversão</th></tr></thead>
+      <thead><tr><th>Tipo de dia</th>${['aq','ap','pr','dv'].map(k=>`<th>${BLOCO[k].nome}</th>`).join('')}</tr></thead>
       <tbody>${usados.map(d=>linhaGrade(d,false)).join('')}${linhaGrade(r.leve,true)}</tbody>
     </table></div>
     <p class="sub" style="margin:0 0 4px">Onde aparece <b>+ pausa +</b>, são duas passadas com 1 minuto de pausa de verdade no meio: solta o ukulele, sacode a mão. O minuto sai de dentro do próprio bloco, o dia não cresce.</p>
@@ -769,7 +783,8 @@ function renderResultado(){
     <div class="nav no-print">
       <button class="btn" id="imprimir">Salvar em PDF</button>
     </div>
-    ${REFAZER?'<p style="text-align:center;margin-top:14px"><button class="btn-texto" id="refazer">Refazer o nivelamento do zero (provisório, para teste)</button></p>':''}`;
+    ${REFAZER?'<p style="text-align:center;margin-top:14px"><button class="btn-texto" id="refazer">Refazer o nivelamento do zero (provisório, para teste)</button></p>':''}
+    <p class="rodape-impresso">Ponto de Partida · Clube do Ukulele${PRIMEIRO?' · '+PRIMEIRO:''} · ${new Date().toLocaleDateString('pt-BR')}</p>`;
 
   document.getElementById('imprimir').onclick=()=>window.print();
   const gr=document.getElementById('gravarAgora');
@@ -842,6 +857,16 @@ addEventListener('keydown',ev=>{
    Renderizar não dispara isso, porque aí o nó continua sendo o mesmo. */
 /* Alça de inspeção, só com `?debug=1` na URL. Serve para conferir a peça de fora sem
    abrir o escopo do script para a página inteira. Só leitura de estado, nada que escreva. */
+/* Com `?debug=1&demo=i0|i1|passou` a ficha abre direto, preenchida. É o que dá para
+   conferir o PDF sem responder o quiz inteiro a cada tentativa. Nunca liga sem o debug. */
+const DEMO=qs.get('debug')==='1'?qs.get('demo'):null;
+const DEMOS={
+  i0:{A1:'tem_toca',N1:2,N2:'app',R1:2,R2:15,O1:'para_mim',O2:'Asa Branca'},
+  i1:{A1:'tem_toca',N1:4,N2:'app',NM1:'devagar',R1:4,R2:30,O1:'para_gente',O2:'Trem Bala'},
+  passou:{A1:'tem_toca',N1:5,N2:'ouvido',NM1:'sai',NM2:'sai',P1:'sai',P2:'sai',R1:5,R2:45,O1:'dominio',O2:'Wherever You Will Go'}
+};
+if(DEMO&&DEMOS[DEMO]){ e=padrao(); e.abriu=true; e.finalizado=true; e.videoOk=true; e.resp=DEMOS[DEMO]; }
+
 if(qs.get('debug')==='1') window.__pp={
   estado:()=>JSON.parse(JSON.stringify(e)),
   decidir:()=>decidir(), perfil:()=>perfilVideo(),
