@@ -921,7 +921,13 @@ function rascunho(forcado){
   const agora=Date.now();
   if(!forcado&&agora-ultimoEnvioMs<INTERVALO_RASCUNHO) return;
   ultimoRascunho=b; ultimoEnvioMs=agora;
-  if(navigator.sendBeacon) navigator.sendBeacon(API.replace(/\/$/,'')+'/rascunho',new Blob([b],{type:'application/json'}));
+  /* `text/plain` de propósito, e não `application/json`: um tipo fora da lista segura do
+     CORS obriga preflight, e `sendBeacon` não sabe fazer preflight -- o navegador
+     descarta o envio em silêncio. O Worker lê o corpo como JSON de qualquer jeito. */
+  const pacote=new Blob([b],{type:'text/plain;charset=UTF-8'});
+  if(!navigator.sendBeacon||!navigator.sendBeacon(API.replace(/\/$/,'')+'/rascunho',pacote)){
+    fetch(API.replace(/\/$/,'')+'/rascunho',{method:'POST',body:b,keepalive:true}).catch(()=>{});
+  }
 }
 /* Fechar a aba é a última chance de guardar, então aí a trava de tempo não vale. */
 addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden') rascunho(true); });
