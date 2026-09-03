@@ -114,6 +114,8 @@ input.livre{min-height:0;padding:13px 12px;display:block}
   padding:8px 14px;font:inherit;font-size:13.5px;font-weight:700;color:var(--text-soft);cursor:pointer;white-space:nowrap}
 .chip[aria-selected=true]{background:var(--anchor);border-color:var(--anchor);color:#fff}
 .chip.coringa{border-style:dashed;border-color:var(--coral);color:var(--coral-text)}
+.chip.extra{border-style:dashed;border-color:#C0B4DC;color:var(--anchor)}
+.chip.extra[aria-selected=true]{background:var(--anchor);border-style:solid;color:#fff}
 .chip.coringa[aria-selected=true]{background:var(--coral);border-style:solid;color:#fff}
 
 .painel{border:1px solid var(--linha);border-radius:14px;padding:14px;background:#FCFBFE}
@@ -484,9 +486,15 @@ function monta(min,k){
 function rotina(){
   const min=e.resp.R2,dias=e.resp.R1;
   if(!min||!dias||!GRADE[min]) return null;
-  return {min,dias,aq:AQUECIMENTO[min],
-    receita:(RECEITA[dias]||RECEITA[5]).map(k=>monta(min,k)),
+  const receita=(RECEITA[dias]||RECEITA[5]).map(k=>monta(min,k));
+  /* O Dia Livre só entra na semana a partir de quatro dias, mas ele é mostrado sempre:
+     existe o dia em que não bate vontade de estudar, e tocar sem cobrança é melhor que
+     não pegar o ukulele. Quando não está na semana, ele aparece como extra, com o
+     porquê escrito. */
+  return {min,dias,aq:AQUECIMENTO[min],receita,
     leve:monta(min,'leve'),
+    livre:monta(min,'livre'),
+    livreNaSemana:receita.some(d=>d.k==='livre'),
     seisEmDiante:dias>=5};
 }
 
@@ -506,20 +514,27 @@ function itemBloco(k,n,pass){
     <span class="txt"><b>${b.nome}</b><small>${b.oque}</small>
     ${pass?`<em>Duas passadas: ${pass[0]} min, 1 minuto de pausa de verdade, e mais ${pass[1]} min.</em>`:''}</span></li>`;
 }
-function painelDia(d,i,coringa){
+const NOTA_EXTRA={
+  leve:'Chegou o dia e você está acabado? Troca o que estava marcado por este. Isso não é furar o plano. Furar o plano é não pegar o ukulele.',
+  livre:'Este não entra na sua semana porque, com poucos dias, cada sessão conta muito. Mas ele existe para quando não bate vontade de estudar, ou quando você só quer tocar por tocar depois de um tempo puxado. Tocar sem cobrança é melhor que não pegar o ukulele.'
+};
+function painelDia(d,i,nota){
   return `<div class="painel ${i===0?'':'oculto'}" data-dia="${d.k}">
     <h4>${d.nome}</h4>
     <p class="quando">${d.quando}</p>
     ${barraDia(d)}
     <ul class="blista">${itemBloco('aq',d.aq,null)}${itemBloco('ap',d.ap,d.apPassadas)}${itemBloco('pr',d.pr,d.prPassadas)}${itemBloco('dv',d.dv,null)}</ul>
-    ${coringa?'<p class="quando" style="margin:12px 0 0">Chegou o dia e você está acabado? Troca o que estava marcado por este. Isso não é furar o plano. Furar o plano é não pegar o ukulele.</p>':''}
+    ${nota?`<p class="quando" style="margin:12px 0 0">${nota}</p>`:''}
   </div>`;
 }
 function rotinaHTML(){
   const r=rotina(); if(!r) return '';
   const usados=[];
   r.receita.forEach(d=>{ if(!usados.some(x=>x.k===d.k)) usados.push(d); });
-  const todos=usados.concat([r.leve]);
+  /* Fora da semana entram sempre o Dia Leve, e o Dia Livre quando a frequência dele não
+     comporta um dia sem aprendizado nenhum. */
+  const extras=(r.livreNaSemana?[]:[r.livre]).concat([r.leve]);
+  const todos=usados.concat(extras);
   return `
   <section class="atv-card rotina-print"><span class="atv-pill">A sua rotina</span>
     <p class="destino">${r.dias===5?'5 dias ou mais':r.dias+' dias'} por semana, ${r.min} minutos por dia</p>
@@ -532,10 +547,13 @@ function rotinaHTML(){
     ${r.seisEmDiante?'<p class="sub" style="margin:8px 0 0">Do sexto dia em diante, só Dia Livre ou Dia Leve. Aqui o Livre deixa de ser opção e vira recomendação: é ele que impede a rotina de virar obrigação.</p>':''}
 
     <p class="rot-titulo">Hoje é qual dia?</p>
-    <div class="dias-tabs" id="diasTabs">${todos.map((d,i)=>
-      `<button class="chip ${d.k==='leve'?'coringa':''}" data-dia="${d.k}" aria-selected="${i===0}">${d.nome}</button>`).join('')}</div>
-    ${todos.map((d,i)=>painelDia(d,i,d.k==='leve')).join('')}
-    <p class="sub" style="margin:12px 0 0">O <b>Dia Leve</b> não entra na semana de propósito: ninguém agenda estar cansado. Ele fica ali como carta de troca, para o dia em que a semana desandar.</p>
+    <div class="dias-tabs" id="diasTabs">${todos.map((d,i)=>{
+      const fora=extras.some(x=>x.k===d.k);
+      return `<button class="chip ${fora?(d.k==='leve'?'coringa':'extra'):''}" data-dia="${d.k}" aria-selected="${i===0}">${d.nome}</button>`;}).join('')}</div>
+    ${todos.map((d,i)=>painelDia(d,i,extras.some(x=>x.k===d.k)?NOTA_EXTRA[d.k]:'')).join('')}
+    <p class="sub" style="margin:12px 0 0">${r.livreNaSemana
+      ?'O <b>Dia Leve</b> não entra na semana de propósito: ninguém agenda estar cansado. Ele fica ali como carta de troca, para o dia em que a semana desandar.'
+      :'Os dois últimos não entram na sua semana de propósito. O <b>Dia Leve</b> é a carta de troca para quando você chega acabado, e o <b>Dia Livre</b> é para quando não bate vontade de estudar. Nenhum dos dois é furar o plano.'}</p>
 
     <details class="dobra" style="margin-top:14px"><summary><span>Como saber que estou no bloco certo<small>A diferença entre Aprendizado e Prática é a que mais confunde</small></span></summary>
       <div class="corpo">
