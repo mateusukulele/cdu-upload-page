@@ -182,22 +182,6 @@ const Q=[
  opcoes:[{t:'G C E A (Sol, Dó, Mi, Lá)',v:'certo'},{t:'E A D G (Mi, Lá, Ré, Sol)',v:'err1',flag:'F3'},{t:'D G B E (Ré, Sol, Si, Mi)',v:'err2',flag:'F3'},
          {t:'Assim de cabeça eu não sei, e prefiro não chutar',v:'nao_sei'}]},
 
-{id:'N3',bloco:'N',mede:'Nível',tipo:'check',
- se:s=>[1,2].includes(s.resp.N1)&&!afinaNao(s),
- enunciado:'Quais desses acordes você monta de memória, sem olhar desenho nenhum?',sub:'Marque só os que saem de verdade.',
- opcoes:[{t:'C (Dó maior)',v:'C'},{t:'Am (Lá menor)',v:'Am'},{t:'F (Fá maior)',v:'F'},{t:'G (Sol maior)',v:'G'},
-         {t:'Em (Mi menor)',v:'Em'},{t:'D (Ré maior)',v:'D'},{t:'Nenhum ainda, e está tudo bem',v:'nenhum',exclusiva:true}]},
-
-{id:'N6',bloco:'N',mede:'Nível',tipo:'radio',
- se:s=>[3,4,5].includes(s.resp.N1)&&!afinaNao(s),
- acordes:['C','Am','F','G'],
- contexto:'Estes quatro abrem a maior parte das músicas, e é neles que o Iniciante 1 termina. Pega o ukulele e emenda os quatro, um atrás do outro, no tempo que der.',
- enunciado:'Hoje, na sua mão, essa emenda:',
- opcoes:[{t:'Sai solta, eu nem penso em cada acorde',v:'lisa'},
-         {t:'Sai, só que eu penso em cada troca',v:'pensando'},
-         {t:'Sai com pausas grandes entre um acorde e outro',v:'pausas'},
-         {t:'Ainda não sai',v:'nao_sai'}]},
-
 {id:'N6b',bloco:'N',mede:'Calibração',calib:'F2',tipo:'radio',
  se:s=>[3,4,5].includes(s.resp.N1)&&!afinaNao(s),
  contexto:'Ler desenho de batida é uma habilidade que se aprende no curso, e muita gente ainda não tem. Se for o seu caso, a última opção é a sua resposta e está tudo certo.',
@@ -208,14 +192,27 @@ const Q=[
          {t:'Ainda não leio desenho de batida',v:'nao_leio'}],
  nota:'As três artes vêm do gerador de batidas. Na página real elas embaralham a cada carregamento, com alt neutro, e a opção certa acompanha o embaralhamento.'},
 
-{id:'N10',bloco:'N',mede:'Nível',tipo:'radio',
+{id:'NM1',bloco:'N',mede:'Nível',tipo:'radio',
  se:s=>[4,5].includes(s.resp.N1)&&!afinaNao(s),
- acordes:['Cm7'],
- enunciado:'Este é o Cm7 (Dó menor com sétima): um dedo deitado prendendo as quatro cordas de uma vez, na terceira casa. Essa barra é a pestana. Na sua mão, hoje, ela:',
- opcoes:[{t:'Sai limpa, eu uso dentro de música',v:'limpa'},
-         {t:'Sai, mas abafa alguma corda e eu preciso ajeitar',v:'abafa'},
-         {t:'Já tentei e o dedo ainda não segura',v:'tentei'},
-         {t:'Nunca cheguei nesse assunto',v:'nunca'}]},
+ acordes:['C','Am','F','G'],
+ batidas:[{arq:'img/pop1.png',nome:'Batida Pop 1'}],
+ contexto:'Estes são os quatro acordes mágicos no tom de C, e são eles que fecham o Ukulele Fundamental. O desenho embaixo é a Batida Pop 1.',
+ enunciado:'Pega o ukulele e toca C, Am, F, G com essa batida. Hoje, na sua mão, isso:',
+ opcoes:[{t:'Sai do começo ao fim, sem travar',v:'sai'},
+         {t:'Sai, mas eu travo em alguma troca',v:'trava'},
+         {t:'Os acordes saem, essa batida é que não',v:'sem_batida'},
+         {t:'Ainda não sai',v:'nao_sai'}]},
+
+{id:'NM2',bloco:'N',mede:'Nível',tipo:'radio',
+ se:s=>s.resp.NM1==='sai',
+ acordes:['G','Em','C','D'],
+ batidas:[{arq:'img/pop1.png',nome:'Batida Pop 1'},{arq:'img/pop2.png',nome:'Batida Pop 2'}],
+ contexto:'São os mesmos quatro acordes mágicos, agora no tom de G. E aqui são as duas batidas: a Pop 1 e a Pop 2.',
+ enunciado:'Toca G, Em, C, D com uma batida e depois com a outra. Hoje, na sua mão, isso:',
+ opcoes:[{t:'Sai com as duas batidas, sem travar',v:'sai'},
+         {t:'Sai com uma delas; com a outra ainda não',v:'uma'},
+         {t:'Os acordes saem, as batidas nesse tom é que não',v:'sem_batida'},
+         {t:'Nesse tom eu ainda não toquei',v:'nunca'}]},
 
 {id:'X3',bloco:'X',mede:'Contexto',tipo:'texto',max:200,opcional:true,se:s=>acimaDoMapa(s),
  enunciado:'E na sua leitura: tem alguma coisa que hoje segura a sua evolução no ukulele?',
@@ -275,8 +272,11 @@ function salvar(){try{localStorage.setItem(LS,JSON.stringify(e));}catch(x){}}
 /* ---------- PORTÕES ---------- */
 function semInstrumento(s){return ['esperando','nao_tem'].includes(s.resp.A1);}
 function afinaNao(s){return ['nao_percebe','percebe'].includes(s.resp.N2);}
-/* teto do Iniciante 1: os quatro acordes emendam sozinhos e a pestana sai limpa. */
-function acimaDoMapa(s){return s.resp.N1>=4&&s.resp.N6==='lisa'&&s.resp.N10==='limpa';}
+/* Teto do Mapa, balizado na Etapa 4 do MAPA DO INICIANTE (itens 66 a 73): os quatro
+   acordes mágicos no tom de C com a Batida Pop 1, e os mesmos no tom de G (G, Em, C, D)
+   com a Pop 1 E a Pop 2. O teto é o tom de G com as duas batidas: é o que fecha o
+   Ukulele Fundamental e abre o Iniciante 2. */
+function acimaDoMapa(s){return s.resp.NM1==='sai'&&s.resp.NM2==='sai';}
 function visiveis(){return Q.filter(q=>!q.se||q.se(e));}
 
 /* ---------- DECISÃO: uma de três saídas ---------- */
@@ -286,38 +286,37 @@ function flags(){
     const o=(q.opcoes||[]).find(o=>o.v===e.resp[q.id]); if(o&&o.flag) f.push(o.flag);});
   return f;
 }
-function nAcordes(){
-  return Array.isArray(e.resp.N3)?e.resp.N3.filter(v=>v!=='nenhum').length:null;
-}
-/* A N1 é a dobradiça entre Iniciante 0 e Iniciante 1, e cada lado tem uma
-   confirmação prática: a N3 embaixo (acordes de memória) e a N6 em cima (os quatro
-   acordes emendando). As flags de vocabulário nunca movem a saída: elas só marcam
-   fronteira, para a análise humana olhar com mais atenção (decisão D2). */
+/* A régua de baixo é o nome da Etapa 1 do Mapa: DO ZERO À 1ª MÚSICA. Quem ainda não
+   tocou uma música inteira não terminou o Iniciante 0, e é isso que a N1 pergunta.
+   A régua de cima é a Etapa 4: os quatro acordes mágicos no tom de C com a Pop 1 e,
+   em seguida, no tom de G com as duas batidas. As flags de vocabulário nunca movem a saída:
+   elas só marcam fronteira, para a análise humana olhar com mais atenção (decisão D2). */
 function decidir(){
   if(semInstrumento(e)) return {saida:'i0',fronteira:false,nf:0,motivo:'sem instrumento'};
   const decl=e.resp.N1;
   if(!decl) return {saida:null,fronteira:false,nf:0,motivo:'âncora não respondida'};
-  /* Não afinar manda para o Iniciante 0 só quem já se declarou no começo. Quem toca
-     música inteira e nunca percebeu o ukulele desafinado não precisa recomeçar do zero:
-     precisa da aula de afinação. Esse caso segue no Iniciante 1, marcado como fronteira. */
-  if(afinaNao(e)&&decl<=2) return {saida:'i0',fronteira:false,nf:0,
-    motivo:'ainda não afina, e afinar é o começo do Iniciante 0'};
 
   let saida,fronteira=false,motivo='';
-  const na=nAcordes(),quatro=e.resp.N6,pestana=e.resp.N10;
+  const tomC=e.resp.NM1,tomG=e.resp.NM2;
 
-  if(decl<=2){
-    if(na>=3){saida='i1';fronteira=true;
-      motivo='declarou '+decl+' e monta '+na+' acordes de memória: Iniciante 1';}
-    else {saida='i0';
-      motivo='declarou '+decl+(na===null?'':' e monta '+na+' acordes')+': Iniciante 0';}
+  if(decl<=3){
+    /* Ainda não fechou uma música inteira: a Etapa 1 do Mapa não terminou. */
+    saida='i0';
+    motivo='declarou '+decl+', ainda sem música inteira: Iniciante 0';
+    if(afinaNao(e)) motivo+=' | e ainda não percebe desafinação';
   }else{
-    saida='i1';motivo='declarou '+decl+': Iniciante 1';
-    if(afinaNao(e)){fronteira=true;motivo+=' | toca mas não percebe desafinação: fronteira';}
-    if(quatro==='pausas'||quatro==='nao_sai'){fronteira=true;
-      motivo+=' | os quatro acordes ainda não emendam: fronteira';}
-    if(acimaDoMapa(e)){saida='passou';fronteira=false;
-      motivo='os quatro acordes emendam e a pestana sai limpa: passou do Iniciante 1';}
+    saida='i1';
+    if(afinaNao(e)){
+      fronteira=true;
+      motivo='toca música inteira mas não percebe desafinação: Iniciante 1, com fronteira';
+    }else if(tomC==='sai'&&tomG==='sai'){
+      saida='passou';
+      motivo='os quatro mágicos saem no tom de C com a Pop 1 e no tom de G com as duas batidas: passou do Mapa';
+    }else if(tomC==='sai'){
+      motivo='os quatro saem no tom de C, mas o tom de G com as duas batidas ainda não: fim do Iniciante 1';
+    }else{
+      motivo='toca música inteira, mas os quatro mágicos ainda não saem no tom de C: início do Iniciante 1';
+    }
   }
 
   const nf=flags().length;
@@ -328,7 +327,15 @@ function curso(){const sa=decidir().saida;return sa?SAIDA[sa]:null;}
 /* O vídeo é sempre pedido, decisão do Mateus em 03/09/2026. O que muda é o roteiro:
    quem está começando se apresenta e responde; quem já toca também toca no fim. */
 function pedeVideo(){return decidir().saida!==null;}
-function pedeToque(){const sa=decidir().saida;return sa==='i1'||sa==='passou';}
+/* Quem pedir para tocar no vídeo é o que a pessoa já faz, não a saída dela: alguém que
+   emenda uma sequência vai para o Iniciante 0 e mesmo assim tem o que mostrar. */
+function perfilVideo(){
+  const d=decidir(); if(!d.saida) return null;
+  if(d.saida==='passou') return 'passou';
+  if(semInstrumento(e)||!e.resp.N1||e.resp.N1<=2) return 'zero';
+  return 'toca';
+}
+function pedeToque(){return perfilVideo()==='toca'||perfilVideo()==='passou';}
 
 /* ---------- diagramas de acorde ----------
    Casas na ordem das cordas do ukulele, g C E A. 0 é corda solta.
@@ -338,6 +345,8 @@ const FORMAS={
   Am:{casas:[2,0,0,0],nome:'Am',pt:'Lá menor'},
   F:{casas:[2,0,1,0],nome:'F',pt:'Fá maior'},
   G:{casas:[0,2,3,2],nome:'G',pt:'Sol maior'},
+  Em:{casas:[0,4,3,2],nome:'Em',pt:'Mi menor'},
+  D:{casas:[2,2,2,0],nome:'D',pt:'Ré maior'},
   Cm7:{casas:[3,3,3,3],nome:'Cm7',pt:'Dó menor com sétima'}
 };
 function svgAcorde(k){
@@ -360,16 +369,23 @@ function svgAcorde(k){
   }
   return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="diagrama de acorde"><g>${g}</g></svg>`;
 }
+/* O desenho da batida é arte que o Mateus gera no gerador de batidas. Enquanto o
+   arquivo não existe, o lugar dele aparece nomeado em vez de quebrar a página. */
+function batidaHTML(b){
+  return `<figure class="batida"><img src="${b.arq}" alt="desenho da ${b.nome}"
+    onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'faltando',textContent:'falta a arte: ${b.arq}'}))">
+    <figcaption>${b.nome}</figcaption></figure>`;
+}
 function acordesHTML(lista){
   return `<div class="acordes">${lista.map(k=>{const f=FORMAS[k];
     return `<div class="acorde">${svgAcorde(k)}<b>${f.nome}</b><small>${f.pt}</small></div>`;}).join('')}</div>`;
 }
 
 const ROTEIRO_VIDEO={
-  i0:['Se apresenta: nome, de onde você fala e há quanto tempo o ukulele entrou na sua vida.',
+  zero:['Se apresenta: nome, de onde você fala e há quanto tempo o ukulele entrou na sua vida.',
       'Conta por que foi justamente o ukulele, e não outro instrumento.',
       'Conta o que você quer estar tocando daqui a alguns meses.'],
-  i1:['Se apresenta: nome, de onde você fala e há quanto tempo você toca.',
+  toca:['Se apresenta: nome, de onde você fala e há quanto tempo você toca.',
       'Conta por que foi justamente o ukulele, e não outro instrumento.',
       'Conta o que você quer estar tocando daqui a alguns meses.',
       'No fim, toca alguma coisa que hoje você considera que já está boa. Não precisa sair perfeita, e é melhor que não saia: eu preciso ver como ela é de verdade.'],
