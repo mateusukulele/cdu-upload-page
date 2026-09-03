@@ -112,7 +112,10 @@ input.livre{min-height:0;padding:13px 12px;display:block}
 /* ---------- ligações externas, a preencher ---------- */
 const API='';                 /* URL do Worker cdu-nivelamento. Vazio = só localStorage. */
 const PRODUTO='';             /* nome do produto no cademi-validador. Vazio = sem portão. */
-const URL_CURSO={i0:'',i1:''}; /* URLs dos cursos na Cademí. Vazio = botão desligado. */
+const URL_CURSO={
+  i0:'https://aluno.comotocarukulele.com/area/conteudo/listagem/619216',  /* Iniciante 0, Do Zero à Primeira Música */
+  i1:'https://aluno.comotocarukulele.com/area/conteudo/listagem/619217'   /* Iniciante 1, Ukulele Fundamental */
+};
 
 /* ---------- quem é o aluno (parâmetros da Página Dinâmica) ---------- */
 const qs=new URLSearchParams(location.search);
@@ -469,7 +472,7 @@ function renderResultado(){
     <section class="atv-card"><span class="atv-pill">Por onde começar</span>
       <p class="destino">Comece pelo <b>${cur.nome}</b></p>
       <p class="destino-sub">${cur.sub}</p>
-      ${url?`<a class="btn" style="text-decoration:none;margin-bottom:12px" href="${url}">Ir para o ${cur.nome}</a>`:''}
+      ${url?`<a class="btn" style="text-decoration:none;margin-bottom:12px" href="${url}" target="_top">Ir para o ${cur.nome}</a>`:''}
       <p class="sub" style="margin:0">Os módulos abrem todos de uma vez, então você entra por onde precisa e volta quando quiser.</p>
     </section>`}
 
