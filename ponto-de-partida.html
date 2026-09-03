@@ -115,6 +115,14 @@ input.livre{min-height:0;padding:13px 12px;display:block}
 
 <script>
 "use strict";
+(function(){
+/* O `remote.js` da Cademí re-serializa o body inteiro no ready do jQuery, e isso faz o
+   navegador EXECUTAR este script uma segunda vez. Sem a trava, a segunda execução morria
+   logo no primeiro `const` repetido ("Identifier 'API' has already been declared") e
+   enchia o console de erro. A trava é a mesma que o bloco de treino da aula usa. */
+if(window.__cduPontoDePartida) return;
+window.__cduPontoDePartida = true;
+
 /* =====================================================================
    PONTO DE PARTIDA v3.0 — página de produção
    Gerado por nivelamento/producao/build.py a partir do protótipo.
@@ -680,6 +688,7 @@ addEventListener('keydown',ev=>{
    reescreve é só o "Carregando", e nada do que a gente ligou se perde. */
 if(document.readyState==='complete') render();
 else addEventListener('load',render);
+})();
 </script>
 </body>
 </html>
