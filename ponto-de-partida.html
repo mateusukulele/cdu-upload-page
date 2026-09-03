@@ -368,7 +368,12 @@ function ligarCorpo(q){
           const alvo=palco.querySelector('.opt[data-sel=true]');
           if(alvo) alvo.classList.add('confirmando');
           clearTimeout(avancoTimer);
-          avancoTimer=setTimeout(()=>{ if(e.i<visiveis().length){e.i++;render();} },260);
+          /* Corrigindo uma resposta, o avanço automático não segue para a próxima
+             pergunta: ele devolve a pessoa para o resultado, que é de onde ela veio. */
+          avancoTimer=setTimeout(()=>{
+            if(e.editando){terminarEdicao();return;}
+            if(e.i<visiveis().length){e.i++;render();}
+          },260);
           return;
         }
         else{
@@ -493,6 +498,9 @@ function finalizar(){
 /* Corrigir uma resposta depois de finalizar muda a decisão, então a linha tem que ser
    reenviada. O `tentativa_uid` continua o mesmo: para o Worker é a mesma tentativa. */
 function reenviar(){ e.enviado=false; enviar(); }
+/* Fecha a correção de uma resposta: volta para o resultado e reenvia a linha, porque a
+   decisão pode ter mudado com a troca. */
+function terminarEdicao(){ e.editando=false; e.finalizado=true; render(); reenviar(); }
 
 /* ---------- VÍDEO ----------
    O vídeo é parte de terminar, não um extra depois do resultado: o aluno chega aqui,
