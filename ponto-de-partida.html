@@ -952,7 +952,15 @@ if(qs.get('debug')==='1') window.__pp={
   decidir:()=>decidir(), perfil:()=>perfilVideo(),
   video:()=>pedeVideo(), caminho:()=>visiveis().map(q=>q.id), aluno:ALUNO,
   /* Só para revisar a tela de "vídeo recebido" sem gastar um upload de verdade no tus. */
-  simularVideoRecebido:()=>{ e.videoOk=true; e.videoAdiado=false; finalizar(); return 'ok'; }
+  simularVideoRecebido:()=>{ e.videoOk=true; e.videoAdiado=false; finalizar(); return 'ok'; },
+  /* Monta a ficha a partir de um conjunto de respostas, sem clicar por todo o
+     questionário. É o que torna viável varrer todos os caminhos de uma vez. */
+  simular:(resp,opts)=>{
+    const o=opts||{};
+    e=padrao(); e.abriu=true; e.resp=resp;
+    e.finalizado=o.finalizado!==false; e.videoOk=o.videoOk!==false; e.videoAdiado=false;
+    render(); return 'ok';
+  }
 };
 
 new MutationObserver(()=>{
