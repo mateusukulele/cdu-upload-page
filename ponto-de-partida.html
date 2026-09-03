@@ -869,7 +869,7 @@ function corpoEnvio(){
     id:ALUNO.id, email:ALUNO.email, nome:ALUNO.nome,
     tentativa_uid:e.uid, versao_questionario:'3.0',
     respostas:e.resp, decisao:{saida:d.saida,fronteira:d.fronteira,motivo:d.motivo},
-    caminho:visiveis().map(q=>q.id),
+    caminho:visiveis().map(q=>q.id), i:e.i,
     video_enviado:e.videoOk?'sim':'nao', video_pendente:(pedeVideo()&&!e.videoOk)?'sim':'nao'
   };
 }
