@@ -226,7 +226,7 @@ const SAIDA={
   i1:{nome:'Iniciante 1',sub:'Ukulele Fundamental',
       titulo:'o seu começo é o Iniciante 1'},
   passou:{nome:null,sub:null,
-      titulo:'você já passou do Mapa do Iniciante'}
+      titulo:'eu preciso te ver tocando'}
 };
 
 const Q=[
@@ -270,7 +270,7 @@ const Q=[
 {id:'P1',bloco:'P',mede:'Vídeo',tipo:'radio',
  se:s=>acimaDoMapa(s),
  treino:{b:'eyJ2IjoxLCJuIjoiVGVudGUgZmF6ZXIgZXN0YSBiYXRpZGEgY29tIGFzIHBlc3RhbmFzIGFiYWl4byIsImJwbSI6ODAsImEiOlsiQ203IiwiRG03Il0sImYiOnt9LCJjIjoxLCJiIjp7ImNvbXBhc3NvIjoiNC80Iiwic3VpbmdhZG8iOmZhbHNlLCJ0ZW1wb3MiOlt7ImRpdiI6MiwiZ2VzdG9zIjpbeyJnIjoiYmFpeG8iLCJmIjowfSx7ImciOiJjaW1hIiwiZiI6MH1dfSx7ImRpdiI6MiwiZ2VzdG9zIjpbeyJnIjoiYmFpeG8iLCJmIjoyfSx7ImciOiJjaW1hIiwiZiI6Mn1dfSx7Imdlc3RvcyI6W3siZyI6ImJhaXhvIiwiZiI6MH0seyJnIjoiY2ltYSIsImYiOjB9XSwiZGl2IjoyfSx7Imdlc3RvcyI6W3siZyI6ImJhaXhvIiwiZiI6Mn0seyJnIjoiY2ltYSIsImYiOjJ9XSwiZGl2IjoyfV19LCJvIjoiVGVzdGUgZGUgUGVzdGFuYSBlIEJhdGlkYSBEaW7Dom1pY2EiLCJ4IjoiUGFyYSBkaXplciBxdWUgY29uc2VndWUgdG9jYXIsIMOpIG5lY2Vzc8OhcmlvIHRvY2FyIGEgcGVsbyBtZW5vcyA4MGJwbSIsImciOjB9',titulo:'Teste de pestana e Batida Dinâmica'},
- contexto:'Você já passou do Mapa, então agora a pergunta é outra: o que eu vou te pedir para tocar. Aqui são duas pestanas, o Cm7 e o Dm7, com a Batida Dinâmica. O metrônomo está em 80, que é o mínimo para contar como "consigo".',
+ contexto:'O quiz já foi até onde ele consegue ir com você. Aqui são duas pestanas, o Cm7 e o Dm7, com a Batida Dinâmica, e o metrônomo está em 80, que é o mínimo para contar como "consigo".',
  enunciado:'Pega o ukulele e toca junto. Hoje, na sua mão, isso:',
  opcoes:[{t:'Sai a 80, as duas pestanas, sem travar',v:'sai'},
          {t:'Sai, mas só mais devagar que 80',v:'devagar'},
@@ -643,8 +643,8 @@ function podeAvancar(q){
 
 /* ---------- RENDER ---------- */
 let palco=document.getElementById('palco');
-const HERO={A:'Primeiro, um pouco da sua história',N:'O ukulele nas suas mãos',X:'Você passou do Mapa do Iniciante',R:'Seu tempo, do jeito que ele é',O:'Onde você quer chegar'};
-const NOMEB={A:'Chegada',N:'Onde você está',X:'Acima do Mapa',R:'Rotina',O:'Objetivo e você'};
+const HERO={A:'Primeiro, o instrumento',N:'O ukulele nas suas mãos',P:'Agora eu preciso te ver',R:'Seu tempo, do jeito que ele é',O:'Onde você quer chegar'};
+const NOMEB={A:'Chegada',N:'Onde você está',P:'O que eu quero ver',R:'Rotina',O:'Objetivo e você'};
 let avancoTimer=null, vis=[];
 
 function render(){
@@ -803,9 +803,9 @@ function renderResultado(){
     <div class="res-hero"><span class="eyebrow">Ponto de Partida</span>
       <h2>${PRIMEIRO?PRIMEIRO+', ':''}${SAIDA[d.saida].titulo}</h2>
       <p>${acima
-        ?'O Mapa do Iniciante é o Iniciante 0 mais o Iniciante 1, e você já passou dos dois. Daqui em diante o seu ponto de partida sai da minha análise, olhando você tocar.'
+        ?'Daqui em diante o seu ponto de partida sai da minha análise, olhando você tocar. Assim que eu fizer a análise do seu vídeo, eu te recomendo por onde começar na Jornada de Aprendizado do Clube.'
         :'Isso não é nota nem classificação. É só o lugar onde o seu próximo passo rende mais.'}</p>
-      ${oQueEleContou()?`<p style="margin-top:8px">${oQueEleContou()}</p>`:''}</div>
+      ${(!acima&&oQueEleContou())?`<p style="margin-top:8px">${oQueEleContou()}</p>`:''}</div>
 
     ${acima?'':`
     <details class="dobra" open><summary><span>Por onde começar<small>${cur.nome} · ${cur.sub}</small></span></summary>
