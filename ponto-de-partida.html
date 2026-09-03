@@ -7,6 +7,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+<!-- remote.js da Cademí: é ele que reporta a altura desta página para o iframe pai
+     (window.iFrameResizer). Sem ele o quadro fica com altura zero e a Página Dinâmica
+     aparece vazia. É a mesma tag que as atividades que já rodam em produção usam. -->
+<script src="https://core.cademi.com.br/assets/js/remote.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -546,7 +550,12 @@ addEventListener('keydown',ev=>{
   }
 });
 
-render();
+/* O `remote.js` faz, no ready do jQuery, um `$("body").html(...)` para trocar {nome} e
+   {email} pelos dados do aluno. Isso re-serializa o body inteiro e apaga todo ouvinte já
+   ligado. Por isso a peça só monta no `load`, que vem depois do ready: aí o que o remote.js
+   reescreve é só o "Carregando", e nada do que a gente ligou se perde. */
+if(document.readyState==='complete') render();
+else addEventListener('load',render);
 </script>
 </body>
 </html>
