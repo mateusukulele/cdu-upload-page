@@ -145,19 +145,6 @@ const Q=[
  opcoes:[{t:'Está aqui, eu pego ele sempre',v:'tem_toca'},{t:'Está aqui, mas passa mais tempo guardado do que na minha mão',v:'tem_guardado'},
          {t:'Comprei e estou esperando chegar',v:'esperando'},{t:'Ainda não tenho',v:'nao_tem'}]},
 
-{id:'A2',bloco:'A',mede:'Contexto',produto:true,tipo:'check',limite:2,
- enunciado:'E o que você já tinha de música na vida antes de chegar aqui?',sub:'Marque até dois, os que mais pesaram.',
- opcoes:[{t:'Nada, começo do zero absoluto',v:'zero',exclusiva:true},{t:'Vídeos soltos de ukulele na internet, sem seguir um método',v:'videos'},
-         {t:'Curso ou aula de ukulele, online ou presencial',v:'curso'},{t:'Violão, por um tempo',v:'violao'},
-         {t:'Outro instrumento (teclado, percussão, canto...)',v:'outro'}]},
-
-{id:'A2b',bloco:'A',mede:'Contexto',tipo:'check',limite:2,
- se:s=>(s.resp.A2||[]).includes('violao'),
- enunciado:'Do tempo de violão, o que ficou com você?',sub:'Marque até dois.',
- opcoes:[{t:'Leio cifra, aquelas letras em cima da letra da música (C, G, Am)',v:'cifra'},{t:'Montava alguns acordes no braço do violão',v:'acordes'},
-         {t:'A mão da batida tinha ritmo, o braço é que não colaborava',v:'ritmo'},{t:'O tamanho do violão foi o problema, os dedos não alcançavam',v:'tamanho'},
-         {t:'Ficou pouca coisa, parei logo no começo',v:'pouco',exclusiva:true}]},
-
 {id:'N1',bloco:'N',mede:'Nível',ancora:true,tipo:'radio',
  se:s=>!semInstrumento(s),
  contexto:'Esta é a pergunta que decide todas as próximas. Responde pelo que sai hoje, num dia comum, e não pelo seu melhor dia. Assim o resto do caminho já vem no seu tamanho.',
@@ -169,24 +156,8 @@ const Q=[
 {id:'N2',bloco:'N',mede:'Nível',tipo:'radio',
  se:s=>!semInstrumento(s)&&s.resp.N1,
  enunciado:'O ukulele está desafinado na sua mão. O que acontece?',
- opcoes:[{t:'Sinceramente, eu nem perceberia',v:'nao_percebe',cls:'abaixo'},{t:'Percebo que tem algo estranho, mas peço ajuda ou deixo assim',v:'percebe',cls:'abaixo'},
-         {t:'Abro um aplicativo afinador e resolvo sozinho',v:'app',cls:'confirma'},{t:'Afino até de ouvido, se tiver uma referência',v:'ouvido',cls:'confirma'}]},
-
-{id:'N2b',bloco:'N',mede:'Calibração',calib:'F3',tipo:'radio',
- se:s=>['app','ouvido'].includes(s.resp.N2),
- enunciado:'De cabeça, sem olhar: as quatro cordas do ukulele, da de cima para a de baixo, são:',
- opcoes:[{t:'G C E A (Sol, Dó, Mi, Lá)',v:'certo'},{t:'E A D G (Mi, Lá, Ré, Sol)',v:'err1',flag:'F3'},{t:'D G B E (Ré, Sol, Si, Mi)',v:'err2',flag:'F3'},
-         {t:'Assim de cabeça eu não sei, e prefiro não chutar',v:'nao_sei'}]},
-
-{id:'N6b',bloco:'N',mede:'Calibração',calib:'F2',tipo:'radio',
- se:s=>[3,4,5].includes(s.resp.N1)&&!afinaNao(s),
- contexto:'Ler desenho de batida é uma habilidade que se aprende no curso, e muita gente ainda não tem. Se for o seu caso, a última opção é a sua resposta e está tudo certo.',
- enunciado:'Qual destes desenhos é a Batida Bate e Desce, a primeira do curso?',
- opcoes:[{t:'Bate e Desce',img:'img-ponto-de-partida/b1.png',v:'certo'},
-         {t:'Batida Mãe no reto',img:'img-ponto-de-partida/b2.png',v:'err1',flag:'F2'},
-         {t:'Batida Avó',img:'img-ponto-de-partida/b3.png',v:'err2',flag:'F2'},
-         {t:'Ainda não leio desenho de batida',v:'nao_leio'}],
- nota:'As três artes vêm do gerador de batidas. Na página real elas embaralham a cada carregamento, com alt neutro, e a opção certa acompanha o embaralhamento.'},
+ opcoes:[{t:'Sinceramente, eu nem perceberia',v:'nao_percebe'},{t:'Percebo que tem algo estranho, mas peço ajuda ou deixo assim',v:'percebe'},
+         {t:'Abro um aplicativo afinador e resolvo sozinho',v:'app'},{t:'Afino até de ouvido, se tiver uma referência',v:'ouvido'}]},
 
 {id:'NM1',bloco:'N',mede:'Nível',tipo:'radio',
  se:s=>[4,5].includes(s.resp.N1)&&!afinaNao(s),
@@ -194,8 +165,7 @@ const Q=[
  contexto:'Estes são os quatro acordes mágicos no tom de C, com a Batida Pop 1, e é neles que o Ukulele Fundamental termina. O metrônomo está em 90, que é a velocidade que conta como "consigo". Pode treinar mais devagar à vontade antes de responder.',
  enunciado:'Pega o ukulele e toca junto. Hoje, na sua mão, isso:',
  opcoes:[{t:'Sai a 90, do começo ao fim, sem travar',v:'sai'},
-         {t:'Sai, mas só mais devagar que 90',v:'trava'},
-         {t:'Os acordes saem, essa batida é que não',v:'sem_batida'},
+         {t:'Sai, mas só mais devagar que 90',v:'devagar'},
          {t:'Ainda não sai',v:'nao_sai'}]},
 
 {id:'NM2',bloco:'N',mede:'Nível',tipo:'radio',
@@ -204,13 +174,22 @@ const Q=[
  contexto:'São os mesmos quatro acordes mágicos, agora no tom de G e com a Batida Pop 2. O metrônomo continua em 90.',
  enunciado:'Toca junto de novo. Hoje, na sua mão, isso:',
  opcoes:[{t:'Sai a 90, do começo ao fim, sem travar',v:'sai'},
-         {t:'Sai, mas só mais devagar que 90',v:'trava'},
-         {t:'Os acordes saem, essa batida é que não',v:'sem_batida'},
-         {t:'Nesse tom eu ainda não toquei',v:'nunca'}]},
+         {t:'Sai, mas só mais devagar que 90',v:'devagar'},
+         {t:'Nesse tom eu ainda não toquei',v:'nao_sai'}]},
 
-{id:'X3',bloco:'X',mede:'Contexto',tipo:'texto',max:200,opcional:true,se:s=>acimaDoMapa(s),
- enunciado:'E na sua leitura: tem alguma coisa que hoje segura a sua evolução no ukulele?',
- sub:'Escreve do seu jeito. O que você escrever aqui eu levo em conta na sua análise.'},
+{id:'P1',bloco:'P',mede:'Vídeo',tipo:'radio',
+ se:s=>acimaDoMapa(s),
+ enunciado:'Pestana: um dedo deitado prendendo mais de uma corda de uma vez. Hoje, na sua mão, ela:',
+ opcoes:[{t:'Sai limpa, e eu uso dentro de música',v:'sai'},
+         {t:'Sai solta, mas dentro de música ainda não',v:'solta'},
+         {t:'Ainda não sai',v:'nao_sai'}]},
+
+{id:'P2',bloco:'P',mede:'Vídeo',tipo:'radio',
+ se:s=>s.resp.P1==='sai',
+ enunciado:'E dedilhado, as cordas tocadas uma a uma no lugar da batida. Hoje, na sua mão, ele:',
+ opcoes:[{t:'Sai dentro de música',v:'sai'},
+         {t:'Sai solto, fora de música',v:'solto'},
+         {t:'Ainda não sai',v:'nao_sai'}]},
 
 {id:'R1',bloco:'R',mede:'Rotina',tipo:'radio',
  enunciado:'Numa semana comum, em quantos dias o ukulele consegue entrar?',
@@ -225,33 +204,11 @@ const Q=[
 {id:'O1',bloco:'O',mede:'Objetivo',tipo:'radio',
  enunciado:'Daqui a alguns meses, qual dessas cenas te deixaria mais feliz?',
  opcoes:[{t:'Eu no sofá, tocando para mim, desligando a cabeça',v:'para_mim'},{t:'Eu tocando e cantando para a família ou os amigos',v:'para_gente'},
-         {t:'Eu participando de uma roda, um grupo, um louvor',v:'em_grupo'},{t:'Eu me acompanhando bem enquanto canto as músicas que amo',v:'cantar'},
-         {t:'Eu dominando o instrumento de verdade, técnica e tudo',v:'dominio'}]},
-
-{id:'O3',bloco:'O',mede:'Objetivo',tipo:'check',limite:2,
- enunciado:'Que som mora no seu ouvido?',sub:'Marque até dois.',
- opcoes:[{t:'MPB e música brasileira de raiz',v:'mpb'},{t:'Pop e rock nacional',v:'pop_nac'},{t:'Músicas internacionais',v:'intl'},
-         {t:'Gospel e louvor',v:'gospel'},{t:'Músicas para tocar com criança',v:'infantil'},{t:'Sertanejo e música popular',v:'sertanejo'}]},
+         {t:'Eu participando de uma roda, um grupo, um louvor',v:'em_grupo'},{t:'Eu dominando o instrumento de verdade, técnica e tudo',v:'dominio'}]},
 
 {id:'O2',bloco:'O',mede:'Objetivo',tipo:'linha',max:120,
  enunciado:'Qual música você quer estar tocando inteira daqui a alguns meses?',
- sub:'Se não vier nenhuma na hora, vale o artista que você mais ouve. E se nem isso vier, escreve uma música que você ama ouvir, uma que você tocaria para homenagear alguém, ou uma que te deixa feliz toda vez que aparece.'},
-
-{id:'O4',bloco:'O',mede:'Contexto',produto:true,tipo:'radio',
- se:s=>!semInstrumento(s),
- contexto:'Se alguma coisa já te atrapalhou no caminho, ela muda a rotina que eu vou te entregar no fim. E se ainda não atrapalhou nada, a primeira opção é a sua.',
- enunciado:'Teve alguma coisa que já te fez parar, ou quase parar, no ukulele?',
- opcoes:[{t:'Ainda não teve nada assim',v:'nada'},{t:'A dor nos dedos me fez duvidar de mim',v:'dor'},
-         {t:'Travei num acorde e não passei dali',v:'acorde'},{t:'As duas mãos juntas não se entenderam',v:'maos'},
-         {t:'A rotina engoliu o tempo do ukulele',v:'rotina'},{t:'Fiquei sem saber o que estudar em seguida',v:'sem_norte'},
-         {t:'Achei que eu não tinha ritmo, ou que já era tarde para começar',v:'ritmo_tarde'},
-         {t:'Cheguei a estudar por aula ou curso, mas o jeito de ensinar não encaixou comigo',v:'metodo'}]},
-
-{id:'O5',bloco:'O',mede:'Contexto',produto:true,tipo:'texto',max:200,opcional:true,
- se:s=>!acimaDoMapa(s),
- contexto:'Última, e é a que eu leio com mais atenção. Ela não tem opção para escolher porque eu não quero te dar ideia nenhuma. Quero a sua palavra.',
- enunciado:'Pensa em você com o ukulele na mão hoje. Tem alguma coisa nessa cena que te incomoda?',
- sub:'Pode ser o que sai do instrumento, o que acontece no seu corpo ou o que passa na sua cabeça. Uma frase já basta.'}
+ sub:'Se não vier nenhuma na hora, vale o artista que você mais ouve. E se nem isso vier, escreve uma música que você ama ouvir.'}
 ];
 
 /* ---------- ESTADO ---------- */
@@ -274,62 +231,55 @@ function acimaDoMapa(s){return s.resp.NM1==='sai'&&s.resp.NM2==='sai';}
 function visiveis(){return Q.filter(q=>!q.se||q.se(e));}
 
 /* ---------- DECISÃO: uma de três saídas ---------- */
-function flags(){
-  const f=[];
-  visiveis().forEach(q=>{if(q.mede!=='Calibração')return;
-    const o=(q.opcoes||[]).find(o=>o.v===e.resp[q.id]); if(o&&o.flag) f.push(o.flag);});
-  return f;
-}
 /* A régua de baixo é o nome da Etapa 1 do Mapa: DO ZERO À 1ª MÚSICA. Quem ainda não
    tocou uma música inteira não terminou o Iniciante 0, e é isso que a N1 pergunta.
    A régua de cima é a Etapa 4: os quatro acordes mágicos no tom de C com a Pop 1 e,
-   em seguida, no tom de G com as duas batidas. As flags de vocabulário nunca movem a saída:
-   elas só marcam fronteira, para a análise humana olhar com mais atenção (decisão D2). */
-function decidir(){
-  if(semInstrumento(e)) return {saida:'i0',fronteira:false,nf:0,motivo:'sem instrumento'};
-  const decl=e.resp.N1;
-  if(!decl) return {saida:null,fronteira:false,nf:0,motivo:'âncora não respondida'};
+   em seguida, no tom de G com a Pop 2, os dois a 90 bpm.
 
-  let saida,fronteira=false,motivo='';
-  const tomC=e.resp.NM1,tomG=e.resp.NM2;
+   Nenhuma pergunta do MVP levanta flag de vocabulário. As calibrações (nome das cordas,
+   ler desenho de batida) saíram: com a decisão D2 elas não moviam a saída, e o vídeo já
+   é pedido a todo mundo, então não sobrava trabalho para elas fazerem. */
+function decidir(){
+  if(semInstrumento(e)) return {saida:'i0',fronteira:false,motivo:'sem instrumento'};
+  const decl=e.resp.N1;
+  if(!decl) return {saida:null,fronteira:false,motivo:'âncora não respondida'};
 
   if(decl<=3){
-    /* Ainda não fechou uma música inteira: a Etapa 1 do Mapa não terminou. */
-    saida='i0';
-    motivo='declarou '+decl+', ainda sem música inteira: Iniciante 0';
-    if(afinaNao(e)) motivo+=' | e ainda não percebe desafinação';
-  }else{
-    saida='i1';
-    if(afinaNao(e)){
-      fronteira=true;
-      motivo='toca música inteira mas não percebe desafinação: Iniciante 1, com fronteira';
-    }else if(tomC==='sai'&&tomG==='sai'){
-      saida='passou';
-      motivo='os quatro mágicos saem no tom de C com a Pop 1 e no tom de G com as duas batidas: passou do Mapa';
-    }else if(tomC==='sai'){
-      motivo='os quatro saem no tom de C, mas o tom de G com as duas batidas ainda não: fim do Iniciante 1';
-    }else{
-      motivo='toca música inteira, mas os quatro mágicos ainda não saem no tom de C: início do Iniciante 1';
-    }
+    return {saida:'i0',fronteira:false,
+      motivo:'declarou '+decl+', ainda sem música inteira: Iniciante 0'
+        +(afinaNao(e)?' | e ainda não percebe desafinação':'')};
   }
+  if(afinaNao(e)) return {saida:'i1',fronteira:true,
+    motivo:'toca música inteira mas não percebe desafinação: Iniciante 1, com fronteira'};
 
-  const nf=flags().length;
-  if(nf>=2){fronteira=true;motivo+=' | '+nf+' flags de vocabulário: fronteira';}
-  return {saida,fronteira,nf,motivo};
+  const tomC=e.resp.NM1,tomG=e.resp.NM2;
+  if(tomC==='sai'&&tomG==='sai') return {saida:'passou',fronteira:false,
+    motivo:'os quatro mágicos saem a 90 no tom de C e no de G: passou do Mapa'};
+  if(tomC==='sai') return {saida:'i1',fronteira:false,
+    motivo:'os quatro saem no tom de C, o de G ainda não: fim do Iniciante 1'};
+  return {saida:'i1',fronteira:false,
+    motivo:'toca música inteira, mas os quatro mágicos ainda não saem no tom de C: início do Iniciante 1'};
 }
 function curso(){const sa=decidir().saida;return sa?SAIDA[sa]:null;}
-/* O vídeo é sempre pedido, decisão do Mateus em 03/09/2026. O que muda é o roteiro:
-   quem está começando se apresenta e responde; quem já toca também toca no fim. */
+/* O vídeo é sempre pedido. O que muda é o roteiro, e para quem passou do Mapa muda
+   também O QUE tocar: é a P1 e a P2 que decidem isso. */
 function pedeVideo(){return decidir().saida!==null;}
-/* Quem pedir para tocar no vídeo é o que a pessoa já faz, não a saída dela: alguém que
-   emenda uma sequência vai para o Iniciante 0 e mesmo assim tem o que mostrar. */
 function perfilVideo(){
   const d=decidir(); if(!d.saida) return null;
   if(d.saida==='passou') return 'passou';
   if(semInstrumento(e)||!e.resp.N1||e.resp.N1<=2) return 'zero';
   return 'toca';
 }
-function pedeToque(){return perfilVideo()==='toca'||perfilVideo()==='passou';}
+/* A música que eu peço no vídeo. Para quem passou do Mapa ela sai da escada P1/P2, e é
+   isso que faz o pedido chegar no tamanho da pessoa em vez de um "toca qualquer coisa". */
+function oQueTocar(){
+  const perfil=perfilVideo();
+  if(!perfil||perfil==='zero') return null;
+  if(perfil==='toca') return 'a música que hoje sai melhor na sua mão';
+  if(e.resp.P2==='sai') return 'uma música que tenha dedilhado, do jeito que você toca ela hoje';
+  if(e.resp.P1==='sai') return 'uma música que tenha pestana, do jeito que você toca ela hoje';
+  return 'a música que você quiser, a que você mais gosta de tocar';
+}
 
 /* ---------- widget de treino ----------
    Quadro do gerador de batidas (oficina.clubedoukulele.com), que mostra os acordes, o
@@ -360,13 +310,10 @@ const ROTEIRO_VIDEO={
       'Conta o que você quer estar tocando daqui a alguns meses.'],
   toca:['Se apresenta: nome, de onde você fala e há quanto tempo você toca.',
       'Conta por que foi justamente o ukulele, e não outro instrumento.',
-      'Conta o que você quer estar tocando daqui a alguns meses.',
-      'No fim, toca alguma coisa que hoje você considera que já está boa. Não precisa sair perfeita, e é melhor que não saia: eu preciso ver como ela é de verdade.'],
+      'Conta o que você quer estar tocando daqui a alguns meses.'],
   passou:['Se apresenta: nome, de onde você fala e há quanto tempo você toca.',
       'Conta por que foi justamente o ukulele, e não outro instrumento.',
-      'Conta onde você quer chegar daqui para a frente.',
-      'Toca alguma coisa que hoje você considera que já está boa.',
-      'E toca também o trecho que hoje você acha o mais difícil do seu repertório. É nele que eu vejo o que ainda dá para melhorar.']
+      'Conta onde você quer chegar daqui para a frente.']
 };
 
 function corpoHTML(q){
