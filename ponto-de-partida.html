@@ -222,9 +222,12 @@ const Q=[
          {t:'Ainda não sai',v:'nao_sai'}]},
 
 {id:'R1',bloco:'R',mede:'Rotina',tipo:'radio',
+ /* Um dia por semana não é oferecido, de propósito: com sete dias de intervalo a pessoa
+    gasta a sessão nova reaprendendo a antiga e conclui que o problema é ela. Dois é o
+    piso, e quem só tem um vai marcar dois e usar a carta do Dia Leve. */
  enunciado:'Numa semana comum, em quantos dias o ukulele consegue entrar?',
  sub:'Vale o que já cabe na sua semana de hoje, não o que você gostaria que coubesse. Prometer demais aqui só faz o plano não servir depois.',
- opcoes:[{t:'1 ou 2 dias',v:2},{t:'3 ou 4 dias',v:4},{t:'5 ou mais',v:5}]},
+ opcoes:[{t:'2 dias',v:2},{t:'3 dias',v:3},{t:'4 dias',v:4},{t:'5 ou mais',v:5}]},
 
 {id:'R2',bloco:'R',mede:'Rotina',tipo:'radio',
  enunciado:'E nesses dias, qual é o mínimo de tempo que você garante?',
@@ -303,16 +306,6 @@ function perfilVideo(){
   if(semInstrumento(e)||!e.resp.N1||e.resp.N1<=2) return 'zero';
   return 'toca';
 }
-/* A música que eu peço no vídeo. Para quem passou do Mapa ela sai da escada P1/P2, e é
-   isso que faz o pedido chegar no tamanho da pessoa em vez de um "toca qualquer coisa". */
-function oQueTocar(){
-  const perfil=perfilVideo();
-  if(!perfil||perfil==='zero') return null;
-  if(perfil==='toca') return 'a música que hoje sai melhor na sua mão';
-  if(e.resp.P2==='sai') return 'uma música que tenha dedilhado, do jeito que você toca ela hoje';
-  if(e.resp.P1==='sai') return 'uma música que tenha pestana, do jeito que você toca ela hoje';
-  return 'a música que você quiser, a que você mais gosta de tocar';
-}
 
 /* ---------- widget de treino ----------
    Quadro do gerador de batidas (oficina.clubedoukulele.com), que mostra os acordes, o
@@ -337,17 +330,126 @@ function treinoHTML(t){
     style="width:100%;height:500px;border:0;display:block;background:transparent"></iframe></div>`;
 }
 
-const ROTEIRO_VIDEO={
-  zero:['Se apresenta: nome, de onde você fala e há quanto tempo o ukulele entrou na sua vida.',
-      'Conta por que foi justamente o ukulele, e não outro instrumento.',
-      'Conta o que você quer estar tocando daqui a alguns meses.'],
-  toca:['Se apresenta: nome, de onde você fala e há quanto tempo você toca.',
-      'Conta por que foi justamente o ukulele, e não outro instrumento.',
-      'Conta o que você quer estar tocando daqui a alguns meses.'],
-  passou:['Se apresenta: nome, de onde você fala e há quanto tempo você toca.',
-      'Conta por que foi justamente o ukulele, e não outro instrumento.',
-      'Conta onde você quer chegar daqui para a frente.']
+/* Um pedido só, para todo mundo que passou da régua do zero. O que muda de pessoa para
+   pessoa é a música que ela escolhe, e o roteiro é escrito para que ela escolha a certa:
+   a mais difícil que já sai, e não a mais fácil que ela tem. Nivelar alguém por uma
+   música fácil demais é o erro que estraga a análise inteira. */
+const ROTEIRO=[
+  'Se apresenta: o seu nome, de onde você fala e há quanto tempo o ukulele está com você.',
+  'Conta por que foi o ukulele, e não outro instrumento.',
+  'Conta o que você quer estar tocando daqui a alguns meses.',
+  'E aí toca. Escolhe o que hoje é o mais difícil que já sai na sua mão: nem a música mais fácil que você tem, nem uma que ainda não sai. Se você toca uma de um acorde e uma de quatro que ainda manca, manda a de quatro.'
+];
+const NOTA_VIDEO='Não precisa sair perfeita, e é melhor que não saia: eu preciso ver os tropeços, é neles que eu enxergo o que te ensinar primeiro. O que não me ajuda é uma música fácil demais para você.';
+
+/* ---------- ROTINA ----------
+   Vem da spec "Recomendação de Rotina de Estudo" (03/09/2026). Trata SÓ de tempo: quanto
+   tempo em cada tipo de atividade, em cada tipo de dia. O que a pessoa toca dentro de cada
+   bloco é outra entrega e não se inventa aqui. O tom é obrigatório: sugestão, nunca regra. */
+
+/* Aquecimento é valor fixo por duração, não porcentagem, e existe em TODO tipo de dia,
+   inclusive no de Avanço: mão fria mais movimento novo é a origem mais comum de dor em
+   adulto iniciante. */
+const AQUECIMENTO={15:2,20:3,30:3,45:4};
+
+/* Grade fechada da spec, com o piso de 3 minutos já aplicado. Cada linha soma exatamente
+   o tempo do dia, e o harness confere: é a trava contra alguém arredondar um bloco e
+   desequilibrar o dia sem perceber. */
+const GRADE={
+ 15:{avanco:{ap:7,pr:3,dv:3},   equilibrado:{ap:5,pr:5,dv:3},   reforco:{ap:0,pr:9,dv:4},  leve:{ap:0,pr:4,dv:9},  livre:{ap:0,pr:0,dv:13}},
+ 20:{avanco:{ap:9,pr:5,dv:3},   equilibrado:{ap:6,pr:7,dv:4},   reforco:{ap:0,pr:12,dv:5}, leve:{ap:0,pr:5,dv:12}, livre:{ap:0,pr:0,dv:17}},
+ 30:{avanco:{ap:15,pr:7,dv:5},  equilibrado:{ap:9,pr:11,dv:7},  reforco:{ap:0,pr:19,dv:8}, leve:{ap:0,pr:8,dv:19}, livre:{ap:0,pr:0,dv:27}},
+ 45:{avanco:{ap:23,pr:11,dv:7}, equilibrado:{ap:14,pr:16,dv:11},reforco:{ap:0,pr:29,dv:12},leve:{ap:0,pr:12,dv:29},livre:{ap:0,pr:0,dv:41}}
 };
+
+const DIA={
+  avanco:{nome:'Dia de Avanço',sub:'dia de encarar coisa nova',quando:'Tem aula nova, ou um trecho que trava.'},
+  equilibrado:{nome:'Dia Equilibrado',sub:'o dia padrão',quando:'Um pouco de cada coisa.'},
+  reforco:{nome:'Dia de Reforço',sub:'dia de firmar',quando:'Nada novo. Você volta no que já viu e deixa mais redondo.'},
+  leve:{nome:'Dia Leve',sub:'dia sem energia',quando:'Pouca energia, pouco tempo, pouca cabeça. Ele salva a sua sequência.'},
+  livre:{nome:'Dia Livre',sub:'dia sem cobrança',quando:'Só tocar, sem corrigir nada.'}
+};
+
+const BLOCO={
+  aq:{nome:'Aquecimento',oque:'Mecânica pura, sem música: soltar a mão, trocar acorde no vazio.',sinal:'Ninguém reconheceria o que você está tocando.'},
+  ap:{nome:'Aprendizado',oque:'O que você ainda não consegue. Devagar, repetido, feio. A aula nova entra aqui.',sinal:'Você erra. Se não está errando, isso não é Aprendizado, é Prática.'},
+  pr:{nome:'Prática',oque:'O que você já entendeu mas ainda não sai no automático. Música inteira, sem parar.',sinal:'Você acerta às vezes. A meta é ficar fluido, não aprender coisa nova.'},
+  dv:{nome:'Diversão',oque:'O que você já sabe, do jeito que quiser. Música velha, cantar junto, tocar para alguém.',sinal:'Você não corrige nada. Se parou para consertar, saiu do bloco.'}
+};
+
+/* Todo Dia de Avanço é seguido por um dia de prática forte: aprender e não voltar nisso
+   no dia seguinte é jogar o minuto fora. O Dia Livre só entra a partir de quatro dias,
+   porque com dois ou três cada sessão é cara demais para uma delas não ter aprendizado. */
+const RECEITA={2:['avanco','reforco'],
+               3:['avanco','reforco','equilibrado'],
+               4:['avanco','reforco','equilibrado','livre'],
+               5:['avanco','reforco','equilibrado','avanco','livre']};
+
+/* Bloco de Aprendizado ou Prática acima de 12 minutos vira duas passadas com 1 minuto de
+   pausa de verdade no meio, e o minuto sai de dentro do próprio bloco: o dia não cresce.
+   Não vale para a Diversão, que não tem esforço a interromper. */
+function passadas(n){ if(n<=12) return null; const u=n-1; return [Math.floor(u/2),Math.ceil(u/2)]; }
+
+function monta(min,k){
+  const g=GRADE[min][k],aq=AQUECIMENTO[min];
+  return {k,nome:DIA[k].nome,sub:DIA[k].sub,quando:DIA[k].quando,
+    aq,ap:g.ap,pr:g.pr,dv:g.dv,apPassadas:passadas(g.ap),prPassadas:passadas(g.pr)};
+}
+function rotina(){
+  const min=e.resp.R2,dias=e.resp.R1;
+  if(!min||!dias||!GRADE[min]) return null;
+  return {min,dias,aq:AQUECIMENTO[min],
+    receita:(RECEITA[dias]||RECEITA[5]).map(k=>monta(min,k)),
+    leve:monta(min,'leve'),
+    seisEmDiante:dias>=5};
+}
+
+/* ---------- ROTINA: o que o aluno lê ----------
+   Tudo daqui é sugestão, e o texto tem que soar assim. Plano escolhido pelo aluno é
+   cumprido; plano mandado é abandonado. */
+function minutos(n){return n+(n===1?' min':' min');}
+function linhaBloco(chave,n,pass){
+  if(!n) return '';
+  const b=BLOCO[chave];
+  return `<div class="lb"><span class="lb-n">${minutos(n)}</span>
+    <span class="lb-t"><b>${b.nome}</b>${pass?`<small>${pass[0]} min, 1 min de pausa de verdade, e mais ${pass[1]} min</small>`:''}</span></div>`;
+}
+function cardDia(d,coringa){
+  return `<article class="dia ${coringa?'coringa':''}">
+    <header><b>${d.nome}</b><span>${d.sub}</span></header>
+    <p class="dia-quando">${d.quando}</p>
+    ${linhaBloco('aq',d.aq,null)}
+    ${linhaBloco('ap',d.ap,d.apPassadas)}
+    ${linhaBloco('pr',d.pr,d.prPassadas)}
+    ${linhaBloco('dv',d.dv,null)}
+  </article>`;
+}
+function rotinaHTML(){
+  const r=rotina(); if(!r) return '';
+  const usados=[...new Set(r.receita.map(d=>d.k))];
+  return `
+  <section class="atv-card"><span class="atv-pill">A sua rotina</span>
+    <p class="destino">${r.dias===5?'5 dias ou mais':r.dias+' dias'} por semana, ${r.min} minutos por dia</p>
+    <p class="sub" style="margin:0 0 14px">Isso aqui é um ponto de partida, não uma regra. Comece por essa sugestão e, depois do primeiro mês, você vai saber melhor que a gente o que o seu dia aguenta.</p>
+
+    <p class="rot-titulo">A sua semana</p>
+    <ol class="semana">${r.receita.map(d=>`<li><b>${d.nome}</b><span>${d.sub}</span></li>`).join('')}</ol>
+    ${r.dias===2?'<p class="sub" style="margin:8px 0 0">Espaça os dois. Quarta e sábado rendem mais que sábado e domingo: o ganho está no intervalo, não na soma dos minutos.</p>':''}
+    ${r.dias===3?'<p class="sub" style="margin:8px 0 0">Evita os três colados. E lembra: 2 dias por semana mantêm você tocando, 3 ou mais já começam a andar de verdade.</p>':''}
+    ${r.seisEmDiante?'<p class="sub" style="margin:8px 0 0">Do sexto dia em diante, só Dia Livre ou Dia Leve. Aqui o Livre deixa de ser opção e vira recomendação: é ele que impede a rotina de virar obrigação.</p>':''}
+
+    <p class="rot-titulo">Como fica cada dia</p>
+    ${usados.map(k=>cardDia(r.receita.find(d=>d.k===k))).join('')}
+
+    <p class="rot-titulo">A sua carta de troca</p>
+    ${cardDia(r.leve,true)}
+    <p class="sub" style="margin:10px 0 0">Chegou o dia e você está acabado? Troca o que estava marcado por um Dia Leve. Isso não é furar o plano. Furar o plano é não pegar o ukulele.</p>
+
+    <p class="rot-titulo">O que é cada bloco</p>
+    <div class="blocos">${['aq','ap','pr','dv'].map(k=>`<div><b>${BLOCO[k].nome}</b><small>${BLOCO[k].oque}</small><em>${BLOCO[k].sinal}</em></div>`).join('')}</div>
+    <p class="sub" style="margin:12px 0 0">A aula nova entra no bloco de Aprendizado. Os seus ${r.min} minutos comportam ela, é para isso que esse bloco existe. E se você já tiver assistido antes, no ônibus ou lavando louça, melhor ainda: aí os ${r.min} minutos inteiros ficam com o ukulele na mão.</p>
+  </section>`;
+}
 
 function corpoHTML(q){
   const r=e.resp[q.id];
@@ -523,9 +625,9 @@ function terminarEdicao(){ e.editando=false; e.finalizado=true; render(); reenvi
    inteiro. Quem sai por ela fica com `video_pendente` na planilha. */
 function renderVideo(){
   if(e.videoOk){ finalizar(); return; }   /* um vídeo só, e ele já veio */
-  const perfil=perfilVideo();
-  const roteiro=ROTEIRO_VIDEO[perfil].concat(oQueTocar()
-    ?['No fim, toca '+oQueTocar()+'. Não precisa sair perfeita, e é melhor que não saia: eu preciso ver como ela é de verdade.']:[]);
+
+  const roteiro=ROTEIRO;
+
   palco.innerHTML=`
     <div class="atv-hero"><span class="eyebrow">Falta uma coisa</span>
       <h2>${PRIMEIRO?PRIMEIRO+', agora eu quero te conhecer':'Agora eu quero te conhecer'}</h2>
@@ -580,7 +682,6 @@ function enviaVideo(f){
 function renderResultado(){
   const d=decidir(),cur=curso(),acima=d.saida==='passou',perfil=perfilVideo();
   if(!d.saida){ e.finalizado=false;e.i=0;render();return; }
-  const rot=(e.resp.R1&&e.resp.R2)?e.resp.R1+' dias por semana, '+e.resp.R2+' minutos por dia':'';
   const url=acima?'':(URL_CURSO[d.saida]||'');
 
   palco.innerHTML=`
@@ -609,16 +710,7 @@ function renderResultado(){
       <button class="btn" id="gravarAgora">Gravar e enviar agora</button>
     </section>`)}
 
-    ${rot?`
-    <section class="atv-card"><span class="atv-pill">A sua rotina</span>
-      <p class="enunciado" style="margin-bottom:4px">${rot}</p>
-      <div class="apd">
-        <div><b>Aquecimento</b><small>Exercício 1234 ou troca de acordes, 2 a 3 minutos. Abre toda sessão.</small></div>
-        <div><b>Aprender</b><small>Aula nova, conteúdo que você ainda não viu.</small></div>
-        <div><b>Praticar</b><small>Repetir o que já viu até virar automático.</small></div>
-        <div><b>Divertir</b><small>Tocar música pelo prazer. Sem meta.</small></div>
-      </div>
-    </section>`:''}
+    ${rotinaHTML()}
 
     <section class="atv-card no-print"><span class="atv-pill">Mudou alguma coisa?</span>
       <p class="sub" style="margin:0 0 12px">Se você respondeu alguma coisa no automático, dá para trocar uma resposta sem refazer tudo.</p>
@@ -698,7 +790,7 @@ addEventListener('keydown',ev=>{
    abrir o escopo do script para a página inteira. Só leitura de estado, nada que escreva. */
 if(qs.get('debug')==='1') window.__pp={
   estado:()=>JSON.parse(JSON.stringify(e)),
-  decidir:()=>decidir(), perfil:()=>perfilVideo(), toca:()=>oQueTocar(),
+  decidir:()=>decidir(), perfil:()=>perfilVideo(),
   video:()=>pedeVideo(), caminho:()=>visiveis().map(q=>q.id), aluno:ALUNO,
   /* Só para revisar a tela de "vídeo recebido" sem gastar um upload de verdade no tus. */
   simularVideoRecebido:()=>{ e.videoOk=true; e.videoAdiado=false; finalizar(); return 'ok'; }
