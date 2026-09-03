@@ -443,22 +443,6 @@ const DIA={
   livre:{nome:'Dia Livre',sub:'dia sem cobrança',quando:'Só tocar, sem corrigir nada.'}
 };
 
-/* A pessoa conta o sonho dela na O1 e na O2 e, sem isto, a ficha nunca devolvia nada
-   disso. Numa página que é a ficha dela, é estranho: ela contou, e o papel não menciona. */
-const CENA={
-  para_mim:'tocando para você mesmo, para desligar a cabeça',
-  para_gente:'tocando e cantando para a família ou os amigos',
-  em_grupo:'tocando numa roda, num grupo, num louvor',
-  dominio:'dominando o instrumento de verdade, técnica e tudo'
-};
-function oQueEleContou(){
-  const musica=(e.resp.O2||'').trim(), cena=CENA[e.resp.O1];
-  if(!musica&&!cena) return '';
-  if(musica&&cena) return `Você me disse que quer estar tocando <b>${musica}</b>, e se ver ${cena}. É daí que sai o que vem abaixo.`;
-  if(musica) return `Você me disse que quer estar tocando <b>${musica}</b>. É daí que sai o que vem abaixo.`;
-  return `Você me disse que quer se ver ${cena}. É daí que sai o que vem abaixo.`;
-}
-
 const BLOCO={
   aq:{nome:'Aquecimento',oque:'Mecânica pura, sem música: soltar a mão, trocar acorde no vazio.',sinal:'Ninguém reconheceria o que você está tocando.'},
   ap:{nome:'Aprendizado',oque:'O que você ainda não consegue. Devagar, repetido, feio. A aula nova entra aqui.',sinal:'Você erra. Se não está errando, isso não é Aprendizado, é Prática.'},
@@ -805,7 +789,7 @@ function renderResultado(){
       <p>${acima
         ?'Daqui em diante o seu ponto de partida sai da minha análise, olhando você tocar. Assim que eu fizer a análise do seu vídeo, eu te recomendo por onde começar na Jornada de Aprendizado do Clube.'
         :'Isso não é nota nem classificação. É só o lugar onde o seu próximo passo rende mais.'}</p>
-      ${(!acima&&oQueEleContou())?`<p style="margin-top:8px">${oQueEleContou()}</p>`:''}</div>
+      </div>
 
     ${acima?'':`
     <details class="dobra" open><summary><span>Por onde começar<small>${cur.nome} · ${cur.sub}</small></span></summary>
