@@ -870,6 +870,20 @@ function rascunho(){
 addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden') rascunho(); });
 addEventListener('pagehide',rascunho);
 
+/* ---------- impressão ----------
+   Um <details> fechado não imprime só com CSS: o Chrome esconde o conteúdo por
+   content-visibility, que `display:block !important` não vence. Então abrimos de verdade
+   antes de imprimir e devolvemos ao estado anterior depois. */
+let dobrasAbertas=[];
+addEventListener('beforeprint',()=>{
+  dobrasAbertas=[...document.querySelectorAll('details.dobra')];
+  dobrasAbertas.forEach(d=>{ d.dataset.estava=d.open?'1':'0'; d.open=true; });
+});
+addEventListener('afterprint',()=>{
+  dobrasAbertas.forEach(d=>{ d.open=d.dataset.estava==='1'; delete d.dataset.estava; });
+  dobrasAbertas=[];
+});
+
 /* ---------- teclado ---------- */
 addEventListener('keydown',ev=>{
   if(e.finalizado||!e.abriu) return;
