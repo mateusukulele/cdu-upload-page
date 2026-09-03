@@ -193,11 +193,10 @@ const API='';                 /* URL do Worker cdu-nivelamento. Vazio = só loca
 const PRODUTO='';             /* nome do produto no cademi-validador. Vazio = sem portão. */
 const TUS='https://cademi-tus-server-1019908552664.southamerica-east1.run.app/files/';
 const MINHAS_ANALISES='https://aluno.comotocarukulele.com/area/produto/624593';
-/* PROVISÓRIO, a pedido do Mateus em 03/09/2026: libera refazer o nivelamento inteiro
-   depois de finalizado, para ele conseguir testar várias vezes seguidas. **Virar false
-   antes de publicar para os alunos**: um aluno refazendo do zero manda um segundo vídeo
-   e a análise dele vira duas fichas concorrentes. */
-const REFAZER=true;
+/* Refazer o nivelamento inteiro depois de finalizado fica fora do MVP: um aluno refazendo
+   manda um segundo vídeo e a análise dele vira duas fichas concorrentes. Liberar o
+   nivelamento de novo de tempos em tempos, com histórico de fichas, é assunto de depois. */
+const REFAZER=false;
 const ATIVIDADE='nivelamento-1_1-me-mostra-como-voce-toca';
 const TITULO_ATIVIDADE='Ponto de Partida | Me mostra como você toca';
 const URL_CURSO={
@@ -879,15 +878,54 @@ function enviar(){
   fetch(API.replace(/\/$/,'')+'/finalizar',{
     method:'POST', headers:{'Content-Type':'application/json'},
     body:JSON.stringify(corpoEnvio())
-  }).then(r=>r.json()).then(j=>{ if(j&&j.ok){e.enviado=true;salvar();} }).catch(()=>{});
+  }).then(r=>r.json()).then(j=>{
+    if(!j||!j.ok) return;                 /* falhou: tenta de novo na próxima abertura */
+    e.enviado=true; e.linha=j.linha||null; salvar();
+  }).catch(()=>{});
 }
-function rascunho(){
+
+/* ---------- retomada, de qualquer aparelho ----------
+   O `localStorage` é a memória do aparelho e o KV é a do aluno. Na abertura a gente
+   pergunta ao Worker o que existe: se lá já há uma ficha fechada, ela manda, porque é a
+   que vale e é a que aparece em outro celular. Se há só um rascunho e este aparelho não
+   tem nada, o rascunho de lá entra. Se o Worker não responde, a página segue com o que
+   tem no aparelho: nada aqui pode impedir o aluno de começar. */
+function retomar(){
+  if(!API||!ALUNO.id) { render(); return; }
+  const url=API.replace(/\/$/,'')+'/estado?id='+encodeURIComponent(ALUNO.id)
+    +'&email='+encodeURIComponent(ALUNO.email);
+  const prazo=setTimeout(render,2500);   /* rede lenta não segura a peça */
+  fetch(url).then(r=>r.json()).then(j=>{
+    clearTimeout(prazo);
+    if(j&&j.estado==='final'&&j.respostas&&Object.keys(j.respostas).length){
+      e=padrao(); e.abriu=true; e.finalizado=true; e.enviado=true;
+      e.videoOk=true; e.resp=j.respostas; e.linha=j.linha||null; e.uid=j.uid||'';
+      salvar();
+    }else if(j&&j.estado==='rascunho'&&!Object.keys(e.resp).length){
+      e.abriu=true; e.resp=j.respostas||{}; e.i=j.i||0; salvar();
+    }
+    render();
+  }).catch(()=>{ clearTimeout(prazo); render(); });
+}
+/* O KV do plano gratuito dá 1.000 escritas por DIA, e a cota é da conta inteira. Sem
+   trava, um aluno que troca de aba dez vezes gasta dez escritas sozinho. Duas travas:
+   só sobe se a resposta mudou desde a última subida, e no máximo uma por minuto. Com
+   isso o normal vira 1 escrita de rascunho por aluno, 2 no total com o finalizar, e a
+   peça cabe em ~500 alunos por dia sem encostar no limite. */
+let ultimoRascunho='', ultimoEnvioMs=0;
+const INTERVALO_RASCUNHO=60000;
+function rascunho(forcado){
   if(!API||e.finalizado||!e.abriu) return;
   const b=JSON.stringify(corpoEnvio());
+  if(b===ultimoRascunho) return;
+  const agora=Date.now();
+  if(!forcado&&agora-ultimoEnvioMs<INTERVALO_RASCUNHO) return;
+  ultimoRascunho=b; ultimoEnvioMs=agora;
   if(navigator.sendBeacon) navigator.sendBeacon(API.replace(/\/$/,'')+'/rascunho',new Blob([b],{type:'application/json'}));
 }
-addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden') rascunho(); });
-addEventListener('pagehide',rascunho);
+/* Fechar a aba é a última chance de guardar, então aí a trava de tempo não vale. */
+addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden') rascunho(true); });
+addEventListener('pagehide',()=>rascunho(true));
 
 /* ---------- impressão ----------
    Um <details> fechado não imprime só com CSS: o Chrome esconde o conteúdo por
@@ -968,8 +1006,8 @@ new MutationObserver(()=>{
   if(p&&p!==palco){ palco=p; render(); }
 }).observe(document.documentElement,{childList:true,subtree:true});
 
-if(document.readyState==='complete') render();
-else addEventListener('load',render);
+if(document.readyState==='complete') retomar();
+else addEventListener('load',retomar);
 })();
 </script>
 </body>
