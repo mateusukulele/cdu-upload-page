@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ponto de Partida | Clube do Ukulele</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --anchor:#443468; --anchor-deep:#2D2249; --coral:#E87A85; --coral-text:#4D1A20;
+  --text:#1F1A2B; --text-soft:#55536B; --surface:#ECEAF1; --card:#fff;
+  --linha:#E7E3EF; --ok:#1F8C7A;
+}
+body{font-family:Montserrat,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  background:transparent;color:var(--text);line-height:1.55}
+.atv-wrap{max-width:720px;margin:0 auto;padding:8px 14px 40px}
+
+.atv-hero{position:relative;background:linear-gradient(135deg,var(--anchor),var(--anchor-deep));border-radius:16px;padding:18px 20px;color:#fff;margin-bottom:14px;overflow:hidden}
+.atv-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--anchor),var(--coral))}
+.atv-hero .eyebrow{display:inline-block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--coral);font-weight:700;margin-bottom:6px}
+.atv-hero h2{font-size:clamp(18px,4vw,24px);line-height:1.2;font-weight:700}
+.atv-hero p{font-size:14.5px;color:#E4DEF2;margin-top:8px}
+
+.atv-card{background:var(--card);border:1px solid rgba(68,52,104,.12);border-radius:16px;padding:18px;margin-bottom:14px;box-shadow:0 8px 24px rgba(68,52,104,.08)}
+.atv-card.pergunta{animation:entra .14s ease-out}
+@keyframes entra{from{opacity:.45}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){.atv-card.pergunta{animation:none}}
+.atv-pill{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:5px 12px;border-radius:999px;background:var(--coral);color:var(--coral-text);margin-bottom:12px}
+.contexto{font-size:14px;color:var(--text-soft);background:var(--surface);border-radius:10px;padding:10px 12px;margin-bottom:12px}
+.enunciado{font-size:17px;font-weight:600;line-height:1.4;margin-bottom:14px}
+.sub{font-size:14px;color:var(--text-soft);margin:-8px 0 14px}
+
+.opts{display:flex;flex-direction:column;gap:9px}
+.opt{display:flex;gap:11px;align-items:flex-start;border:1.5px solid var(--linha);border-radius:12px;padding:13px 14px;cursor:pointer;background:#fff;font-size:14.5px;transition:border-color .12s,background .12s}
+.opt:hover{border-color:#C0B4DC;background:#FCFBFE}
+.opt[data-sel=true]{border-color:var(--anchor);background:#F4F1FA}
+.opt[data-off=true]{cursor:not-allowed;background:#F5F4F8;border-color:#EDEAF3;color:#5F5C76}
+.opt[data-off=true] .letra,.opt[data-off=true] .marca{border-color:#DCD7E8;color:#6E6A85}
+.opt .letra{flex:0 0 auto;width:24px;height:24px;border:1.5px solid var(--linha);border-radius:6px;display:grid;place-items:center;font-size:12.5px;font-weight:700;color:var(--text-soft);background:#FBFAFE}
+.opt[data-sel=true] .letra{border-color:var(--anchor);color:var(--anchor);background:#fff}
+@media(max-width:600px){.opt .letra{display:none}.opt{font-size:16px}}
+.opt .marca{flex:0 0 auto;width:20px;height:20px;border:2px solid #C0B4DC;border-radius:50%;margin-top:1px;display:grid;place-items:center}
+.opt.check .marca{border-radius:6px}
+.opt[data-sel=true] .marca{border-color:var(--anchor);background:var(--anchor)}
+.opt[data-sel=true] .marca::after{content:'';width:8px;height:8px;background:#fff;border-radius:50%}
+.opt.check[data-sel=true] .marca::after{border-radius:2px}
+.opt.confirmando{border-color:var(--ok);background:#F3FAF7}
+.opt img.desenho{flex:1;min-width:0;max-width:300px;border-radius:8px;background:#fff;border:1px solid var(--linha)}
+
+textarea.livre,input.livre{width:100%;border:1.5px solid var(--linha);border-radius:12px;padding:12px;font:inherit;font-size:16px;resize:vertical;min-height:70px}
+textarea.livre:focus,input.livre:focus{outline:0;border-color:var(--anchor)}
+input.livre{min-height:0;padding:13px 12px;display:block}
+.contador{font-size:13px;color:var(--text-soft);text-align:right;margin-top:4px;display:flex;justify-content:space-between;gap:10px}
+.dica-teclado{font-size:12.5px;color:var(--text-soft)}
+
+.acordes{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;background:#FAF9FD;border:1px solid var(--linha);border-radius:14px;padding:16px 14px;margin-bottom:14px}
+.acorde{text-align:center}
+.acorde svg{display:block;margin:0 auto}
+.acorde b{display:block;font-size:13.5px;margin-top:5px;color:var(--anchor)}
+.acorde small{display:block;font-size:12px;color:var(--text-soft)}
+
+.progresso{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.barra{flex:1;height:8px;border-radius:99px;background:#DED7EE;overflow:hidden}
+.barra i{display:block;height:100%;background:var(--coral);transition:width .25s}
+.progresso span{font-size:13px;color:var(--text-soft);white-space:nowrap}
+
+.nav{display:flex;gap:10px;margin-top:16px}
+.btn{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:12px;padding:14px;font:inherit;font-size:15px;font-weight:700;cursor:pointer;background:var(--coral);color:#fff}
+.btn:disabled{background:#C4BFD2;cursor:not-allowed}
+.btn.ghost{background:#fff;color:var(--anchor);border:1.5px solid var(--linha);flex:0 0 auto;padding:14px 18px}
+.dica-auto{flex:1;display:flex;align-items:center;justify-content:center;font-size:13.5px;color:var(--text-soft)}
+.abertura{font-size:15px;margin-bottom:12px;line-height:1.6}
+
+.res-hero{background:linear-gradient(135deg,var(--anchor),var(--anchor-deep));border-radius:16px;padding:22px;color:#fff;margin-bottom:14px}
+.res-hero .eyebrow{display:inline-block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--coral);font-weight:700;margin-bottom:6px}
+.res-hero h2{font-size:clamp(19px,4.4vw,26px);line-height:1.2;margin-bottom:8px}
+.res-hero p{font-size:15px;color:#E4DEF2}
+.destino{font-size:21px;font-weight:700;color:var(--anchor);margin-bottom:2px}
+.destino-sub{font-size:14.5px;color:var(--text-soft);margin-bottom:14px}
+.roteiro{margin:0 0 14px 20px;font-size:15px;line-height:1.55}
+.roteiro li{margin-bottom:8px}
+.apd{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:12px}
+.apd div{background:var(--surface);border-radius:10px;padding:11px 12px}
+.apd b{display:block;font-size:14px;color:var(--anchor);margin-bottom:3px}
+.apd small{font-size:12.5px;color:var(--text-soft);line-height:1.45}
+.upload{border:2px dashed #C0B4DC;background:#FAF9FD;border-radius:14px;padding:18px;text-align:center;font-size:14px;color:var(--text-soft)}
+
+.aviso{background:#FDF4E6;border:1px solid #E3C892;border-radius:12px;padding:12px 14px;font-size:14px;color:#6B4711;margin-bottom:14px}
+.carregando{text-align:center;padding:40px 0;color:var(--text-soft);font-size:15px}
+
+@media print{
+  .nav,.progresso,.upload,.no-print{display:none !important}
+  body{background:#fff}
+  .atv-wrap{max-width:100%;padding:0}
+  .atv-card,.res-hero{break-inside:avoid;box-shadow:none}
+  .res-hero{background:#fff;color:var(--text);border:2px solid var(--anchor)}
+  .res-hero p{color:var(--text-soft)}
+  @page{size:A4;margin:16mm}
+}
+</style>
+</head>
+<body>
+<div class="atv-wrap" id="palco"><div class="carregando">Carregando o seu Ponto de Partida...</div></div>
+
+<script>
+"use strict";
+/* =====================================================================
+   PONTO DE PARTIDA v3.0 — página de produção
+   Gerado por nivelamento/producao/build.py a partir do protótipo.
+   NÃO EDITAR À MÃO: mexa no protótipo e rode o build de novo.
+   ===================================================================== */
+
+/* ---------- ligações externas, a preencher ---------- */
+const API='';                 /* URL do Worker cdu-nivelamento. Vazio = só localStorage. */
+const PRODUTO='';             /* nome do produto no cademi-validador. Vazio = sem portão. */
+const URL_CURSO={i0:'',i1:''}; /* URLs dos cursos na Cademí. Vazio = botão desligado. */
+
+/* ---------- quem é o aluno (parâmetros da Página Dinâmica) ---------- */
+const qs=new URLSearchParams(location.search);
+const ALUNO={
+  id:(qs.get('cuser_id')||'').trim(),
+  email:(qs.get('cuser_email')||'').trim().toLowerCase(),
+  nome:(qs.get('cuser_name')||'').trim()
+};
+const PRIMEIRO=ALUNO.nome?ALUNO.nome.split(/\s+/)[0]:'';
+
+const LS='cdu-ponto-de-partida-v3'+(ALUNO.id?':'+ALUNO.id:'');
+const LETRAS='ABCDEFGHIJ'.split('');
+
+/* MVP v3, decisão do Mateus em 03/09/2026: a peça devolve UMA de três saídas.
+   O Mapa do Iniciante é exatamente o conteúdo do Iniciante 0 mais o do Iniciante 1:
+   o Iniciante 0 vai até a primeira música, o Iniciante 1 daí até os quatro acordes
+   mágicos. Quem passou dos dois não recebe curso, recebe pedido de vídeo. */
+const SAIDA={
+  i0:{nome:'Iniciante 0',sub:'Do Zero à Primeira Música',
+      titulo:'o seu começo é o Iniciante 0'},
+  i1:{nome:'Iniciante 1',sub:'Ukulele Fundamental',
+      titulo:'o seu começo é o Iniciante 1'},
+  passou:{nome:null,sub:null,
+      titulo:'você já passou do Mapa do Iniciante'}
+};
+
+const Q=[
+{id:'A1',bloco:'A',mede:'Contexto',tipo:'radio',
+ enunciado:'Primeira de todas: o ukulele já está com você?',
+ opcoes:[{t:'Está aqui, eu pego ele sempre',v:'tem_toca'},{t:'Está aqui, mas passa mais tempo guardado do que na minha mão',v:'tem_guardado'},
+         {t:'Comprei e estou esperando chegar',v:'esperando'},{t:'Ainda não tenho',v:'nao_tem'}]},
+
+{id:'A2',bloco:'A',mede:'Contexto',produto:true,tipo:'check',limite:2,
+ enunciado:'E o que você já tinha de música na vida antes de chegar aqui?',sub:'Marque até dois, os que mais pesaram.',
+ opcoes:[{t:'Nada, começo do zero absoluto',v:'zero',exclusiva:true},{t:'Vídeos soltos de ukulele na internet, sem seguir um método',v:'videos'},
+         {t:'Curso ou aula de ukulele, online ou presencial',v:'curso'},{t:'Violão, por um tempo',v:'violao'},
+         {t:'Outro instrumento (teclado, percussão, canto...)',v:'outro'}]},
+
+{id:'A2b',bloco:'A',mede:'Contexto',tipo:'check',limite:2,
+ se:s=>(s.resp.A2||[]).includes('violao'),
+ enunciado:'Do tempo de violão, o que ficou com você?',sub:'Marque até dois.',
+ opcoes:[{t:'Leio cifra, aquelas letras em cima da letra da música (C, G, Am)',v:'cifra'},{t:'Montava alguns acordes no braço do violão',v:'acordes'},
+         {t:'A mão da batida tinha ritmo, o braço é que não colaborava',v:'ritmo'},{t:'O tamanho do violão foi o problema, os dedos não alcançavam',v:'tamanho'},
+         {t:'Ficou pouca coisa, parei logo no começo',v:'pouco',exclusiva:true}]},
+
+{id:'N1',bloco:'N',mede:'Nível',ancora:true,tipo:'radio',
+ se:s=>!semInstrumento(s),
+ contexto:'Esta é a pergunta que decide todas as próximas. Responde pelo que sai hoje, num dia comum, e não pelo seu melhor dia. Assim o resto do caminho já vem no seu tamanho.',
+ enunciado:'Cena real: você pega o ukulele agora, sem preparar nada, e toca do jeito que sai. O que sai dele?',
+ opcoes:[{t:'Quase nada ainda, sons soltos de quem está descobrindo',v:1},{t:'Um ou dois acordes que eu decorei',v:2},
+         {t:'Uma sequência de acordes que eu emendo, mesmo mancando',v:3},{t:'Uma música inteira, do começo ao fim',v:4},
+         {t:'Várias músicas, e já vario batida ou arrisco dedilhado',v:5}]},
+
+{id:'N2',bloco:'N',mede:'Nível',tipo:'radio',
+ se:s=>!semInstrumento(s)&&s.resp.N1,
+ enunciado:'O ukulele está desafinado na sua mão. O que acontece?',
+ opcoes:[{t:'Sinceramente, eu nem perceberia',v:'nao_percebe',cls:'abaixo'},{t:'Percebo que tem algo estranho, mas peço ajuda ou deixo assim',v:'percebe',cls:'abaixo'},
+         {t:'Abro um aplicativo afinador e resolvo sozinho',v:'app',cls:'confirma'},{t:'Afino até de ouvido, se tiver uma referência',v:'ouvido',cls:'confirma'}]},
+
+{id:'N2b',bloco:'N',mede:'Calibração',calib:'F3',tipo:'radio',
+ se:s=>['app','ouvido'].includes(s.resp.N2),
+ enunciado:'De cabeça, sem olhar: as quatro cordas do ukulele, da de cima para a de baixo, são:',
+ opcoes:[{t:'G C E A (Sol, Dó, Mi, Lá)',v:'certo'},{t:'E A D G (Mi, Lá, Ré, Sol)',v:'err1',flag:'F3'},{t:'D G B E (Ré, Sol, Si, Mi)',v:'err2',flag:'F3'},
+         {t:'Assim de cabeça eu não sei, e prefiro não chutar',v:'nao_sei'}]},
+
+{id:'N3',bloco:'N',mede:'Nível',tipo:'check',
+ se:s=>[1,2].includes(s.resp.N1)&&!afinaNao(s),
+ enunciado:'Quais desses acordes você monta de memória, sem olhar desenho nenhum?',sub:'Marque só os que saem de verdade.',
+ opcoes:[{t:'C (Dó maior)',v:'C'},{t:'Am (Lá menor)',v:'Am'},{t:'F (Fá maior)',v:'F'},{t:'G (Sol maior)',v:'G'},
+         {t:'Em (Mi menor)',v:'Em'},{t:'D (Ré maior)',v:'D'},{t:'Nenhum ainda, e está tudo bem',v:'nenhum',exclusiva:true}]},
+
+{id:'N6',bloco:'N',mede:'Nível',tipo:'radio',
+ se:s=>[3,4,5].includes(s.resp.N1)&&!afinaNao(s),
+ acordes:['C','Am','F','G'],
+ contexto:'Estes quatro abrem a maior parte das músicas, e é neles que o Iniciante 1 termina. Pega o ukulele e emenda os quatro, um atrás do outro, no tempo que der.',
+ enunciado:'Hoje, na sua mão, essa emenda:',
+ opcoes:[{t:'Sai solta, eu nem penso em cada acorde',v:'lisa'},
+         {t:'Sai, só que eu penso em cada troca',v:'pensando'},
+         {t:'Sai com pausas grandes entre um acorde e outro',v:'pausas'},
+         {t:'Ainda não sai',v:'nao_sai'}]},
+
+{id:'N6b',bloco:'N',mede:'Calibração',calib:'F2',tipo:'radio',
+ se:s=>[3,4,5].includes(s.resp.N1)&&!afinaNao(s),
+ contexto:'Ler desenho de batida é uma habilidade que se aprende no curso, e muita gente ainda não tem. Se for o seu caso, a última opção é a sua resposta e está tudo certo.',
+ enunciado:'Qual destes desenhos é a Batida Bate e Desce, a primeira do curso?',
+ opcoes:[{t:'Bate e Desce',img:'img-ponto-de-partida/b1.png',v:'certo'},
+         {t:'Batida Mãe no reto',img:'img-ponto-de-partida/b2.png',v:'err1',flag:'F2'},
+         {t:'Batida Avó',img:'img-ponto-de-partida/b3.png',v:'err2',flag:'F2'},
+         {t:'Ainda não leio desenho de batida',v:'nao_leio'}],
+ nota:'As três artes vêm do gerador de batidas. Na página real elas embaralham a cada carregamento, com alt neutro, e a opção certa acompanha o embaralhamento.'},
+
+{id:'N10',bloco:'N',mede:'Nível',tipo:'radio',
+ se:s=>[4,5].includes(s.resp.N1)&&!afinaNao(s),
+ acordes:['Cm7'],
+ enunciado:'Este é o Cm7 (Dó menor com sétima): um dedo deitado prendendo as quatro cordas de uma vez, na terceira casa. Essa barra é a pestana. Na sua mão, hoje, ela:',
+ opcoes:[{t:'Sai limpa, eu uso dentro de música',v:'limpa'},
+         {t:'Sai, mas abafa alguma corda e eu preciso ajeitar',v:'abafa'},
+         {t:'Já tentei e o dedo ainda não segura',v:'tentei'},
+         {t:'Nunca cheguei nesse assunto',v:'nunca'}]},
+
+{id:'X3',bloco:'X',mede:'Contexto',tipo:'texto',max:200,opcional:true,se:s=>acimaDoMapa(s),
+ enunciado:'E na sua leitura: tem alguma coisa que hoje segura a sua evolução no ukulele?',
+ sub:'Escreve do seu jeito. O que você escrever aqui eu levo em conta na sua análise.'},
+
+{id:'R1',bloco:'R',mede:'Rotina',tipo:'radio',
+ enunciado:'Numa semana comum, em quantos dias o ukulele consegue entrar?',
+ sub:'Vale o que já cabe na sua semana de hoje, não o que você gostaria que coubesse. Prometer demais aqui só faz o plano não servir depois.',
+ opcoes:[{t:'1 ou 2 dias',v:2},{t:'3 ou 4 dias',v:4},{t:'5 ou mais',v:5}]},
+
+{id:'R2',bloco:'R',mede:'Rotina',tipo:'radio',
+ enunciado:'E nesses dias, qual é o mínimo de tempo que você garante?',
+ sub:'Pensa no piso, não no seu melhor dia. É esse piso que eu uso para montar a sua rotina.',
+ opcoes:[{t:'15 minutos',v:15},{t:'20 minutos',v:20},{t:'30 minutos',v:30},{t:'45 minutos ou mais',v:45}]},
+
+{id:'O1',bloco:'O',mede:'Objetivo',tipo:'radio',
+ enunciado:'Daqui a alguns meses, qual dessas cenas te deixaria mais feliz?',
+ opcoes:[{t:'Eu no sofá, tocando para mim, desligando a cabeça',v:'para_mim'},{t:'Eu tocando e cantando para a família ou os amigos',v:'para_gente'},
+         {t:'Eu participando de uma roda, um grupo, um louvor',v:'em_grupo'},{t:'Eu me acompanhando bem enquanto canto as músicas que amo',v:'cantar'},
+         {t:'Eu dominando o instrumento de verdade, técnica e tudo',v:'dominio'}]},
+
+{id:'O3',bloco:'O',mede:'Objetivo',tipo:'check',limite:2,
+ enunciado:'Que som mora no seu ouvido?',sub:'Marque até dois.',
+ opcoes:[{t:'MPB e música brasileira de raiz',v:'mpb'},{t:'Pop e rock nacional',v:'pop_nac'},{t:'Músicas internacionais',v:'intl'},
+         {t:'Gospel e louvor',v:'gospel'},{t:'Músicas para tocar com criança',v:'infantil'},{t:'Sertanejo e música popular',v:'sertanejo'}]},
+
+{id:'O2',bloco:'O',mede:'Objetivo',tipo:'linha',max:120,
+ enunciado:'Qual música você quer estar tocando inteira daqui a alguns meses?',
+ sub:'Se não vier nenhuma na hora, vale o artista que você mais ouve. E se nem isso vier, escreve uma música que você ama ouvir, uma que você tocaria para homenagear alguém, ou uma que te deixa feliz toda vez que aparece.'},
+
+{id:'O4',bloco:'O',mede:'Contexto',produto:true,tipo:'radio',
+ se:s=>!semInstrumento(s),
+ contexto:'Se alguma coisa já te atrapalhou no caminho, ela muda a rotina que eu vou te entregar no fim. E se ainda não atrapalhou nada, a primeira opção é a sua.',
+ enunciado:'Teve alguma coisa que já te fez parar, ou quase parar, no ukulele?',
+ opcoes:[{t:'Ainda não teve nada assim',v:'nada'},{t:'A dor nos dedos me fez duvidar de mim',v:'dor'},
+         {t:'Travei num acorde e não passei dali',v:'acorde'},{t:'As duas mãos juntas não se entenderam',v:'maos'},
+         {t:'A rotina engoliu o tempo do ukulele',v:'rotina'},{t:'Fiquei sem saber o que estudar em seguida',v:'sem_norte'},
+         {t:'Achei que eu não tinha ritmo, ou que já era tarde para começar',v:'ritmo_tarde'},
+         {t:'Cheguei a estudar por aula ou curso, mas o jeito de ensinar não encaixou comigo',v:'metodo'}]},
+
+{id:'O5',bloco:'O',mede:'Contexto',produto:true,tipo:'texto',max:200,opcional:true,
+ se:s=>!acimaDoMapa(s),
+ contexto:'Última, e é a que eu leio com mais atenção. Ela não tem opção para escolher porque eu não quero te dar ideia nenhuma. Quero a sua palavra.',
+ enunciado:'Pensa em você com o ukulele na mão hoje. Tem alguma coisa nessa cena que te incomoda?',
+ sub:'Pode ser o que sai do instrumento, o que acontece no seu corpo ou o que passa na sua cabeça. Uma frase já basta.'}
+];
+
+/* ---------- ESTADO ---------- */
+function padrao(){return {resp:{},i:0,abriu:false,finalizado:false,enviado:false,uid:''};}
+let e=carregar();
+function carregar(){
+  try{const s=JSON.parse(localStorage.getItem(LS));if(s&&s.resp)return Object.assign(padrao(),s);}catch(x){}
+  return padrao();
+}
+function salvar(){try{localStorage.setItem(LS,JSON.stringify(e));}catch(x){}}
+
+/* ---------- PORTÕES ---------- */
+function semInstrumento(s){return ['esperando','nao_tem'].includes(s.resp.A1);}
+function afinaNao(s){return ['nao_percebe','percebe'].includes(s.resp.N2);}
+/* teto do Iniciante 1: os quatro acordes emendam sozinhos e a pestana sai limpa. */
+function acimaDoMapa(s){return s.resp.N1>=4&&s.resp.N6==='lisa'&&s.resp.N10==='limpa';}
+function visiveis(){return Q.filter(q=>!q.se||q.se(e));}
+
+/* ---------- DECISÃO: uma de três saídas ---------- */
+function flags(){
+  const f=[];
+  visiveis().forEach(q=>{if(q.mede!=='Calibração')return;
+    const o=(q.opcoes||[]).find(o=>o.v===e.resp[q.id]); if(o&&o.flag) f.push(o.flag);});
+  return f;
+}
+function nAcordes(){
+  return Array.isArray(e.resp.N3)?e.resp.N3.filter(v=>v!=='nenhum').length:null;
+}
+/* A N1 é a dobradiça entre Iniciante 0 e Iniciante 1, e cada lado tem uma
+   confirmação prática: a N3 embaixo (acordes de memória) e a N6 em cima (os quatro
+   acordes emendando). As flags de vocabulário nunca movem a saída: elas só marcam
+   fronteira, para a análise humana olhar com mais atenção (decisão D2). */
+function decidir(){
+  if(semInstrumento(e)) return {saida:'i0',fronteira:false,nf:0,motivo:'sem instrumento'};
+  const decl=e.resp.N1;
+  if(!decl) return {saida:null,fronteira:false,nf:0,motivo:'âncora não respondida'};
+  /* Não afinar manda para o Iniciante 0 só quem já se declarou no começo. Quem toca
+     música inteira e nunca percebeu o ukulele desafinado não precisa recomeçar do zero:
+     precisa da aula de afinação. Esse caso segue no Iniciante 1, marcado como fronteira. */
+  if(afinaNao(e)&&decl<=2) return {saida:'i0',fronteira:false,nf:0,
+    motivo:'ainda não afina, e afinar é o começo do Iniciante 0'};
+
+  let saida,fronteira=false,motivo='';
+  const na=nAcordes(),quatro=e.resp.N6,pestana=e.resp.N10;
+
+  if(decl<=2){
+    if(na>=3){saida='i1';fronteira=true;
+      motivo='declarou '+decl+' e monta '+na+' acordes de memória: Iniciante 1';}
+    else {saida='i0';
+      motivo='declarou '+decl+(na===null?'':' e monta '+na+' acordes')+': Iniciante 0';}
+  }else{
+    saida='i1';motivo='declarou '+decl+': Iniciante 1';
+    if(afinaNao(e)){fronteira=true;motivo+=' | toca mas não percebe desafinação: fronteira';}
+    if(quatro==='pausas'||quatro==='nao_sai'){fronteira=true;
+      motivo+=' | os quatro acordes ainda não emendam: fronteira';}
+    if(acimaDoMapa(e)){saida='passou';fronteira=false;
+      motivo='os quatro acordes emendam e a pestana sai limpa: passou do Iniciante 1';}
+  }
+
+  const nf=flags().length;
+  if(nf>=2){fronteira=true;motivo+=' | '+nf+' flags de vocabulário: fronteira';}
+  return {saida,fronteira,nf,motivo};
+}
+function curso(){const sa=decidir().saida;return sa?SAIDA[sa]:null;}
+/* O vídeo é sempre pedido, decisão do Mateus em 03/09/2026. O que muda é o roteiro:
+   quem está começando se apresenta e responde; quem já toca também toca no fim. */
+function pedeVideo(){return decidir().saida!==null;}
+function pedeToque(){const sa=decidir().saida;return sa==='i1'||sa==='passou';}
+
+/* ---------- diagramas de acorde ----------
+   Casas na ordem das cordas do ukulele, g C E A. 0 é corda solta.
+   Quatro dedos na mesma casa viram pestana: uma barra, não quatro pontos. */
+const FORMAS={
+  C:{casas:[0,0,0,3],nome:'C',pt:'Dó maior'},
+  Am:{casas:[2,0,0,0],nome:'Am',pt:'Lá menor'},
+  F:{casas:[2,0,1,0],nome:'F',pt:'Fá maior'},
+  G:{casas:[0,2,3,2],nome:'G',pt:'Sol maior'},
+  Cm7:{casas:[3,3,3,3],nome:'Cm7',pt:'Dó menor com sétima'}
+};
+function svgAcorde(k){
+  const f=FORMAS[k]; if(!f) return '';
+  const L=16,T=22,DX=22,DY=24,NC=4,NF=4,W=L*2+DX*3,H=T+DY*NF+10;
+  const x=i=>L+DX*i, y=n=>T+DY*n;
+  let g='';
+  for(let i=0;i<NC;i++) g+=`<line x1="${x(i)}" y1="${T}" x2="${x(i)}" y2="${y(NF)}" stroke="#8E85A8" stroke-width="1.2"/>`;
+  for(let n=1;n<=NF;n++) g+=`<line x1="${L}" y1="${y(n)}" x2="${L+DX*3}" y2="${y(n)}" stroke="#C9C2DA" stroke-width="1.2"/>`;
+  g+=`<line x1="${L-1}" y1="${T}" x2="${L+DX*3+1}" y2="${T}" stroke="#443468" stroke-width="4" stroke-linecap="round"/>`;
+  const uniq=[...new Set(f.casas)];
+  if(uniq.length===1&&uniq[0]>0){
+    const cy=y(uniq[0])-DY/2;
+    g+=`<rect x="${x(0)-8}" y="${cy-8}" width="${DX*3+16}" height="16" rx="8" fill="#443468"/>`;
+  }else{
+    f.casas.forEach((c,i)=>{
+      if(c>0) g+=`<circle cx="${x(i)}" cy="${y(c)-DY/2}" r="7.5" fill="#443468"/>`;
+      else g+=`<circle cx="${x(i)}" cy="${T-9}" r="4.2" fill="none" stroke="#8E85A8" stroke-width="1.4"/>`;
+    });
+  }
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="diagrama de acorde"><g>${g}</g></svg>`;
+}
+function acordesHTML(lista){
+  return `<div class="acordes">${lista.map(k=>{const f=FORMAS[k];
+    return `<div class="acorde">${svgAcorde(k)}<b>${f.nome}</b><small>${f.pt}</small></div>`;}).join('')}</div>`;
+}
+
+const ROTEIRO_VIDEO={
+  i0:['Se apresenta: nome, de onde você fala e há quanto tempo o ukulele entrou na sua vida.',
+      'Conta por que foi justamente o ukulele, e não outro instrumento.',
+      'Conta o que você quer estar tocando daqui a alguns meses.'],
+  i1:['Se apresenta: nome, de onde você fala e há quanto tempo você toca.',
+      'Conta por que foi justamente o ukulele, e não outro instrumento.',
+      'Conta o que você quer estar tocando daqui a alguns meses.',
+      'No fim, toca alguma coisa que hoje você considera que já está boa. Não precisa sair perfeita, e é melhor que não saia: eu preciso ver como ela é de verdade.'],
+  passou:['Se apresenta: nome, de onde você fala e há quanto tempo você toca.',
+      'Conta por que foi justamente o ukulele, e não outro instrumento.',
+      'Conta onde você quer chegar daqui para a frente.',
+      'Toca alguma coisa que hoje você considera que já está boa.',
+      'E toca também o trecho que hoje você acha o mais difícil do seu repertório. É nele que eu vejo o que ainda dá para melhorar.']
+};
+
+function corpoHTML(q){
+  const r=e.resp[q.id];
+  if(q.tipo==='radio') return `<div class="opts">${q.opcoes.map((o,i)=>
+    `<label class="opt" data-sel="${r===o.v}" data-i="${i}"><span class="letra">${LETRAS[i]}</span><span class="marca"></span>${o.img?`<img class="desenho" src="${o.img}" alt="desenho de batida">`:`<span>${o.t}</span>`}</label>`).join('')}</div>`;
+  if(q.tipo==='check'){
+    const sel=Array.isArray(r)?r:[],cheio=q.limite&&sel.length>=q.limite;
+    return `<div class="opts">${q.opcoes.map((o,i)=>{
+      const on=sel.includes(o.v),off=!!(cheio&&!on&&!o.exclusiva);
+      return `<label class="opt check" data-sel="${on}" data-off="${off}" data-i="${i}"><span class="letra">${LETRAS[i]}</span><span class="marca"></span><span>${o.t}</span></label>`;}).join('')}</div>
+      ${q.limite?`<p class="contador">${sel.length} de ${q.limite}</p>`:''}`;
+  }
+  if(q.tipo==='texto') return `<textarea class="livre" id="livre" maxlength="${q.max}"></textarea><div class="contador"><span class="dica-teclado">Enter para seguir, Shift e Enter para pular linha</span> <span id="cont">0</span>/${q.max}</div>`;
+  if(q.tipo==='linha') return `<input class="livre" id="livre" maxlength="${q.max}"><div class="contador"><span class="dica-teclado">Enter para seguir</span> <span id="cont">0</span>/${q.max}</div>`;
+  return '';
+}
+
+function ligarCorpo(q){
+  if(q.tipo==='radio'||q.tipo==='check'){
+    palco.querySelectorAll('.opt').forEach(el=>{
+      if(el.dataset.off==='true')return;
+      el.onclick=()=>{
+        const o=q.opcoes[+el.dataset.i];
+        if(q.tipo==='radio'){
+          e.resp[q.id]=o.v;
+          render();
+          const alvo=palco.querySelector('.opt[data-sel=true]');
+          if(alvo) alvo.classList.add('confirmando');
+          clearTimeout(avancoTimer);
+          avancoTimer=setTimeout(()=>{ if(e.i<visiveis().length){e.i++;render();} },260);
+          return;
+        }
+        else{
+          let sel=Array.isArray(e.resp[q.id])?e.resp[q.id].slice():[];
+          if(o.exclusiva) sel=sel.includes(o.v)?[]:[o.v];
+          else{
+            sel=sel.filter(v=>!(q.opcoes.find(x=>x.v===v)||{}).exclusiva);
+            sel.includes(o.v)?sel.splice(sel.indexOf(o.v),1):sel.push(o.v);
+            if(q.limite&&sel.length>q.limite) sel=sel.slice(-q.limite);
+          }
+          e.resp[q.id]=sel;
+          const fechou = (o.exclusiva && sel.includes(o.v)) || (q.limite && sel.length===q.limite);
+          if(fechou){
+            render();
+            const alvo=palco.querySelector(`.opt[data-i="${el.dataset.i}"]`);
+            if(alvo) alvo.classList.add('confirmando');
+            clearTimeout(avancoTimer);
+            avancoTimer=setTimeout(()=>{ if(e.i<visiveis().length){e.i++;render();} },320);
+            return;
+          }
+        }
+        render();
+      };
+    });
+  }
+  if(q.tipo==='texto'||q.tipo==='linha'){
+    const ta=document.getElementById('livre');ta.value=e.resp[q.id]||'';
+    document.getElementById('cont').textContent=ta.value.length;
+    ta.oninput=()=>{e.resp[q.id]=ta.value;document.getElementById('cont').textContent=ta.value.length;salvar();
+      const av=document.getElementById('avancar'); if(av) av.disabled=!podeAvancar(q);};
+    ta.onkeydown=ev=>{ if(ev.key==='Enter'&&!ev.shiftKey){ev.preventDefault(); if(podeAvancar(q)){e.i++;render();}} };
+  }
+}
+function podeAvancar(q){
+  if(q.opcional)return true;
+  if(q.tipo==='linha') return !!(e.resp[q.id]||'').trim();
+  const r=e.resp[q.id];
+  if(q.tipo==='check')return Array.isArray(r)&&r.length>0;
+  return r!==undefined&&r!=='';
+}
+
+/* ---------- RENDER ---------- */
+const palco=document.getElementById('palco');
+const HERO={A:'Primeiro, um pouco da sua história',N:'O ukulele nas suas mãos',X:'Você passou do Mapa do Iniciante',R:'Seu tempo, do jeito que ele é',O:'Onde você quer chegar'};
+const NOMEB={A:'Chegada',N:'Onde você está',X:'Acima do Mapa',R:'Rotina',O:'Objetivo e você'};
+let avancoTimer=null, vis=[];
+
+function render(){
+  salvar();
+  vis=visiveis();
+  if(e.finalizado||e.i>=vis.length){renderResultado();return;}
+  if(!e.abriu){renderAbertura();return;}
+  renderPergunta();
+}
+
+function renderAbertura(){
+  palco.innerHTML=`
+    <div class="atv-hero">
+      <span class="eyebrow">Ponto de Partida</span>
+      <h2>${PRIMEIRO?PRIMEIRO+', vamos achar o seu ponto de partida':'Vamos achar o seu ponto de partida'}</h2>
+    </div>
+    <section class="atv-card">
+      <p class="abertura">São poucas perguntas, menos de cinco minutos. No fim você recebe um plano curto e com o seu nome, dizendo por qual curso começar e como encaixar o estudo na semana que você tem de verdade. Não existe resposta errada e nada aqui vale nota.</p>
+      <p class="abertura">Deixa o ukulele por perto, se ele já estiver com você. E se ainda não chegou, fica tranquilo: tem um caminho mais curto esperando, e o seu plano sai do mesmo jeito.</p>
+      <button class="btn" id="comecar">Começar</button>
+      <p class="dica-teclado" style="margin-top:12px;text-align:center">Dá para responder tudo pelo teclado: as letras escolhem e Enter segue.</p>
+    </section>`;
+  const b=document.getElementById('comecar');
+  b.onclick=()=>{e.abriu=true;if(!e.uid&&crypto.randomUUID)e.uid=crypto.randomUUID();render();};
+  b.focus();
+}
+
+function renderPergunta(){
+  const q=vis[e.i],pct=Math.round((e.i/vis.length)*100);
+  palco.innerHTML=`
+    <div class="progresso"><div class="barra"><i style="width:${pct}%"></i></div><span>${e.i+1} de ${vis.length}</span></div>
+    <div class="atv-hero"><span class="eyebrow">${NOMEB[q.bloco]}</span><h2>${HERO[q.bloco]}</h2></div>
+    <section class="atv-card pergunta">
+      ${q.acordes?acordesHTML(q.acordes):''}
+      ${q.contexto?`<p class="contexto">${q.contexto}</p>`:''}
+      <p class="enunciado">${q.enunciado}</p>
+      ${q.sub?`<p class="sub">${q.sub}</p>`:''}
+      ${corpoHTML(q)}
+    </section>
+    <div class="nav">
+      <button class="btn ghost" id="voltar" ${e.i===0?'disabled':''}>Voltar</button>
+      ${(q.tipo==='radio'&&e.i<vis.length-1)?'<span class="dica-auto">Escolha uma opção para seguir</span>':
+        `<button class="btn" id="avancar" ${podeAvancar(q)?'':'disabled'}>${e.i===vis.length-1?'Ver meu resultado':'Continuar'}</button>`}
+    </div>`;
+  ligarCorpo(q);
+  document.getElementById('voltar').onclick=()=>{clearTimeout(avancoTimer);e.i--;render();};
+  const av=document.getElementById('avancar');
+  if(av) av.onclick=()=>{ if(e.i>=vis.length-1) finalizar(); else {e.i++;render();} };
+}
+
+/* o avanço automático nunca dispara na última: lá o botão é "Ver meu resultado" */
+function avancar(){ if(e.i<vis.length-1){e.i++;render();} }
+
+function finalizar(){
+  e.finalizado=true;
+  render();
+  enviar();
+}
+
+function renderResultado(){
+  const d=decidir(),cur=curso(),acima=d.saida==='passou';
+  if(!d.saida){ e.finalizado=false;e.i=0;render();return; }
+  const rot=(e.resp.R1&&e.resp.R2)?e.resp.R1+' dias por semana, '+e.resp.R2+' minutos por dia':'';
+  const url=acima?'':(URL_CURSO[d.saida]||'');
+
+  palco.innerHTML=`
+    <div class="res-hero"><span class="eyebrow">Ponto de Partida</span>
+      <h2>${PRIMEIRO?PRIMEIRO+', ':''}${SAIDA[d.saida].titulo}</h2>
+      <p>${acima
+        ?'O Mapa do Iniciante é o Iniciante 0 mais o Iniciante 1, e você já passou dos dois. Daqui em diante o seu ponto de partida sai da minha análise, olhando você tocar.'
+        :'Isso não é nota nem classificação. É só o lugar onde o seu próximo passo rende mais.'}</p></div>
+
+    ${acima?'':`
+    <section class="atv-card"><span class="atv-pill">Por onde começar</span>
+      <p class="destino">Comece pelo <b>${cur.nome}</b></p>
+      <p class="destino-sub">${cur.sub}</p>
+      ${url?`<a class="btn" style="text-decoration:none;margin-bottom:12px" href="${url}">Ir para o ${cur.nome}</a>`:''}
+      <p class="sub" style="margin:0">Os módulos abrem todos de uma vez, então você entra por onde precisa e volta quando quiser.</p>
+    </section>`}
+
+    <section class="atv-card" style="border-color:var(--coral)"><span class="atv-pill">Agora eu quero te conhecer</span>
+      <p class="enunciado" style="margin-bottom:6px">Grava um vídeo curto para mim. ${d.saida==='i0'?'Não precisa tocar nada.':'No fim dele você toca.'}</p>
+      <p class="sub" style="margin:0 0 14px">Pode ser pelo celular, do jeito que der. Uns três minutos bastam, e é a coisa que mais me ajuda a te ajudar.</p>
+      <ol class="roteiro">${ROTEIRO_VIDEO[d.saida].map(l=>'<li>'+l+'</li>').join('')}</ol>
+      <div class="upload">O bloco de envio do vídeo entra aqui.</div>
+    </section>
+
+    ${rot?`
+    <section class="atv-card"><span class="atv-pill">A sua rotina</span>
+      <p class="enunciado" style="margin-bottom:4px">${rot}</p>
+      <div class="apd">
+        <div><b>Aquecimento</b><small>Exercício 1234 ou troca de acordes, 2 a 3 minutos. Abre toda sessão.</small></div>
+        <div><b>Aprender</b><small>Aula nova, conteúdo que você ainda não viu.</small></div>
+        <div><b>Praticar</b><small>Repetir o que já viu até virar automático.</small></div>
+        <div><b>Divertir</b><small>Tocar música pelo prazer. Sem meta.</small></div>
+      </div>
+    </section>`:''}
+
+    <div class="nav no-print">
+      <button class="btn ghost" id="voltar">Voltar</button>
+      <button class="btn" id="imprimir">Salvar em PDF</button>
+    </div>`;
+
+  document.getElementById('imprimir').onclick=()=>window.print();
+  document.getElementById('voltar').onclick=()=>{e.finalizado=false;e.i=Math.max(0,visiveis().length-1);render();};
+}
+
+/* ---------- envio ---------- */
+function corpoEnvio(){
+  const d=decidir();
+  return {
+    id:ALUNO.id, email:ALUNO.email, nome:ALUNO.nome,
+    tentativa_uid:e.uid, versao_questionario:'3.0',
+    respostas:e.resp, decisao:{saida:d.saida,fronteira:d.fronteira,nf:d.nf,motivo:d.motivo},
+    caminho:visiveis().map(q=>q.id)
+  };
+}
+function enviar(){
+  if(!API||e.enviado) return;
+  fetch(API.replace(/\/$/,'')+'/finalizar',{
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(corpoEnvio())
+  }).then(r=>r.json()).then(j=>{ if(j&&j.ok){e.enviado=true;salvar();} }).catch(()=>{});
+}
+function rascunho(){
+  if(!API||e.finalizado||!e.abriu) return;
+  const b=JSON.stringify(corpoEnvio());
+  if(navigator.sendBeacon) navigator.sendBeacon(API.replace(/\/$/,'')+'/rascunho',new Blob([b],{type:'application/json'}));
+}
+addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden') rascunho(); });
+addEventListener('pagehide',rascunho);
+
+/* ---------- teclado ---------- */
+addEventListener('keydown',ev=>{
+  if(e.finalizado||!e.abriu) return;
+  const q=vis[e.i]; if(!q) return;
+  const alvo=ev.target;
+  if(alvo&&(alvo.tagName==='TEXTAREA'||alvo.tagName==='INPUT')) return;
+  if(ev.key==='Enter'){
+    const av=document.getElementById('avancar');
+    if(av&&!av.disabled){ev.preventDefault();av.click();}
+    return;
+  }
+  const i=LETRAS.indexOf(ev.key.toUpperCase());
+  if(i>=0&&q.opcoes&&q.opcoes[i]){
+    const el=palco.querySelector('.opt[data-i="'+i+'"]');
+    if(el&&el.dataset.off!=='true'){ev.preventDefault();el.click();}
+  }
+});
+
+render();
+</script>
+</body>
+</html>
