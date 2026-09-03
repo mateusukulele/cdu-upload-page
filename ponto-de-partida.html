@@ -99,6 +99,33 @@ input.livre{min-height:0;padding:13px 12px;display:block}
 .aviso{background:#FDF4E6;border:1px solid #E3C892;border-radius:12px;padding:12px 14px;font-size:14px;color:#6B4711;margin-bottom:14px}
 .carregando{text-align:center;padding:40px 0;color:var(--text-soft);font-size:15px}
 
+/* ===== INICIO CSS ROTINA (o build recorta daqui) ===== */
+.rot-titulo{{font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--text-soft);margin:20px 0 8px}}
+.semana{{margin:0;padding-left:20px;font-size:14.5px}}
+.semana li{{margin-bottom:6px}}
+.semana li b{{color:var(--anchor)}}
+.semana li i{{font-style:normal;color:var(--text-soft);font-size:13.5px}}
+.grade-wrap{{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:6px}}
+.grade{{width:100%;border-collapse:collapse;font-size:14px;min-width:340px}}
+.grade th,.grade td{{border:1px solid var(--linha);padding:8px 6px;text-align:center}}
+.grade thead th{{background:var(--anchor);color:#fff;font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-weight:700}}
+.grade tbody th{{text-align:left;background:var(--surface);font-weight:700;color:var(--anchor);font-size:13.5px;min-width:132px}}
+.grade tbody th small{{display:block;font-weight:400;color:var(--text-soft);font-size:12px}}
+.grade td{{font-weight:700;color:var(--text)}}
+.grade td.zero{{color:#B7B2C6;font-weight:400}}
+.grade td em{{display:block;font-style:normal;font-weight:400;font-size:11.5px;color:var(--text-soft);margin-top:2px}}
+.grade tr.coringa th{{background:#FFF1F3;color:var(--coral-text)}}
+.grade tr.coringa td{{background:#FFF9FA}}
+.quando{{margin:10px 0 0;font-size:13.5px;color:var(--text-soft)}}
+.quando li{{margin-bottom:5px;list-style:none}}
+.quando b{{color:var(--anchor)}}
+.blocos{{display:grid;gap:10px}}
+.blocos div{{background:var(--surface);border-radius:10px;padding:11px 13px}}
+.blocos b{{display:block;font-size:14px;color:var(--anchor);margin-bottom:3px}}
+.blocos small{{display:block;font-size:13px;color:var(--text);margin-bottom:4px}}
+.blocos em{{display:block;font-size:12.5px;color:var(--text-soft);font-style:normal}}
+.blocos em::before{{content:'Você sabe que está aqui quando: '}}
+
 @media print{
   .nav,.progresso,.upload,.no-print{display:none !important}
   body{background:#fff}
@@ -134,6 +161,11 @@ const API='';                 /* URL do Worker cdu-nivelamento. Vazio = só loca
 const PRODUTO='';             /* nome do produto no cademi-validador. Vazio = sem portão. */
 const TUS='https://cademi-tus-server-1019908552664.southamerica-east1.run.app/files/';
 const MINHAS_ANALISES='https://aluno.comotocarukulele.com/area/produto/624593';
+/* PROVISÓRIO, a pedido do Mateus em 03/09/2026: libera refazer o nivelamento inteiro
+   depois de finalizado, para ele conseguir testar várias vezes seguidas. **Virar false
+   antes de publicar para os alunos**: um aluno refazendo do zero manda um segundo vídeo
+   e a análise dele vira duas fichas concorrentes. */
+const REFAZER=true;
 const ATIVIDADE='nivelamento-1_1-me-mostra-como-voce-toca';
 const TITULO_ATIVIDADE='Ponto de Partida | Me mostra como você toca';
 const URL_CURSO={
@@ -423,43 +455,41 @@ function rotina(){
 /* ---------- ROTINA: o que o aluno lê ----------
    Tudo daqui é sugestão, e o texto tem que soar assim. Plano escolhido pelo aluno é
    cumprido; plano mandado é abandonado. */
-function minutos(n){return n+(n===1?' min':' min');}
-function linhaBloco(chave,n,pass){
-  if(!n) return '';
-  const b=BLOCO[chave];
-  return `<div class="lb"><span class="lb-n">${minutos(n)}</span>
-    <span class="lb-t"><b>${b.nome}</b>${pass?`<small>${pass[0]} min, 1 min de pausa de verdade, e mais ${pass[1]} min</small>`:''}</span></div>`;
+function cel(n,pass){
+  if(!n) return '<td class="zero">—</td>';
+  return `<td>${n} min${pass?`<em>${pass[0]} + pausa + ${pass[1]}</em>`:''}</td>`;
 }
-function cardDia(d,coringa){
-  return `<article class="dia ${coringa?'coringa':''}">
-    <header><b>${d.nome}</b><span>${d.sub}</span></header>
-    <p class="dia-quando">${d.quando}</p>
-    ${linhaBloco('aq',d.aq,null)}
-    ${linhaBloco('ap',d.ap,d.apPassadas)}
-    ${linhaBloco('pr',d.pr,d.prPassadas)}
-    ${linhaBloco('dv',d.dv,null)}
-  </article>`;
+function linhaGrade(d,coringa){
+  return `<tr class="${coringa?'coringa':''}">
+    <th>${d.nome}<small>${d.sub}</small></th>
+    ${cel(d.aq,null)}${cel(d.ap,d.apPassadas)}${cel(d.pr,d.prPassadas)}${cel(d.dv,null)}
+  </tr>`;
 }
 function rotinaHTML(){
   const r=rotina(); if(!r) return '';
-  const usados=[...new Set(r.receita.map(d=>d.k))];
+  const usados=[];
+  r.receita.forEach(d=>{ if(!usados.some(x=>x.k===d.k)) usados.push(d); });
   return `
   <section class="atv-card"><span class="atv-pill">A sua rotina</span>
     <p class="destino">${r.dias===5?'5 dias ou mais':r.dias+' dias'} por semana, ${r.min} minutos por dia</p>
     <p class="sub" style="margin:0 0 14px">Isso aqui é um ponto de partida, não uma regra. Comece por essa sugestão e, depois do primeiro mês, você vai saber melhor que a gente o que o seu dia aguenta.</p>
 
     <p class="rot-titulo">A sua semana</p>
-    <ol class="semana">${r.receita.map(d=>`<li><b>${d.nome}</b><span>${d.sub}</span></li>`).join('')}</ol>
+    <ol class="semana">${r.receita.map(d=>`<li><b>${d.nome}</b> <i>${d.sub}</i></li>`).join('')}</ol>
     ${r.dias===2?'<p class="sub" style="margin:8px 0 0">Espaça os dois. Quarta e sábado rendem mais que sábado e domingo: o ganho está no intervalo, não na soma dos minutos.</p>':''}
-    ${r.dias===3?'<p class="sub" style="margin:8px 0 0">Evita os três colados. E lembra: 2 dias por semana mantêm você tocando, 3 ou mais já começam a andar de verdade.</p>':''}
+    ${r.dias===3?'<p class="sub" style="margin:8px 0 0">Evita os três colados. E vale saber: 2 dias por semana mantêm você tocando, 3 ou mais já começam a andar de verdade.</p>':''}
     ${r.seisEmDiante?'<p class="sub" style="margin:8px 0 0">Do sexto dia em diante, só Dia Livre ou Dia Leve. Aqui o Livre deixa de ser opção e vira recomendação: é ele que impede a rotina de virar obrigação.</p>':''}
 
-    <p class="rot-titulo">Como fica cada dia</p>
-    ${usados.map(k=>cardDia(r.receita.find(d=>d.k===k))).join('')}
+    <p class="rot-titulo">Os seus ${r.min} minutos, dia por dia</p>
+    <div class="grade-wrap"><table class="grade">
+      <thead><tr><th>Tipo de dia</th><th>Aquec.</th><th>Aprend.</th><th>Prática</th><th>Diversão</th></tr></thead>
+      <tbody>${usados.map(d=>linhaGrade(d,false)).join('')}${linhaGrade(r.leve,true)}</tbody>
+    </table></div>
+    <p class="sub" style="margin:0 0 4px">Onde aparece <b>+ pausa +</b>, são duas passadas com 1 minuto de pausa de verdade no meio: solta o ukulele, sacode a mão. O minuto sai de dentro do próprio bloco, o dia não cresce.</p>
 
-    <p class="rot-titulo">A sua carta de troca</p>
-    ${cardDia(r.leve,true)}
-    <p class="sub" style="margin:10px 0 0">Chegou o dia e você está acabado? Troca o que estava marcado por um Dia Leve. Isso não é furar o plano. Furar o plano é não pegar o ukulele.</p>
+    <p class="rot-titulo">Quando usar cada um</p>
+    <ul class="quando">${usados.concat([r.leve]).map(d=>`<li><b>${d.nome}:</b> ${d.quando}</li>`).join('')}</ul>
+    <p class="sub" style="margin:12px 0 0">A última linha da tabela é a sua carta de troca. Chegou o dia e você está acabado? Troca o que estava marcado por um Dia Leve. Isso não é furar o plano. Furar o plano é não pegar o ukulele.</p>
 
     <p class="rot-titulo">O que é cada bloco</p>
     <div class="blocos">${['aq','ap','pr','dv'].map(k=>`<div><b>${BLOCO[k].nome}</b><small>${BLOCO[k].oque}</small><em>${BLOCO[k].sinal}</em></div>`).join('')}</div>
@@ -738,7 +768,8 @@ function renderResultado(){
 
     <div class="nav no-print">
       <button class="btn" id="imprimir">Salvar em PDF</button>
-    </div>`;
+    </div>
+    ${REFAZER?'<p style="text-align:center;margin-top:14px"><button class="btn-texto" id="refazer">Refazer o nivelamento do zero (provisório, para teste)</button></p>':''}`;
 
   document.getElementById('imprimir').onclick=()=>window.print();
   const gr=document.getElementById('gravarAgora');
@@ -747,6 +778,12 @@ function renderResultado(){
   if(lista) lista.querySelectorAll('.opt').forEach(el=>{
     el.onclick=()=>{e.editando=true;e.finalizado=false;e.i=+el.dataset.i;render();};
   });
+  const rf=document.getElementById('refazer');
+  if(rf) rf.onclick=()=>{
+    if(!confirm('Isso apaga tudo, inclusive o vídeo já enviado, e começa o nivelamento do zero. Quer mesmo?')) return;
+    try{localStorage.removeItem(LS);}catch(x){}
+    e=padrao(); salvar(); render();
+  };
 }
 
 /* ---------- envio ---------- */
