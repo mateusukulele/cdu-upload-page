@@ -133,6 +133,7 @@ window.__cduPontoDePartida = true;
 const API='';                 /* URL do Worker cdu-nivelamento. Vazio = só localStorage. */
 const PRODUTO='';             /* nome do produto no cademi-validador. Vazio = sem portão. */
 const TUS='https://cademi-tus-server-1019908552664.southamerica-east1.run.app/files/';
+const MINHAS_ANALISES='https://aluno.comotocarukulele.com/area/produto/624593';
 const ATIVIDADE='nivelamento-1_1-me-mostra-como-voce-toca';
 const TITULO_ATIVIDADE='Ponto de Partida | Me mostra como você toca';
 const URL_CURSO={
@@ -441,6 +442,8 @@ function render(){
   if(e.i>=vis.length){
     /* Quem passou da régua do zero só vê o resultado depois de mandar o vídeo. Quem
        está no zero não tem o que gravar, e vai direto. */
+    /* Um vídeo por nivelamento. Depois de enviado, a tela de envio não volta mais: o
+       aluno vê a ficha dele e acompanha a análise em Minhas Análises. */
     if(pedeVideo()&&!e.videoOk&&!e.videoAdiado){renderVideo();return;}
     finalizar();return;
   }
@@ -519,6 +522,7 @@ function terminarEdicao(){ e.editando=false; e.finalizado=true; render(); reenvi
    A saída de emergência é de propósito: uma conexão ruim não pode custar o questionário
    inteiro. Quem sai por ela fica com `video_pendente` na planilha. */
 function renderVideo(){
+  if(e.videoOk){ finalizar(); return; }   /* um vídeo só, e ele já veio */
   const perfil=perfilVideo();
   const roteiro=ROTEIRO_VIDEO[perfil].concat(oQueTocar()
     ?['No fim, toca '+oQueTocar()+'. Não precisa sair perfeita, e é melhor que não saia: eu preciso ver como ela é de verdade.']:[]);
@@ -594,12 +598,16 @@ function renderResultado(){
       <p class="sub" style="margin:0">Os módulos abrem todos de uma vez, então você entra por onde precisa e volta quando quiser.</p>
     </section>`}
 
-    <section class="atv-card" style="border-color:var(--coral)"><span class="atv-pill">Agora eu quero te conhecer</span>
-      <p class="enunciado" style="margin-bottom:6px">Grava um vídeo curto para mim. ${perfil==='zero'?'Não precisa tocar nada.':'No fim dele você toca.'}</p>
-      <p class="sub" style="margin:0 0 14px">Pode ser pelo celular, do jeito que der. Uns três minutos bastam, e é a coisa que mais me ajuda a te ajudar.</p>
-      <ol class="roteiro">${ROTEIRO_VIDEO[perfil].concat(oQueTocar()?['No fim, toca '+oQueTocar()+'. Não precisa sair perfeita, e é melhor que não saia: eu preciso ver como ela é de verdade.']:[]).map(l=>'<li>'+l+'</li>').join('')}</ol>
-      <div class="upload">O bloco de envio do vídeo entra aqui.</div>
-    </section>
+    ${!pedeVideo()?'':(e.videoOk?`
+    <section class="atv-card" style="border-color:var(--ok)"><span class="atv-pill" style="background:var(--ok);color:#fff">Vídeo recebido</span>
+      <p class="enunciado" style="margin-bottom:6px">Você já enviou o seu vídeo.</p>
+      <p class="sub" style="margin:0 0 14px">A sua análise fica disponível em até 3 dias úteis depois do envio, na aba Minhas Análises, junto com as análises das suas atividades.</p>
+      <a class="btn no-print" style="text-decoration:none" href="${MINHAS_ANALISES}" target="_top">Ir para Minhas Análises</a>
+    </section>`:`
+    <section class="atv-card no-print" style="border-color:var(--coral)"><span class="atv-pill">Falta o seu vídeo</span>
+      <p class="sub" style="margin:0 0 12px">Você deixou o vídeo para depois. Ele é o que me deixa ver o que resposta nenhuma mostra, e quando der é por aqui.</p>
+      <button class="btn" id="gravarAgora">Gravar e enviar agora</button>
+    </section>`)}
 
     ${rot?`
     <section class="atv-card"><span class="atv-pill">A sua rotina</span>
@@ -610,12 +618,6 @@ function renderResultado(){
         <div><b>Praticar</b><small>Repetir o que já viu até virar automático.</small></div>
         <div><b>Divertir</b><small>Tocar música pelo prazer. Sem meta.</small></div>
       </div>
-    </section>`:''}
-
-    ${e.videoAdiado&&!e.videoOk?`
-    <section class="atv-card no-print" style="border-color:var(--coral)"><span class="atv-pill">Falta o seu vídeo</span>
-      <p class="sub" style="margin:0 0 12px">Você deixou o vídeo para depois. Quando der, é por aqui.</p>
-      <button class="btn" id="gravarAgora">Gravar e enviar agora</button>
     </section>`:''}
 
     <section class="atv-card no-print"><span class="atv-pill">Mudou alguma coisa?</span>
@@ -631,7 +633,7 @@ function renderResultado(){
 
   document.getElementById('imprimir').onclick=()=>window.print();
   const gr=document.getElementById('gravarAgora');
-  if(gr) gr.onclick=()=>{e.videoAdiado=false;e.finalizado=false;e.i=visiveis().length;render();};
+  if(gr) gr.onclick=()=>{ if(e.videoOk) return; e.videoAdiado=false;e.finalizado=false;e.i=visiveis().length;render(); };
   const lista=document.getElementById('corrigir');
   if(lista) lista.querySelectorAll('.opt').forEach(el=>{
     el.onclick=()=>{e.editando=true;e.finalizado=false;e.i=+el.dataset.i;render();};
