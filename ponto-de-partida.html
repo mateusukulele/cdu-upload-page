@@ -699,7 +699,9 @@ addEventListener('keydown',ev=>{
 if(qs.get('debug')==='1') window.__pp={
   estado:()=>JSON.parse(JSON.stringify(e)),
   decidir:()=>decidir(), perfil:()=>perfilVideo(), toca:()=>oQueTocar(),
-  video:()=>pedeVideo(), caminho:()=>visiveis().map(q=>q.id), aluno:ALUNO
+  video:()=>pedeVideo(), caminho:()=>visiveis().map(q=>q.id), aluno:ALUNO,
+  /* Só para revisar a tela de "vídeo recebido" sem gastar um upload de verdade no tus. */
+  simularVideoRecebido:()=>{ e.videoOk=true; e.videoAdiado=false; finalizar(); return 'ok'; }
 };
 
 new MutationObserver(()=>{
