@@ -370,6 +370,22 @@ const DIA={
   livre:{nome:'Dia Livre',sub:'dia sem cobrança',quando:'Só tocar, sem corrigir nada.'}
 };
 
+/* A pessoa conta o sonho dela na O1 e na O2 e, sem isto, a ficha nunca devolvia nada
+   disso. Numa página que é a ficha dela, é estranho: ela contou, e o papel não menciona. */
+const CENA={
+  para_mim:'tocando para você mesmo, para desligar a cabeça',
+  para_gente:'tocando e cantando para a família ou os amigos',
+  em_grupo:'tocando numa roda, num grupo, num louvor',
+  dominio:'dominando o instrumento de verdade, técnica e tudo'
+};
+function oQueEleContou(){
+  const musica=(e.resp.O2||'').trim(), cena=CENA[e.resp.O1];
+  if(!musica&&!cena) return '';
+  if(musica&&cena) return `Você me disse que quer estar tocando <b>${musica}</b>, e se ver ${cena}. É daí que sai o que vem abaixo.`;
+  if(musica) return `Você me disse que quer estar tocando <b>${musica}</b>. É daí que sai o que vem abaixo.`;
+  return `Você me disse que quer se ver ${cena}. É daí que sai o que vem abaixo.`;
+}
+
 const BLOCO={
   aq:{nome:'Aquecimento',oque:'Mecânica pura, sem música: soltar a mão, trocar acorde no vazio.',sinal:'Ninguém reconheceria o que você está tocando.'},
   ap:{nome:'Aprendizado',oque:'O que você ainda não consegue. Devagar, repetido, feio. A aula nova entra aqui.',sinal:'Você erra. Se não está errando, isso não é Aprendizado, é Prática.'},
@@ -689,7 +705,8 @@ function renderResultado(){
       <h2>${PRIMEIRO?PRIMEIRO+', ':''}${SAIDA[d.saida].titulo}</h2>
       <p>${acima
         ?'O Mapa do Iniciante é o Iniciante 0 mais o Iniciante 1, e você já passou dos dois. Daqui em diante o seu ponto de partida sai da minha análise, olhando você tocar.'
-        :'Isso não é nota nem classificação. É só o lugar onde o seu próximo passo rende mais.'}</p></div>
+        :'Isso não é nota nem classificação. É só o lugar onde o seu próximo passo rende mais.'}</p>
+      ${oQueEleContou()?`<p style="margin-top:8px">${oQueEleContou()}</p>`:''}</div>
 
     ${acima?'':`
     <section class="atv-card"><span class="atv-pill">Por onde começar</span>
