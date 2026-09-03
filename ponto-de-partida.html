@@ -166,6 +166,10 @@ details.dobra .corpo{padding:0 16px 16px}
   .roteiro,.semana,.blista{break-inside:avoid}
   .barra i{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .rodape-impresso{display:block !important;margin-top:14px;font-size:10.5px;color:#6E6A85;text-align:center}
+  /* Impressão pedida pelo botão: só a rotina e o rodapé. Ctrl+P direto continua
+     imprimindo a ficha inteira, para quem quiser. */
+  body.so-rotina .atv-wrap>*:not(.rotina-print):not(.rodape-impresso){display:none !important}
+  body.so-rotina .rotina-print{border:0;padding:0}
   @page{size:A4;margin:14mm}
 }
 .rodape-impresso{display:none}
@@ -517,7 +521,7 @@ function rotinaHTML(){
   r.receita.forEach(d=>{ if(!usados.some(x=>x.k===d.k)) usados.push(d); });
   const todos=usados.concat([r.leve]);
   return `
-  <section class="atv-card"><span class="atv-pill">A sua rotina</span>
+  <section class="atv-card rotina-print"><span class="atv-pill">A sua rotina</span>
     <p class="destino">${r.dias===5?'5 dias ou mais':r.dias+' dias'} por semana, ${r.min} minutos por dia</p>
     <p class="sub" style="margin:0 0 14px">Isso aqui é um ponto de partida, não uma regra. Comece por essa sugestão e, depois do primeiro mês, você vai saber melhor que a gente o que o seu dia aguenta.</p>
 
@@ -823,13 +827,18 @@ function renderResultado(){
     </details>
 
     <div class="nav no-print">
-      <button class="btn" id="imprimir">Salvar em PDF</button>
+      <button class="btn" id="imprimir">Salvar a minha rotina em PDF</button>
     </div>
     ${REFAZER?'<p style="text-align:center;margin-top:14px"><button class="btn-texto" id="refazer">Refazer o nivelamento do zero (provisório, para teste)</button></p>':''}
     <p class="rodape-impresso">Ponto de Partida · Clube do Ukulele${PRIMEIRO?' · '+PRIMEIRO:''} · ${new Date().toLocaleDateString('pt-BR')}</p>`;
 
   ligarRotina();
-  document.getElementById('imprimir').onclick=()=>window.print();
+  /* O PDF é a rotina, e só ela: é a parte que o aluno volta a consultar. O resto da ficha
+     ele lê na tela uma vez ou outra, e no papel só ocupava página. */
+  document.getElementById('imprimir').onclick=()=>{
+    document.body.classList.add('so-rotina');
+    window.print();
+  };
   const gr=document.getElementById('gravarAgora');
   if(gr) gr.onclick=()=>{ if(e.videoOk) return; e.videoAdiado=false;e.finalizado=false;e.i=visiveis().length;render(); };
   const lista=document.getElementById('corrigir');
@@ -882,6 +891,7 @@ addEventListener('beforeprint',()=>{
 addEventListener('afterprint',()=>{
   dobrasAbertas.forEach(d=>{ d.open=d.dataset.estava==='1'; delete d.dataset.estava; });
   dobrasAbertas=[];
+  document.body.classList.remove('so-rotina');
 });
 
 /* ---------- teclado ---------- */
@@ -923,6 +933,9 @@ const DEMOS={
   passou:{A1:'tem_toca',N1:5,N2:'ouvido',NM1:'sai',NM2:'sai',P1:'sai',P2:'sai',R1:5,R2:45,O1:'dominio',O2:'Wherever You Will Go'}
 };
 if(DEMO&&DEMOS[DEMO]){ e=padrao(); e.abriu=true; e.finalizado=true; e.videoOk=true; e.resp=DEMOS[DEMO]; }
+/* `&sorotina=1` junto com o demo liga o recorte da impressão sem precisar clicar no botão.
+   É como o PDF da rotina é conferido por linha de comando. */
+if(DEMO&&qs.get('sorotina')==='1') addEventListener('load',()=>document.body.classList.add('so-rotina'));
 
 if(qs.get('debug')==='1') window.__pp={
   estado:()=>JSON.parse(JSON.stringify(e)),
