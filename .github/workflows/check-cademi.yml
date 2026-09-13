@@ -1,0 +1,29 @@
+# Check diario: a pagina dinamica da Cademi depende do iframe-resizer do lado do pai.
+# Se a Cademi trocar a versao (v4 -> v5) ou o arquivo sumir, o filho para de avisar a
+# altura e toda aula/atividade some com height:0. Falhou aqui = GitHub manda e-mail.
+name: check-cademi
+on:
+  schedule:
+    - cron: "0 12 * * *"   # 09h em Sao Paulo
+  workflow_dispatch:
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: iframe-resizer do pai da Cademi continua v4
+        run: |
+          curl -fsS https://core.cademi.com.br/assets/js/vendor/iframeResizer.min.js -o pai.js
+          head -c 300 pai.js
+          grep -q "iFrame Resizer (iframeResizer.min.js) - v4\." pai.js
+      - name: nosso iframeResizer.contentWindow serve como JS
+        run: |
+          curl -fsSI https://cdu-upload-page.pages.dev/js/iframeResizer.contentWindow.min.js | grep -i "content-type: application/javascript"
+      - name: nenhuma pagina do repo carrega script da Cademi
+        run: |
+          ! grep -rl "core.cademi.com.br/assets/js" --include=*.html .
+      - name: paginas condicionais respondem com a tag certa
+        run: |
+          for p in paginas-condicionais/como-estudar-comecando-hoje paginas-condicionais/aula-sua-segunda-musica-cademi; do
+            curl -fsS "https://cdu-upload-page.pages.dev/$p" | grep -q "/js/iframeResizer.contentWindow.min.js"
+          done
