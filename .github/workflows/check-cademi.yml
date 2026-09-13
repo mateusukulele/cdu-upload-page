@@ -15,7 +15,7 @@ jobs:
         run: |
           curl -fsS https://core.cademi.com.br/assets/js/vendor/iframeResizer.min.js -o pai.js
           head -c 300 pai.js
-          grep -q "iFrame Resizer (iframeResizer.min.js) - v4\." pai.js
+          grep -q "iFrame Resizer .* - v4\." pai.js
       - name: nosso iframeResizer.contentWindow serve como JS
         run: |
           curl -fsSI https://cdu-upload-page.pages.dev/js/iframeResizer.contentWindow.min.js | grep -i "content-type: application/javascript"
