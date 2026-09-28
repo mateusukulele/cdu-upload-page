@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plantões ao vivo · Clube do Ukulele</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  /* Página Dinâmica da Cademí: a Cademí injeta ?cuser_id= na URL. Marca: skill marca-cdu.
+     Quiz: ../QUIZ-MARCACAO.md. Regras: ../REGRAS-DO-PLANTAO.md. */
+  :root{
+    --indigo:#443468; --indigo-profundo:#2D124E; --indigo-hover:#3F3060;
+    --verde:#25845A; --erro:#B83A2E; --erro-suave:#FBE9E6;
+    --texto:#1F1A2B; --texto-suave:#5C5A70; --fundo:#F5F4F7; --superficie:#ECEAF1; --card:#FFFFFF;
+    --neutro-medio:#8E8AA3; --fonte:"Montserrat",system-ui,-apple-system,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--fundo);color:var(--texto);font-family:var(--fonte);font-size:16px;line-height:1.65}
+  .pg{max-width:720px;margin:0 auto;padding:20px 16px 48px}
+  h1{font-size:28px;line-height:1.2;font-weight:800;color:var(--indigo);margin:0 0 14px}
+  h2{font-size:20px;line-height:1.3;font-weight:800;color:var(--indigo);margin:0 0 12px}
+  p{margin:0 0 12px;max-width:700px}
+  .sub{color:var(--texto-suave)}
+  .abas{display:flex;gap:6px;margin:0 0 20px;border-bottom:2px solid var(--superficie);overflow-x:auto}
+  .aba{flex:none;min-height:44px;padding:8px 14px;border:0;background:none;font-family:var(--fonte);font-size:16px;font-weight:700;color:var(--texto-suave);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px}
+  .aba[aria-selected="true"]{color:var(--indigo);border-bottom-color:var(--indigo)}
+  .card{background:var(--card);border-radius:16px;padding:20px;margin-bottom:12px;box-shadow:0 20px 44px -30px rgb(31 26 43 / .45)}
+  .quando{font-size:18px;font-weight:700}
+  .estado{display:inline-flex;align-items:center;gap:6px;font-weight:700;color:var(--verde);margin-top:4px}
+  .nota{color:var(--texto-suave);font-size:15px;margin-top:6px}
+  .acoes{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+  .btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 20px;border-radius:10px;font-family:var(--fonte);font-size:16px;font-weight:700;cursor:pointer;text-decoration:none;border:2px solid var(--indigo)}
+  .btn-1{background:var(--indigo);color:#fff}
+  .btn-1:hover{background:var(--indigo-hover);border-color:var(--indigo-hover)}
+  .btn-2{background:var(--card);color:var(--indigo)}
+  .btn-2:hover{background:var(--superficie)}
+  .btn-txt{border-color:transparent;background:none;color:var(--indigo);padding-left:8px;padding-right:8px;text-decoration:underline}
+  .btn[disabled]{opacity:.6;cursor:default}
+  .btn:focus-visible,.aba:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid var(--indigo);outline-offset:3px}
+  form{margin-top:16px;border-top:1px solid var(--superficie);padding-top:16px}
+  fieldset{border:0;margin:0 0 16px;padding:0;min-width:0}
+  legend{font-weight:700;font-size:17px;margin-bottom:4px}
+  .dica{color:var(--texto-suave);font-size:15px;margin:0 0 10px}
+  .opc{display:block;border:1px solid var(--superficie);border-radius:12px;margin-bottom:8px}
+  .opc>label{display:flex;gap:10px;align-items:flex-start;padding:12px;cursor:pointer;min-height:44px}
+  .opc input[type=radio]{margin-top:5px;width:18px;height:18px;flex:none;accent-color:var(--indigo)}
+  .opc b{display:block}
+  .opc .desc{display:block;color:var(--texto-suave);font-size:15px;line-height:1.5;margin-top:2px}
+  .opc.sel{border-color:var(--indigo)}
+  .opc.separada{margin-top:18px}
+  .extra{padding:0 12px 14px 40px}
+  .campo{margin-top:12px}
+  .campo>label,.campo>.rot{display:block;font-weight:700;margin-bottom:6px}
+  .opcional{font-weight:500;color:var(--texto-suave)}
+  input[type=text],input[type=url],textarea{width:100%;border:1px solid var(--neutro-medio);border-radius:10px;padding:10px 12px;font-family:var(--fonte);font-size:16px;line-height:1.5;color:var(--texto);background:#fff}
+  textarea{min-height:84px;resize:vertical}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{position:relative}
+  .chip input{position:absolute;opacity:0;width:1px;height:1px}
+  .chip span{display:inline-flex;align-items:center;min-height:40px;padding:6px 14px;border:1px solid var(--neutro-medio);border-radius:999px;font-size:15px;cursor:pointer;background:#fff}
+  .chip input:checked+span{background:var(--indigo);border-color:var(--indigo);color:#fff}
+  .chip input:focus-visible+span{outline:3px solid var(--indigo);outline-offset:2px}
+  .caixa{background:var(--superficie);border-radius:12px;padding:12px 14px;margin-top:10px;font-size:15px;line-height:1.6}
+  .caixa ul{margin:6px 0 0;padding-left:20px}
+  .aceite{display:flex;gap:10px;align-items:flex-start;margin:16px 0;background:var(--superficie);border-radius:12px;padding:12px;cursor:pointer}
+  .aceite input{margin-top:5px;width:18px;height:18px;flex:none;accent-color:var(--indigo)}
+  .erro{background:var(--erro-suave);color:var(--erro);border-radius:10px;padding:12px 14px;margin-top:12px;font-weight:500}
+  .vazio{color:var(--texto-suave)}
+  .video{position:relative;padding-top:56.25%;border-radius:12px;overflow:hidden;background:var(--indigo-profundo);margin-top:12px}
+  .video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+  .resumo{background:var(--card);border-radius:16px;padding:18px 20px;margin-bottom:12px;border-left:0}
+  details{background:var(--card);border-radius:12px;margin-bottom:8px}
+  summary{cursor:pointer;padding:14px 18px;font-weight:700;min-height:44px;list-style-position:inside}
+  details>div{padding:0 18px 14px}
+  [hidden]{display:none !important}
+</style>
+</head>
+<body>
+<main class="pg">
+  <h1>Plantões ao vivo</h1>
+  <div class="abas" role="tablist" aria-label="Seções">
+    <button class="aba" role="tab" id="aba-plantoes" aria-controls="sec-plantoes" data-aba="plantoes">Próximos plantões</button>
+    <button class="aba" role="tab" id="aba-gravacoes" aria-controls="sec-gravacoes" data-aba="gravacoes">Minhas gravações</button>
+    <button class="aba" role="tab" id="aba-regras" aria-controls="sec-regras" data-aba="regras">Como funciona</button>
+  </div>
+
+  <div id="carregando" class="card vazio">Carregando os plantões…</div>
+  <div id="bloqueado" class="card" hidden>
+    <p><b>Os plantões ao vivo fazem parte do Plano Ouro.</b></p>
+    <p class="sub">Se você acha que já deveria ter acesso, fale com a equipe.</p>
+    <div class="acoes"><a class="btn btn-2" href="https://wa.me/553198585286" target="_blank" rel="noopener">Falar com a equipe no WhatsApp</a></div>
+  </div>
+  <div id="falha" class="erro" hidden></div>
+
+  <section id="sec-plantoes" role="tabpanel" aria-labelledby="aba-plantoes" hidden></section>
+  <section id="sec-gravacoes" role="tabpanel" aria-labelledby="aba-gravacoes" hidden></section>
+
+  <section id="sec-regras" role="tabpanel" aria-labelledby="aba-regras" hidden>
+    <div class="resumo">
+      <p><b>Terça às 19h30 e quinta às 10h, pelo Google Meet.</b> A agenda da semana abre no domingo às 10h, e cada plantão fecha às 23h59 da véspera. A chamada segue a ordem de confirmação, com cerca de 10 minutos por pessoa.</p>
+    </div>
+    <details><summary>Como marcar</summary><div>
+      <p>Na hora de confirmar, você conta sobre o que é a sua pergunta. Essas respostas ajudam o professor a entender o que você precisa quando chegar a sua vez.</p>
+      <p>Você pode ter um plantão com pergunta confirmado por vez. Se foi no de terça, pode confirmar o de quinta depois que o de terça acontecer, ainda até as 23h59 de quarta.</p>
+      <p>Se souber que não vai conseguir ir, cancele até as 23h59 da véspera. Faltar não gera penalidade, mas o cancelamento ajuda: a fila fica certa e o professor não espera por quem não vem.</p>
+    </div></details>
+    <details><summary>A ordem de chamada</summary><div>
+      <p>A chamada segue a ordem de confirmação. Quem confirmou primeiro é chamado primeiro.</p>
+      <p>Cada pessoa tem cerca de 10 minutos, e no máximo 15. Se a sua dúvida pedir mais tempo, vocês continuam depois, no fim da fila, para que todo mundo seja atendido.</p>
+      <p>Se você não estiver na sala quando chegar a sua vez, ela passa para o próximo e você vai para o fim da fila enquanto o plantão durar. Quem falta não tem o pedido respondido na gravação.</p>
+      <p>Quem marcou "só acompanhar" e quiser perguntar alguma coisa na hora é chamado no fim, depois de quem enviou pergunta.</p>
+    </div></details>
+    <details><summary>Na sala</summary><div>
+      <p>Deixe o microfone desligado até a sua vez. A câmera fica a seu critério.</p>
+      <p>Na sua vez, ligue a câmera e o microfone e deixe o ukulele aparecendo, porque é vendo as suas mãos que o professor consegue corrigir. Se não der para ligar a câmera, avise: o professor ajuda do melhor jeito possível.</p>
+      <p>O plantão termina quando as perguntas acabam. Para conversar sobre música com a turma, a Confraria acontece toda quinta, às 19h40.</p>
+    </div></details>
+    <details><summary>Quando o plantão não acontece</summary><div>
+      <p>O plantão existe para responder perguntas. Se ninguém enviar uma até as 23h59 da véspera, ele pode ser cancelado, e todos os confirmados recebem um aviso por e-mail com o próximo horário.</p>
+    </div></details>
+    <details><summary>Avisos e gravação</summary><div>
+      <p>Ao confirmar, você recebe um convite no Google Agenda com o link da sala. Um dia antes e duas horas antes do plantão chegam lembretes por e-mail.</p>
+      <p>O plantão é gravado. A gravação fica aqui, em "Minhas gravações", para quem participou.</p>
+    </div></details>
+  </section>
+</main>
+
+<script>
+(function () {
+  var API = (location.hostname === '127.0.0.1' || location.hostname === 'localhost')
+    ? '/api/plantoes/aluno'
+    : 'https://analises.clubedoukulele.com/api/plantoes/aluno';
+  var idAluno = new URLSearchParams(location.search).get('cuser_id') || '';
+  var dados = null;        // resposta do listar
+  var aberto = '';         // id do plantão com formulário aberto
+  var modo = '';           // 'confirmar' | 'editar'
+
+  // Descrições do quiz (QUIZ-MARCACAO.md). O servidor manda os ids, os rótulos e o que é obrigatório.
+  var DESC = {
+    musica: 'Você toca um trecho e o professor ajuda no que estiver travando.',
+    acordes: 'Montar um acorde, fazer o som sair limpo, trocar de um para outro, um acorde que você não conhece ou uma cifra que parece errada.',
+    ritmo: 'Manter o tempo, encaixar a batida na música, aprender uma batida nova ou descobrir a batida de uma música que você quer tocar.',
+    dedilhado: 'Dedilhar os acordes, tocar a melodia de uma música, um solo ou um arranjo só com o ukulele, sem cantar (fingerstyle).',
+    jeito: 'Como segurar o ukulele, posição das mãos, uso dos dedos, som com chiado, cansaço ou incômodo.',
+    aula: 'Uma aula ou um exercício do curso em que você travou.',
+    outra: 'Qualquer dúvida sobre ukulele que não apareceu acima.',
+    acompanhar: ''
+  };
+  var PERGUNTA = {
+    acordes: ['Conte qual é a sua dúvida ou dificuldade', 'Por exemplo: o F sai abafado'],
+    ritmo: ['Conte qual é a dúvida, e a música, se tiver uma', 'Por exemplo: não consigo encaixar a batida em Trem Bala'],
+    dedilhado: ['Conte qual é a dúvida, e a música, se tiver uma', 'Por exemplo: o dedilhado de Asa Branca embola no meio'],
+    jeito: ['Descreva com as suas palavras o que você sente ou quer saber', 'Por exemplo: o pulso cansa depois de uns minutos tocando'],
+    outra: ['Qual é a sua pergunta?', 'Escreva do seu jeito']
+  };
+  var ACEITE = {
+    pergunta: 'Entendi que a minha vez é chamada ao vivo, na ordem de confirmação. Se eu não estiver na sala quando chegar a minha vez, ela passa para o próximo e o meu pedido não é respondido na gravação.',
+    acompanhar: 'Entendi que não enviei pergunta e que o plantão pode ser cancelado se ninguém enviar.'
+  };
+
+  var DIAS = ['domingo', 'segunda-feira', 'terça-feira', 'quarta-feira', 'quinta-feira', 'sexta-feira', 'sábado'];
+  function hora(d) { return d.getHours() + 'h' + (d.getMinutes() ? String(d.getMinutes()).padStart(2, '0') : ''); }
+  function data(d) { return String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0'); }
+  function quando(iso) { var d = new Date(iso), dia = DIAS[d.getDay()]; return dia.charAt(0).toUpperCase() + dia.slice(1) + ', ' + data(d) + ', às ' + hora(d); }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function $(s, r) { return (r || document).querySelector(s); }
+  function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+
+  function falhar(msg) { $('#carregando').hidden = true; var f = $('#falha'); f.textContent = msg; f.hidden = false; }
+
+  function chamar(action, extra) {
+    var corpo = Object.assign({ action: action, cuser_id: idAluno }, extra || {});
+    // text/plain evita a pré-checagem de CORS; o Worker lê o JSON do mesmo jeito.
+    return fetch(API, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=UTF-8' }, body: JSON.stringify(corpo) })
+      .then(function (r) { return r.json(); });
+  }
+
+  // ── abas (hash: #plantoes, #gravacoes, #regras) ──
+  function abaAtual() { var h = location.hash.replace('#', ''); return ['plantoes', 'gravacoes', 'regras'].indexOf(h) >= 0 ? h : 'plantoes'; }
+  function mostrarAba() {
+    var a = abaAtual();
+    $$('.aba').forEach(function (b) { b.setAttribute('aria-selected', String(b.getAttribute('data-aba') === a)); });
+    ['plantoes', 'gravacoes', 'regras'].forEach(function (s) { $('#sec-' + s).hidden = !dados || s !== a; });
+    if (a === 'regras') $('#sec-regras').hidden = false;
+  }
+  $$('.aba').forEach(function (b) { b.onclick = function () { location.hash = b.getAttribute('data-aba'); }; });
+  window.addEventListener('hashchange', mostrarAba);
+
+  function carregar() {
+    if (!idAluno) { falhar('Não consegui identificar o seu acesso. Abra esta página pela área de membros.'); mostrarAba(); return; }
+    chamar('listar').then(function (d) {
+      $('#carregando').hidden = true;
+      if (d.bloqueado) { $('#bloqueado').hidden = false; $('.abas').hidden = true; return; }
+      if (!d.ok) { falhar('Não consegui carregar os plantões agora. Tente de novo em alguns minutos. (' + (d.erro || 'erro') + ')'); mostrarAba(); return; }
+      dados = d; $('#falha').hidden = true;
+      desenharPlantoes(); desenharGravacoes(); mostrarAba();
+    }).catch(function () { falhar('Não consegui carregar os plantões agora. Confira a sua internet e tente de novo.'); mostrarAba(); });
+  }
+
+  // ── próximos plantões ──
+  function desenharPlantoes() {
+    var h = '';
+    if (!dados.proximas.length) {
+      h += '<div class="card vazio">' + (dados.proximaAbertura
+        ? 'A agenda da próxima semana abre ' + quando(dados.proximaAbertura).toLowerCase() + '.'
+        : 'Nenhum plantão marcado por enquanto. Assim que houver, ele aparece aqui.') + '</div>';
+    } else {
+      h += dados.proximas.map(cartao).join('');
+      if (dados.proximaAbertura) h += '<p class="nota">A agenda da semana seguinte abre ' + quando(dados.proximaAbertura).toLowerCase() + '.</p>';
+    }
+    $('#sec-plantoes').innerHTML = h;
+    ligarPlantoes();
+  }
+
+  function cartao(p) {
+    var h = '<div class="card" id="p-' + esc(p.id) + '"><div class="quando">' + esc(quando(p.inicio)) + '</div>';
+    if (p.confirmado) {
+      h += '<div class="estado">✓ Presença confirmada</div>' +
+        '<div class="nota">' + (p.escolha === 'acompanhar' ? 'Você vai só acompanhar.' : 'Sua pergunta: ' + esc(p.resumo)) + '</div>';
+      if (aberto === p.id && modo === 'editar') h += formulario(p);
+      else h += '<div class="acoes"><a class="btn btn-1" href="' + esc(p.meetLink) + '" target="_blank" rel="noopener">Entrar na sala</a>' +
+        (p.aberta ? '<button class="btn btn-2" data-editar="' + esc(p.id) + '">Editar minha pergunta</button><button class="btn btn-txt" data-cancelar="' + esc(p.id) + '">Não vou conseguir ir</button>' : '') + '</div>' +
+        (p.aberta ? '' : '<div class="nota">A confirmação fechou às 23h59 da véspera.</div>');
+    } else if (p.aberta) {
+      h += aberto === p.id && modo === 'confirmar'
+        ? formulario(p)
+        : '<div class="acoes"><button class="btn btn-1" data-abrir="' + esc(p.id) + '">Confirmar presença</button></div>';
+    } else {
+      h += '<div class="nota">A confirmação deste plantão já fechou.</div>';
+    }
+    return h + '<div class="erro" data-erro-card hidden></div></div>';
+  }
+
+  function chips(nome, lista, tipo, marcados) {
+    return '<div class="chips">' + lista.map(function (x) {
+      return '<label class="chip"><input type="' + tipo + '" name="' + nome + '" value="' + esc(x) + '"' + (marcados.indexOf(x) >= 0 ? ' checked' : '') + '><span>' + esc(x) + '</span></label>';
+    }).join('') + '</div>';
+  }
+
+  function extras(id, r) {
+    r = r || {};
+    var e = {};
+    e.musica = campoTexto('musica', 'Qual música?', r.musica, 'Por exemplo: Asa Branca', true) +
+      '<div class="campo"><span class="rot">O que está difícil? <span class="opcional">(pode marcar mais de um)</span></span>' + chips('dif-' + id, dados.dificuldades, 'checkbox', r.dificuldades || []) + '</div>' +
+      campoTexto('cifra', 'Link da cifra ou tablatura que você usa', r.cifra, 'https://', false, 'url');
+    ['acordes', 'ritmo', 'dedilhado', 'jeito'].forEach(function (k) { e[k] = campoArea('texto', PERGUNTA[k][0], r.texto, PERGUNTA[k][1], true); });
+    e.aula = campoTexto('aulaNome', 'Qual aula? Pode ser o nome, o número ou o assunto', r.aulaNome, '', true) +
+      campoArea('aulaDetalhe', 'O que a aula pedia, e em que parte você travou?', r.aulaDetalhe, '', false);
+    e.outra = campoArea('texto', PERGUNTA.outra[0], r.texto, PERGUNTA.outra[1], true) +
+      '<div class="campo"><span class="rot">Se ajudar, marque o assunto <span class="opcional">(opcional)</span></span>' + chips('ass-' + id, dados.assuntos, 'radio', r.assunto ? [r.assunto] : []) + '</div>';
+    e.acompanhar = '<div class="caixa">Pode vir! Você assiste e aprende com as perguntas dos outros alunos. Duas coisas para saber:<ul>' +
+      '<li>O plantão existe para responder perguntas. Se ninguém trouxer uma, ele pode ser cancelado, e você recebe um aviso.</li>' +
+      '<li>Se ele acontecer e surgir uma dúvida na hora, pode perguntar: você entra no fim da fila, depois de quem enviou pergunta.</li></ul></div>';
+    return e;
+  }
+  function campoTexto(nome, rotulo, valor, exemplo, obrig, tipo) {
+    return '<div class="campo"><label>' + esc(rotulo) + (obrig ? '' : ' <span class="opcional">(opcional)</span>') +
+      '<input type="' + (tipo || 'text') + '" data-campo="' + nome + '" value="' + esc(valor || '') + '" placeholder="' + esc(exemplo || '') + '" maxlength="500"' + (obrig ? ' data-obrig' : '') + '></label></div>';
+  }
+  function campoArea(nome, rotulo, valor, exemplo, obrig) {
+    return '<div class="campo"><label>' + esc(rotulo) + (obrig ? '' : ' <span class="opcional">(opcional)</span>') +
+      '<textarea data-campo="' + nome + '" placeholder="' + esc(exemplo || '') + '" maxlength="1000"' + (obrig ? ' data-obrig' : '') + '>' + esc(valor || '') + '</textarea></label></div>';
+  }
+
+  function formulario(p) {
+    var r = modo === 'editar' ? (p.respostas || {}) : {};
+    var escolhida = modo === 'editar' ? p.escolha : '';
+    var ex = extras(p.id, r);
+    var travada = !!p.bloqueioPergunta && modo === 'confirmar';
+    var opcoes = dados.escolhas.map(function (e) {
+      var desativada = travada && e.id !== 'acompanhar';
+      return '<div class="opc' + (e.id === 'acompanhar' ? ' separada' : '') + (e.id === escolhida ? ' sel' : '') + '">' +
+        '<label><input type="radio" name="esc-' + esc(p.id) + '" value="' + esc(e.id) + '"' + (e.id === escolhida ? ' checked' : '') + (desativada ? ' disabled' : '') + '>' +
+        '<span><b>' + esc(e.rotulo) + '</b>' + (DESC[e.id] ? '<span class="desc">' + esc(DESC[e.id]) + '</span>' : '') + '</span></label>' +
+        '<div class="extra" data-extra="' + esc(e.id) + '"' + (e.id === escolhida ? '' : ' hidden') + '>' + ex[e.id] + '</div></div>';
+    }).join('');
+    return '<form data-form="' + esc(p.id) + '" novalidate>' +
+      (travada ? '<div class="caixa">' + esc(p.bloqueioPergunta) + ' Por enquanto, você pode confirmar para acompanhar.</div>' : '') +
+      '<fieldset><legend>Sobre o que é a sua pergunta?</legend>' +
+      '<p class="dica">Não precisa acertar a categoria: escolha a que parecer mais perto. Se a dúvida é numa música específica, escolha "Uma música que estou tocando".</p>' +
+      opcoes + '</fieldset>' +
+      '<div data-comum hidden>' +
+        campoArea('detalhe', 'Quer explicar melhor?', r.detalhe, '', false) +
+        campoTexto('video', 'Se você tiver um vídeo seu no YouTube ou no Google Drive, cole o link', r.video, 'https://', false, 'url') +
+      '</div>' +
+      '<label class="aceite" data-aceite hidden><input type="checkbox"> <span data-aceite-texto></span></label>' +
+      '<div class="acoes"><button class="btn btn-1" type="submit">' + (modo === 'editar' ? 'Salvar alterações' : 'Confirmar presença') + '</button>' +
+      '<button class="btn btn-2" type="button" data-fechar>Voltar</button></div>' +
+      '<div class="erro" data-erro role="alert" hidden></div></form>';
+  }
+
+  function escolhaDo(form) { var m = $('input[type=radio][name^="esc-"]:checked', form); return m ? m.value : ''; }
+
+  function atualizarForm(form) {
+    var e = escolhaDo(form);
+    $$('.opc', form).forEach(function (o) {
+      var sel = $('input[type=radio]', o).value === e;
+      o.classList.toggle('sel', sel);
+      $('.extra', o).hidden = !sel;
+    });
+    $('[data-comum]', form).hidden = !e || e === 'acompanhar';
+    $('[data-aceite]', form).hidden = !e;
+    $('[data-aceite-texto]', form).textContent = e === 'acompanhar' ? ACEITE.acompanhar : ACEITE.pergunta;
+  }
+
+  function coletar(form) {
+    var e = escolhaDo(form), r = {};
+    var bloco = $('[data-extra="' + e + '"]', form);
+    if (bloco) {
+      $$('[data-campo]', bloco).forEach(function (c) { if (c.value.trim()) r[c.getAttribute('data-campo')] = c.value.trim(); });
+      var dif = $$('input[name^="dif-"]:checked', bloco).map(function (c) { return c.value; });
+      if (dif.length) r.dificuldades = dif;
+      var ass = $('input[name^="ass-"]:checked', bloco);
+      if (ass) r.assunto = ass.value;
+    }
+    if (e !== 'acompanhar') $$('[data-comum] [data-campo]', form).forEach(function (c) { if (c.value.trim()) r[c.getAttribute('data-campo')] = c.value.trim(); });
+    return { escolha: e, respostas: r };
+  }
+
+  function validar(form) {
+    var e = escolhaDo(form);
+    if (!e) return 'Escolha sobre o que é a sua pergunta.';
+    var falta = $$('[data-extra="' + e + '"] [data-obrig]', form).filter(function (c) { return !c.value.trim(); })[0];
+    if (falta) { falta.focus(); return 'Preencha o campo destacado para continuar.'; }
+    var link = $$('input[type=url]', form).filter(function (c) { return c.offsetParent && c.value.trim() && !/^https?:\/\/\S+$/i.test(c.value.trim()); })[0];
+    if (link) { link.focus(); return 'O link precisa começar com http:// ou https://'; }
+    if (!$('[data-aceite] input', form).checked) return 'Marque a caixa da regra para continuar.';
+    return '';
+  }
+
+  function ligarPlantoes() {
+    $$('[data-abrir]').forEach(function (b) { b.onclick = function () { aberto = b.getAttribute('data-abrir'); modo = 'confirmar'; desenharPlantoes(); focarForm(); }; });
+    $$('[data-editar]').forEach(function (b) { b.onclick = function () { aberto = b.getAttribute('data-editar'); modo = 'editar'; desenharPlantoes(); focarForm(); }; });
+    $$('[data-fechar]').forEach(function (b) { b.onclick = function () { aberto = ''; modo = ''; desenharPlantoes(); }; });
+    $$('form[data-form]').forEach(function (f) {
+      atualizarForm(f);
+      $$('input[type=radio][name^="esc-"]', f).forEach(function (r) { r.onchange = function () { atualizarForm(f); }; });
+      f.onsubmit = function (ev) {
+        ev.preventDefault();
+        var erro = $('[data-erro]', f), msg = validar(f);
+        if (msg) { erro.textContent = msg; erro.hidden = false; return; }
+        erro.hidden = true;
+        var botao = $('button[type=submit]', f); botao.disabled = true;
+        var c = coletar(f);
+        chamar(modo === 'editar' ? 'editar' : 'confirmar', { aulaId: f.getAttribute('data-form'), escolha: c.escolha, respostas: c.respostas, aceite: true })
+          .then(function (d) {
+            if (!d.ok) { erro.textContent = 'Não deu para salvar: ' + (d.erro || 'erro') + '.'; erro.hidden = false; botao.disabled = false; return; }
+            aberto = ''; modo = ''; carregar();
+          })
+          .catch(function () { erro.textContent = 'Não deu para salvar agora. Confira a sua internet e tente de novo.'; erro.hidden = false; botao.disabled = false; });
+      };
+    });
+    $$('[data-cancelar]').forEach(function (b) {
+      b.onclick = function () {
+        var id = b.getAttribute('data-cancelar');
+        if (!confirm('Cancelar a sua presença neste plantão? Se mudar de ideia até as 23h59 da véspera, você pode confirmar de novo, mas volta para o fim da fila.')) return;
+        b.disabled = true;
+        chamar('cancelar', { aulaId: id }).then(function (d) {
+          if (!d.ok) { var e = $('#p-' + id + ' [data-erro-card]'); e.textContent = 'Não deu para cancelar: ' + (d.erro || 'erro') + '.'; e.hidden = false; b.disabled = false; return; }
+          carregar();
+        }).catch(function () { b.disabled = false; });
+      };
+    });
+  }
+  function focarForm() { var f = $('form[data-form]'); if (f) { f.scrollIntoView({ behavior: 'smooth', block: 'start' }); var r = $('input[type=radio]:not([disabled])', f); if (r) r.focus(); } }
+
+  // ── gravações ──
+  function idDoYoutube(link) { var m = String(link).match(/(?:youtu\.be\/|v=)([\w-]{6,})/); return m ? m[1] : ''; }
+  function desenharGravacoes() {
+    var g = dados.gravacoes;
+    $('#sec-gravacoes').innerHTML = g.length
+      ? g.map(function (x) {
+          return '<div class="card"><div class="quando">' + esc(quando(x.inicio)) + '</div>' +
+            (x.resumo ? '<div class="nota">Sua pergunta: ' + esc(x.resumo) + '</div>' : '') +
+            '<div class="acoes"><button class="btn btn-2" data-assistir="' + esc(x.link) + '">Assistir</button></div><div data-video></div></div>';
+        }).join('')
+      : '<div class="card vazio">Quando você participar de um plantão, a gravação aparece aqui.</div>';
+    $$('[data-assistir]').forEach(function (b) {
+      b.onclick = function () {
+        var vid = idDoYoutube(b.getAttribute('data-assistir')), alvo = $('[data-video]', b.closest('.card'));
+        if (!vid) { window.open(b.getAttribute('data-assistir'), '_blank', 'noopener'); return; }
+        alvo.innerHTML = '<div class="video"><iframe src="https://www.youtube-nocookie.com/embed/' + esc(vid) + '?rel=0" title="Gravação do plantão" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>';
+        b.hidden = true;
+      };
+    });
+  }
+
+  mostrarAba();
+  carregar();
+})();
+</script>
+</body>
+</html>
