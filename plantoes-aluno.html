@@ -403,7 +403,6 @@
         : vazio('Nenhum plantão marcado por enquanto', 'Assim que houver, ele aparece aqui.');
     } else {
       h += '<div class="lista">' + dados.proximas.map(cartao).join('') + '</div>';
-      if (dados.proximaAbertura) h += '<p class="nota" style="margin-top:14px">A agenda da semana seguinte abre ' + esc(quando(dados.proximaAbertura)) + ' (horário de Brasília).</p>';
     }
     $('#sec-plantoes').innerHTML = h;
     ligarPlantoes();
@@ -463,6 +462,10 @@
           ? '<div class="acoes"><button class="btn btn-txt" data-abrir="' + esc(p.id) + '">Quero só acompanhar este</button></div>'
           : '<div class="acoes"><button class="btn btn-1" data-abrir="' + esc(p.id) + '">Confirmar presença</button></div>');
       }
+    } else if (agora < new Date(p.abreEm).getTime()) {
+      // Ainda não abriu: diz quando abre e quanto falta.
+      corpo += '<div class="nota">A confirmação abre ' + esc(quando(p.abreEm)) + ' (horário de Brasília).</div></div></div>';
+      lado = '<span class="contagem" data-abre="' + esc(p.abreEm) + '"></span>';
     } else {
       corpo += '<div class="nota">A confirmação deste plantão já fechou.</div></div></div>';
     }
@@ -599,6 +602,10 @@
       el.innerHTML = agora >= ini - ABRE_ANTES
         ? '<a class="btn btn-1" href="' + esc(el.getAttribute('data-link')) + '" target="_blank" rel="noopener">Entrar na sala</a>'
         : '<span class="contagem">' + ICONE_RELOGIO + '<span><b>O botão "Entrar na sala" aparece aqui às ' + esc(sp(ini - ABRE_ANTES).hora) + '</b>, 15 minutos antes do plantão. Faltam ' + esc(falta(ini - agora)) + '.</span></span>';
+    });
+    $$('[data-abre]').forEach(function (el) {
+      var ms = new Date(el.getAttribute('data-abre')).getTime() - Date.now();
+      el.innerHTML = ICONE_RELOGIO + '<span>Abre em <b>' + esc(falta(Math.max(ms, 60000))) + '</b>. O botão de confirmar aparece aqui.</span>';
     });
     // Passou a hora de abrir a próxima semana: busca de novo, sem precisar recarregar.
     if (dados && dados.proximaAbertura && Date.now() >= new Date(dados.proximaAbertura).getTime() && !aberto) carregar();
