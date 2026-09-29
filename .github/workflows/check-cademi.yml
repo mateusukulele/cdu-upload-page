@@ -10,7 +10,8 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      # clone direto (repo publico): sem action em Node, sem aviso de deprecacao
+      - run: git clone -q --depth 1 https://github.com/${{ github.repository }} .
       - name: iframe-resizer do pai da Cademi continua v4
         run: |
           curl -fsS https://core.cademi.com.br/assets/js/vendor/iframeResizer.min.js -o pai.js
