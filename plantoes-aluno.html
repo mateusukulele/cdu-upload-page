@@ -105,6 +105,25 @@
   .aceite input{margin-top:3px;width:20px;height:20px;flex:none;accent-color:var(--indigo)}
   .erro{background:var(--erro-suave);color:var(--erro);border-radius:12px;padding:12px 14px;margin-top:12px;font-weight:500}
 
+  .opcoes{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .opc-b{position:relative;display:block}
+  .opc-b input{position:absolute;opacity:0;width:1px;height:1px}
+  .opc-b span{display:flex;align-items:center;justify-content:center;text-align:center;min-height:56px;padding:8px 10px;border:1.5px solid var(--superficie);border-radius:12px;background:#fff;font-weight:700;font-size:15px;line-height:1.25;cursor:pointer;color:var(--texto)}
+  .opc-b.sel span,.opc-b input:checked+span{border-color:var(--indigo);background:var(--indigo);color:#fff}
+  .opc-b input:focus-visible+span,.acomp input:focus-visible+span{outline:3px solid var(--indigo);outline-offset:2px}
+  .opc-b input[disabled]+span{opacity:.45;cursor:default}
+  .acomp{display:block;margin-top:12px;text-align:center}
+  .acomp input{position:absolute;opacity:0;width:1px;height:1px}
+  .acomp span{font-size:14px;color:var(--texto-suave);text-decoration:underline;cursor:pointer}
+  .acomp.sel span{color:var(--indigo);font-weight:700}
+  .extra{padding:0}
+  .extra .desc{color:var(--texto-suave);font-size:15px;margin:0 0 4px;line-height:1.5}
+  details.mais{background:none;box-shadow:none;margin:12px 0 0;border-radius:0}
+  details.mais summary{padding:6px 0;min-height:44px;font-weight:700;color:var(--indigo);justify-content:flex-start}
+  details.mais summary::after{display:none}
+  details.mais>.campo:first-of-type{margin-top:4px}
+  @media (min-width:700px){.opcoes{grid-template-columns:repeat(4,1fr)}}
+
   /* gravações */
   .thumb{position:relative;display:block;width:100%;aspect-ratio:16/9;border:0;padding:0;border-radius:12px;overflow:hidden;background:var(--indigo-profundo);cursor:pointer;margin-top:12px}
   .thumb img{width:100%;height:100%;object-fit:cover;display:block}
@@ -207,26 +226,26 @@
   var modo = '';           // 'confirmar' | 'editar'
 
   // Descrições do quiz (QUIZ-MARCACAO.md). O servidor manda os ids, os rótulos e o que é obrigatório.
+  // Quiz compacto (QUIZ-MARCACAO.md): grade de botões curtos; a descrição e os campos aparecem só na opção escolhida.
   var DESC = {
     musica: 'Você toca um trecho e o professor ajuda no que estiver travando.',
-    acordes: 'Montar um acorde, fazer o som sair limpo, trocar de um para outro, um acorde que você não conhece ou uma cifra que parece errada.',
-    ritmo: 'Manter o tempo, encaixar a batida na música, aprender uma batida nova ou descobrir a batida de uma música que você quer tocar.',
-    dedilhado: 'Dedilhar os acordes, tocar a melodia de uma música, um solo ou um arranjo só com o ukulele, sem cantar (fingerstyle).',
-    jeito: 'Como segurar o ukulele, posição das mãos, uso dos dedos, som com chiado, cansaço ou incômodo.',
-    aula: 'Uma aula ou um exercício do curso em que você travou.',
-    outra: 'Qualquer dúvida sobre ukulele que não apareceu acima.',
-    acompanhar: ''
+    acordes: 'Montar, fazer soar limpo, trocar de um para outro, um acorde novo ou uma cifra estranha.',
+    ritmo: 'Manter o tempo, encaixar a batida na música, aprender ou descobrir uma batida.',
+    dedilhado: 'Dedilhar acordes, tocar melodia, solo ou arranjo instrumental (fingerstyle).',
+    jeito: 'Como segurar o ukulele, posição das mãos e dos dedos, som chiando, dor ou cansaço.',
+    aula: 'Um ponto de uma aula ou de um exercício do curso em que você travou.',
+    outra: 'Qualquer dúvida sobre ukulele que não coube nas outras opções.'
   };
   var PERGUNTA = {
-    acordes: ['Conte qual é a sua dúvida ou dificuldade', 'Por exemplo: o F sai abafado'],
-    ritmo: ['Conte qual é a dúvida, e a música, se tiver uma', 'Por exemplo: não consigo encaixar a batida em Trem Bala'],
-    dedilhado: ['Conte qual é a dúvida, e a música, se tiver uma', 'Por exemplo: o dedilhado de Asa Branca embola no meio'],
-    jeito: ['Descreva com as suas palavras o que você sente ou quer saber', 'Por exemplo: o pulso cansa depois de uns minutos tocando'],
+    acordes: ['Qual é a sua dúvida?', 'Por exemplo: o F sai abafado'],
+    ritmo: ['Qual é a sua dúvida? Se for de uma música, diga qual', 'Por exemplo: não encaixo a batida em Trem Bala'],
+    dedilhado: ['Qual é a sua dúvida? Se for de uma música, diga qual', 'Por exemplo: o dedilhado de Asa Branca embola no meio'],
+    jeito: ['Conte com as suas palavras o que você sente ou quer saber', 'Por exemplo: o pulso cansa depois de uns minutos'],
     outra: ['Qual é a sua pergunta?', 'Escreva do seu jeito']
   };
   var ACEITE = {
-    pergunta: 'Entendi que a minha vez é chamada ao vivo, na ordem de confirmação. Se eu não estiver na sala quando chegar a minha vez, ela passa para o próximo e o meu pedido não é respondido na gravação.',
-    acompanhar: 'Entendi que não enviei pergunta e que o plantão pode ser cancelado se ninguém enviar.'
+    pergunta: 'Combinado! Vou estar na sala no horário, pronto para a minha vez. Se eu não estiver quando me chamarem, a vez passa para o próximo e eu trago a minha pergunta em outro plantão.',
+    acompanhar: 'Combinado! Sei que o plantão acontece quando alguém traz pergunta. Se ninguém trouxer, ele pode ser cancelado, e eu recebo um aviso.'
   };
 
   var DIAS = ['domingo', 'segunda-feira', 'terça-feira', 'quarta-feira', 'quinta-feira', 'sexta-feira', 'sábado'];
@@ -332,20 +351,28 @@
     }).join('') + '</div>';
   }
 
+  function mais(conteudo, aberto) {
+    return '<details class="mais"' + (aberto ? ' open' : '') + '><summary>+ Adicionar detalhes <span class="opcional">(opcional)</span></summary>' + conteudo + '</details>';
+  }
+
+  // Cada tipo: o obrigatório à vista; o opcional atrás de "Adicionar detalhes".
   function extras(id, r) {
     r = r || {};
+    var comum = campoArea('detalhe', 'Quer explicar melhor?', r.detalhe, '', false) +
+      campoTexto('video', 'Link de um vídeo seu tocando (YouTube ou Google Drive)', r.video, 'https://', false, 'url');
+    var temComum = !!(r.detalhe || r.video);
     var e = {};
     e.musica = campoTexto('musica', 'Qual música?', r.musica, 'Por exemplo: Asa Branca', true) +
-      '<div class="campo"><span class="rot">O que está difícil? <span class="opcional">(pode marcar mais de um)</span></span>' + chips('dif-' + id, dados.dificuldades, 'checkbox', r.dificuldades || []) + '</div>' +
-      campoTexto('cifra', 'Link da cifra ou tablatura que você usa', r.cifra, 'https://', false, 'url');
-    ['acordes', 'ritmo', 'dedilhado', 'jeito'].forEach(function (k) { e[k] = campoArea('texto', PERGUNTA[k][0], r.texto, PERGUNTA[k][1], true); });
+      '<div class="campo"><span class="rot">O que está difícil? <span class="opcional">(opcional)</span></span>' + chips('dif-' + id, dados.dificuldades, 'checkbox', r.dificuldades || []) + '</div>' +
+      mais(campoTexto('cifra', 'Link da cifra ou tablatura que você usa', r.cifra, 'https://', false, 'url') + comum, temComum || !!r.cifra);
+    ['acordes', 'ritmo', 'dedilhado', 'jeito'].forEach(function (k) {
+      e[k] = campoArea('texto', PERGUNTA[k][0], r.texto, PERGUNTA[k][1], true) + mais(comum, temComum);
+    });
     e.aula = campoTexto('aulaNome', 'Qual aula? Pode ser o nome, o número ou o assunto', r.aulaNome, '', true) +
-      campoArea('aulaDetalhe', 'O que a aula pedia, e em que parte você travou?', r.aulaDetalhe, '', false);
+      mais(campoArea('aulaDetalhe', 'O que a aula pedia, e em que parte você travou?', r.aulaDetalhe, '', false) + comum, temComum || !!r.aulaDetalhe);
     e.outra = campoArea('texto', PERGUNTA.outra[0], r.texto, PERGUNTA.outra[1], true) +
-      '<div class="campo"><span class="rot">Se ajudar, marque o assunto <span class="opcional">(opcional)</span></span>' + chips('ass-' + id, dados.assuntos, 'radio', r.assunto ? [r.assunto] : []) + '</div>';
-    e.acompanhar = '<div class="caixa">Pode vir! Você assiste e aprende com as perguntas dos outros alunos. Duas coisas para saber:<ul>' +
-      '<li>O plantão existe para responder perguntas. Se ninguém trouxer uma, ele pode ser cancelado, e você recebe um aviso.</li>' +
-      '<li>Se ele acontecer e surgir uma dúvida na hora, pode perguntar: você entra no fim da fila, depois de quem enviou pergunta.</li></ul></div>';
+      mais('<div class="campo"><span class="rot">Se ajudar, marque o assunto</span>' + chips('ass-' + id, dados.assuntos, 'radio', r.assunto ? [r.assunto] : []) + '</div>' + comum, temComum || !!r.assunto);
+    e.acompanhar = '<div class="caixa">Pode vir! Você assiste e aprende com as perguntas dos outros alunos. Se surgir uma dúvida na hora, pode perguntar: você entra no fim da fila, depois de quem enviou pergunta.</div>';
     return e;
   }
   function campoTexto(nome, rotulo, valor, exemplo, obrig, tipo) {
@@ -362,22 +389,21 @@
     var escolhida = modo === 'editar' ? p.escolha : '';
     var ex = extras(p.id, r);
     var travada = !!p.bloqueioPergunta && modo === 'confirmar';
-    var opcoes = dados.escolhas.map(function (e) {
-      var desativada = travada && e.id !== 'acompanhar';
-      return '<div class="opc' + (e.id === 'acompanhar' ? ' separada' : '') + (e.id === escolhida ? ' sel' : '') + '">' +
-        '<label><input type="radio" name="esc-' + esc(p.id) + '" value="' + esc(e.id) + '"' + (e.id === escolhida ? ' checked' : '') + (desativada ? ' disabled' : '') + '>' +
-        '<span><b>' + esc(e.rotulo) + '</b>' + (DESC[e.id] ? '<span class="desc">' + esc(DESC[e.id]) + '</span>' : '') + '</span></label>' +
-        '<div class="extra" data-extra="' + esc(e.id) + '"' + (e.id === escolhida ? '' : ' hidden') + '>' + ex[e.id] + '</div></div>';
+    var nome = 'esc-' + esc(p.id);
+    var botoes = dados.escolhas.filter(function (e) { return e.id !== 'acompanhar'; }).map(function (e) {
+      return '<label class="opc-b"><input type="radio" name="' + nome + '" value="' + esc(e.id) + '"' + (e.id === escolhida ? ' checked' : '') + (travada ? ' disabled' : '') + '><span>' + esc(e.rotulo) + '</span></label>';
+    }).join('');
+    var paineis = dados.escolhas.map(function (e) {
+      return '<div class="extra" data-extra="' + esc(e.id) + '"' + (e.id === escolhida ? '' : ' hidden') + '>' +
+        (DESC[e.id] ? '<p class="desc">' + esc(DESC[e.id]) + '</p>' : '') + ex[e.id] + '</div>';
     }).join('');
     return '<form data-form="' + esc(p.id) + '" novalidate>' +
       (travada ? '<div class="caixa">' + esc(p.bloqueioPergunta) + ' Por enquanto, você pode confirmar para acompanhar.</div>' : '') +
       '<fieldset><legend>Sobre o que é a sua pergunta?</legend>' +
-      '<p class="dica">Não precisa acertar a categoria: escolha a que parecer mais perto. Se a dúvida é numa música específica, escolha "Uma música que estou tocando".</p>' +
-      opcoes + '</fieldset>' +
-      '<div data-comum hidden>' +
-        campoArea('detalhe', 'Quer explicar melhor?', r.detalhe, '', false) +
-        campoTexto('video', 'Se você tiver um vídeo seu no YouTube ou no Google Drive, cole o link', r.video, 'https://', false, 'url') +
-      '</div>' +
+      '<p class="dica">Escolha a opção mais próxima.</p>' +
+      '<div class="opcoes">' + botoes + '</div>' +
+      '<label class="acomp"><input type="radio" name="' + nome + '" value="acompanhar"' + (escolhida === 'acompanhar' ? ' checked' : '') + '><span>Sem pergunta desta vez? Dá para só acompanhar.</span></label>' +
+      '</fieldset>' + paineis +
       '<label class="aceite" data-aceite hidden><input type="checkbox"> <span data-aceite-texto></span></label>' +
       '<div class="acoes"><button class="btn btn-1" type="submit">' + (modo === 'editar' ? 'Salvar alterações' : 'Confirmar presença') + '</button>' +
       '<button class="btn btn-2" type="button" data-fechar>Voltar</button></div>' +
@@ -388,12 +414,9 @@
 
   function atualizarForm(form) {
     var e = escolhaDo(form);
-    $$('.opc', form).forEach(function (o) {
-      var sel = $('input[type=radio]', o).value === e;
-      o.classList.toggle('sel', sel);
-      $('.extra', o).hidden = !sel;
-    });
-    $('[data-comum]', form).hidden = !e || e === 'acompanhar';
+    $$('.opc-b', form).forEach(function (o) { o.classList.toggle('sel', $('input', o).checked); });
+    $('.acomp', form).classList.toggle('sel', e === 'acompanhar');
+    $$('.extra', form).forEach(function (x) { x.hidden = x.getAttribute('data-extra') !== e; });
     $('[data-aceite]', form).hidden = !e;
     $('[data-aceite-texto]', form).textContent = e === 'acompanhar' ? ACEITE.acompanhar : ACEITE.pergunta;
   }
@@ -401,14 +424,13 @@
   function coletar(form) {
     var e = escolhaDo(form), r = {};
     var bloco = $('[data-extra="' + e + '"]', form);
-    if (bloco) {
+    if (bloco && e !== 'acompanhar') {
       $$('[data-campo]', bloco).forEach(function (c) { if (c.value.trim()) r[c.getAttribute('data-campo')] = c.value.trim(); });
       var dif = $$('input[name^="dif-"]:checked', bloco).map(function (c) { return c.value; });
       if (dif.length) r.dificuldades = dif;
       var ass = $('input[name^="ass-"]:checked', bloco);
       if (ass) r.assunto = ass.value;
     }
-    if (e !== 'acompanhar') $$('[data-comum] [data-campo]', form).forEach(function (c) { if (c.value.trim()) r[c.getAttribute('data-campo')] = c.value.trim(); });
     return { escolha: e, respostas: r };
   }
 
@@ -417,9 +439,9 @@
     if (!e) return 'Escolha sobre o que é a sua pergunta.';
     var falta = $$('[data-extra="' + e + '"] [data-obrig]', form).filter(function (c) { return !c.value.trim(); })[0];
     if (falta) { falta.focus(); return 'Preencha o campo destacado para continuar.'; }
-    var link = $$('input[type=url]', form).filter(function (c) { return c.offsetParent && c.value.trim() && !/^https?:\/\/\S+$/i.test(c.value.trim()); })[0];
-    if (link) { link.focus(); return 'O link precisa começar com http:// ou https://'; }
-    if (!$('[data-aceite] input', form).checked) return 'Marque a caixa da regra para continuar.';
+    var link = $$('input[type=url]', form).filter(function (c) { return !c.closest('[hidden]') && c.value.trim() && !/^https?:\/\/\S+$/i.test(c.value.trim()); })[0];
+    if (link) { var d = link.closest('details'); if (d) d.open = true; link.focus(); return 'O link precisa começar com http:// ou https://'; }
+    if (!$('[data-aceite] input', form).checked) return 'Marque o "Combinado" para confirmar.';
     return '';
   }
 
