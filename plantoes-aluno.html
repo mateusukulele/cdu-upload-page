@@ -34,10 +34,6 @@
   .hero::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--coral)}
   .hero h1{font-size:26px;line-height:1.15;font-weight:800;margin:0 0 6px;color:#fff}
   .hero p{color:var(--sobre-escuro);margin:0 0 12px;line-height:1.5}
-  .fatos{display:flex;flex-wrap:wrap;align-items:center;gap:8px;list-style:none;margin:0;padding:0}
-  .fatos li{display:inline-flex;align-items:center;gap:6px;background:rgb(255 255 255 / .08);border:1px solid rgb(255 255 255 / .16);color:#fff;border-radius:999px;padding:5px 12px;font-size:15px;font-weight:600}
-  .fatos li.fuso{background:none;border:0;padding:0 4px;color:var(--sobre-escuro);font-weight:500;font-size:14px}
-  .fatos svg{width:16px;height:16px;flex:none}
 
   /* abas */
   .abas{display:flex;gap:4px;background:var(--superficie);border-radius:14px;padding:4px;margin:0 0 14px}
@@ -124,6 +120,7 @@
   .campo{margin-top:12px}
   .campo>label,.campo>.rot{display:block;font-weight:700;margin-bottom:6px;line-height:1.4}
   .opcional{font-weight:500;color:var(--texto-suave)}
+  .obrigatorio{font-weight:500;color:var(--indigo)}
   input[type=text],input[type=url],textarea{width:100%;margin-top:6px;border:1.5px solid var(--neutro-medio);border-radius:12px;padding:12px 14px;font-family:var(--fonte);font-size:16px;line-height:1.5;color:var(--texto);background:#fff}
   textarea{min-height:92px;resize:vertical}
   .invalido{border-color:var(--indigo) !important;box-shadow:0 0 0 3px rgb(68 52 104 / .2)}
@@ -190,11 +187,6 @@
   <header class="hero">
     <h1>Plantões ao vivo</h1>
     <p>Tire as suas dúvidas tocando, ao vivo com o professor, pelo Google Meet.</p>
-    <ul class="fatos">
-      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Terça, 19h30</li>
-      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Quinta, 10h</li>
-      <li class="fuso">Horário de Brasília</li>
-    </ul>
   </header>
   <div class="abas" role="tablist" aria-label="Seções">
     <button class="aba" role="tab" id="aba-plantoes" aria-controls="sec-plantoes" data-aba="plantoes">Plantões</button>
@@ -422,7 +414,7 @@
 
   function avisoRecente(id) {
     if (!recente || recente.id !== id) return '';
-    var txt = { confirmado: 'Presença confirmada! O convite com o link da sala chega no seu e-mail.', editado: 'Pergunta atualizada.', cancelado: 'Presença cancelada. Obrigado por avisar!', avisou: 'Aviso enviado. Obrigado por avisar!', voltou: 'Combinado, a sua presença continua confirmada.', avaliado: 'Obrigado! A sua nota ajuda a melhorar os plantões.' }[recente.tipo];
+    var txt = { confirmado: 'Presença confirmada! No dia, o botão para entrar na sala aparece neste cartão, 15 minutos antes do plantão. O convite também chega no seu e-mail.', editado: 'Pergunta atualizada.', cancelado: 'Presença cancelada. Obrigado por avisar!', avisou: 'Aviso enviado. Obrigado por avisar!', voltou: 'Combinado, a sua presença continua confirmada.', avaliado: 'Obrigado! A sua nota ajuda a melhorar os plantões.' }[recente.tipo];
     return '<div class="sucesso" role="status">' + ICONE_OK + '<span>' + txt + '</span></div>';
   }
 
@@ -513,11 +505,11 @@
   // Mesmos limites que o servidor corta (plantoes-regras.js): o aluno vê o limite em vez de perder texto calado.
   var MAX_CAMPO = { musica: 120, aulaNome: 200 };
   function campoTexto(nome, rotulo, valor, exemplo, obrig, tipo) {
-    return '<div class="campo"><label>' + esc(rotulo) + (obrig ? '' : ' <span class="opcional">(opcional)</span>') +
+    return '<div class="campo"><label>' + esc(rotulo) + (obrig ? ' <span class="obrigatorio">(obrigatório)</span>' : ' <span class="opcional">(opcional)</span>') +
       '<input type="' + (tipo || 'text') + '" data-campo="' + nome + '" value="' + esc(valor || '') + '" placeholder="' + esc(exemplo || '') + '" maxlength="' + (MAX_CAMPO[nome] || 500) + '"' + (obrig ? ' data-obrig' : '') + '></label></div>';
   }
   function campoArea(nome, rotulo, valor, exemplo, obrig) {
-    return '<div class="campo"><label>' + esc(rotulo) + (obrig ? '' : ' <span class="opcional">(opcional)</span>') +
+    return '<div class="campo"><label>' + esc(rotulo) + (obrig ? ' <span class="obrigatorio">(obrigatório)</span>' : ' <span class="opcional">(opcional)</span>') +
       '<textarea data-campo="' + nome + '" placeholder="' + esc(exemplo || '') + '" maxlength="1000"' + (obrig ? ' data-obrig' : '') + '>' + esc(valor || '') + '</textarea></label></div>';
   }
 
@@ -539,7 +531,7 @@
     return '<form data-form="' + esc(p.id) + '" novalidate>' +
       (travada
         ? '<fieldset hidden><input type="radio" name="' + nome + '" value="acompanhar" checked></fieldset>'
-        : '<fieldset><legend>Sobre o que é a sua pergunta?</legend>' +
+        : '<fieldset><legend>Sobre o que é a sua pergunta? <span class="obrigatorio">(obrigatório)</span></legend>' +
           '<p class="dica">Escolha a opção mais próxima.</p>' +
           '<div class="opcoes">' + botoes + '</div>' +
           '<label class="acomp"><input type="radio" name="' + nome + '" value="acompanhar"' + (escolhida === 'acompanhar' ? ' checked' : '') + '><span>Sem pergunta desta vez? Dá para só acompanhar.</span></label>' +
@@ -606,7 +598,7 @@
       var ini = new Date(el.getAttribute('data-sala')).getTime(), agora = Date.now();
       el.innerHTML = agora >= ini - ABRE_ANTES
         ? '<a class="btn btn-1" href="' + esc(el.getAttribute('data-link')) + '" target="_blank" rel="noopener">Entrar na sala</a>'
-        : '<span class="contagem">' + ICONE_RELOGIO + '<span>Começa em <b>' + esc(falta(ini - agora)) + '</b>. A sala abre 15 minutos antes.</span></span>';
+        : '<span class="contagem">' + ICONE_RELOGIO + '<span><b>O botão "Entrar na sala" aparece aqui às ' + esc(sp(ini - ABRE_ANTES).hora) + '</b>, 15 minutos antes do plantão. Faltam ' + esc(falta(ini - agora)) + '.</span></span>';
     });
     // Passou a hora de abrir a próxima semana: busca de novo, sem precisar recarregar.
     if (dados && dados.proximaAbertura && Date.now() >= new Date(dados.proximaAbertura).getTime() && !aberto) carregar();
