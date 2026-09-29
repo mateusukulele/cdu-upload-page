@@ -9,14 +9,15 @@
      Sem a parte "filha" abaixo, o quadro fica com altura 0. O remote.js da documentação antiga não existe mais. -->
 <script src="https://core.cademi.com.br/assets/js/vendor/iframeResizer.contentWindow.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   /* Página Dinâmica da Cademí: a Cademí injeta ?cuser_id= na URL. Marca: skill marca-cdu.
-     Quiz: ../QUIZ-MARCACAO.md. Regras: ../REGRAS-DO-PLANTAO.md. */
+     Quiz: ../QUIZ-MARCACAO.md. Regras: ../REGRAS-DO-PLANTAO.md.
+     Horários sempre em Brasília (o aluno pode estar em outro fuso). */
   :root{
-    --indigo:#443468; --indigo-profundo:#2D124E; --indigo-hover:#3F3060;
-    --coral:#E87A85; --coral-texto:#4D1A20;
-    --verde:#25845A; --verde-suave:#E4F2EA; --erro:#B83A2E; --erro-suave:#FBE9E6;
+    --indigo:#443468; --indigo-profundo:#2D124E; --indigo-hover:#3F3060; --indigo-suave:#F1EEF8;
+    --coral:#E87A85;
+    --verde:#25845A; --verde-suave:#E4F2EA; --verde-texto:#1C6445; --erro:#B83A2E; --erro-suave:#FBE9E6;
     --texto:#1F1A2B; --texto-suave:#5C5A70; --fundo:#F5F4F7; --superficie:#ECEAF1; --card:#FFFFFF;
     --neutro-medio:#8E8AA3; --sobre-escuro:#DCD6E6; --fonte:"Montserrat",system-ui,-apple-system,sans-serif;
     --sombra:0 20px 44px -30px rgb(31 26 43 / .45);
@@ -29,40 +30,45 @@
   .sub{color:var(--texto-suave)}
 
   /* topo */
-  .hero{background:var(--indigo-profundo);color:#fff;border-radius:20px;padding:22px 20px 20px;margin-bottom:16px;position:relative;overflow:hidden}
+  .hero{background:var(--indigo-profundo);color:#fff;border-radius:20px;padding:20px 18px 18px 22px;margin-bottom:14px;position:relative;overflow:hidden}
   .hero::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--coral)}
-  .selo{display:inline-block;background:var(--coral);color:var(--coral-texto);font-weight:800;font-size:13px;letter-spacing:.4px;text-transform:uppercase;border-radius:999px;padding:3px 12px;margin-bottom:10px}
-  .hero h1{font-size:28px;line-height:1.15;font-weight:800;margin:0 0 6px;color:#fff}
-  .hero p{color:var(--sobre-escuro);margin:0 0 14px}
-  .fatos{display:flex;flex-wrap:wrap;gap:8px;list-style:none;margin:0;padding:0}
-  .fatos li{display:inline-flex;align-items:center;gap:6px;background:rgb(255 255 255 / .08);border:1px solid rgb(255 255 255 / .16);color:#fff;border-radius:999px;padding:5px 12px;font-size:15px;font-weight:500}
+  .hero h1{font-size:26px;line-height:1.15;font-weight:800;margin:0 0 6px;color:#fff}
+  .hero p{color:var(--sobre-escuro);margin:0 0 12px;line-height:1.5}
+  .fatos{display:flex;flex-wrap:wrap;align-items:center;gap:8px;list-style:none;margin:0;padding:0}
+  .fatos li{display:inline-flex;align-items:center;gap:6px;background:rgb(255 255 255 / .08);border:1px solid rgb(255 255 255 / .16);color:#fff;border-radius:999px;padding:5px 12px;font-size:15px;font-weight:600}
+  .fatos li.fuso{background:none;border:0;padding:0 4px;color:var(--sobre-escuro);font-weight:500;font-size:14px}
   .fatos svg{width:16px;height:16px;flex:none}
 
   /* abas */
-  .abas{display:flex;gap:4px;background:var(--superficie);border-radius:14px;padding:4px;margin:0 0 16px}
-  .aba{flex:1;min-height:44px;padding:8px 6px;border:0;border-radius:10px;background:none;font-family:var(--fonte);font-size:15px;font-weight:700;color:var(--texto-suave);cursor:pointer;line-height:1.2}
+  .abas{display:flex;gap:4px;background:var(--superficie);border-radius:14px;padding:4px;margin:0 0 14px}
+  .aba{flex:1 1 auto;min-height:44px;padding:8px 10px;border:0;border-radius:10px;background:none;font-family:var(--fonte);font-size:15px;font-weight:700;color:var(--texto-suave);cursor:pointer;line-height:1.2;white-space:nowrap}
   .aba[aria-selected="true"]{background:var(--card);color:var(--indigo);box-shadow:0 4px 14px -8px rgb(31 26 43 / .5)}
 
   /* cartões */
   .card{background:var(--card);border-radius:16px;padding:18px;margin-bottom:12px;box-shadow:var(--sombra)}
+  .lista{display:grid;gap:12px}
+  .lista>.card,.grade>.card{margin-bottom:0}
   .grade{display:grid;gap:12px}
-  .grade>.card{margin-bottom:0}
-  .plantao .linha-topo{display:flex;gap:14px;align-items:flex-start}
+  .linha-topo{display:flex;gap:14px;align-items:flex-start}
   .data{flex:none;width:64px;border-radius:12px;background:var(--superficie);text-align:center;padding:8px 0 6px;line-height:1.1}
-  .data .ds{display:block;font-size:12px;font-weight:800;letter-spacing:.6px;color:var(--texto-suave);text-transform:uppercase}
+  .data .ds{display:block;font-size:13px;font-weight:800;letter-spacing:.6px;color:var(--texto-suave);text-transform:uppercase}
   .data .dn{display:block;font-size:26px;font-weight:800;color:var(--indigo)}
-  .data .dm{display:block;font-size:12px;font-weight:700;color:var(--texto-suave);text-transform:lowercase}
+  .data .dm{display:block;font-size:13px;font-weight:700;color:var(--texto-suave);text-transform:lowercase}
   .plantao.ok .data{background:var(--verde-suave)}
   .plantao.ok .data .dn{color:var(--verde)}
   .info{min-width:0;flex:1}
   .quando{font-size:18px;font-weight:700;line-height:1.3}
-  .estado{display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:15px;color:var(--verde);margin-top:4px}
+  .estado{display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:16px;color:var(--verde);margin-top:4px}
   .estado svg{width:18px;height:18px}
+  .agora{display:inline-flex;align-items:center;gap:6px;margin-top:6px;background:var(--indigo);color:#fff;border-radius:999px;padding:3px 12px;font-size:14px;font-weight:700}
+  .agora::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--coral)}
   .nota{color:var(--texto-suave);font-size:15px;margin-top:4px;line-height:1.5}
-  .pergunta{margin-top:10px;background:var(--fundo);border-radius:10px;padding:10px 12px;font-size:15px;line-height:1.5}
+  .pergunta{margin-top:12px;background:var(--fundo);border-radius:12px;padding:10px 14px;font-size:16px;line-height:1.5}
   .pergunta b{display:block;font-size:13px;color:var(--texto-suave);font-weight:700}
+  .corpo>.nota{margin-top:10px}
+  .lado:empty{display:none}
   .acoes{display:flex;flex-direction:column;gap:8px;margin-top:14px}
-  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:10px 20px;border-radius:12px;font-family:var(--fonte);font-size:16px;font-weight:700;cursor:pointer;text-decoration:none;border:2px solid var(--indigo);width:100%}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:10px 20px;border-radius:12px;font-family:var(--fonte);font-size:16px;font-weight:700;cursor:pointer;text-decoration:none;border:2px solid var(--indigo);width:100%;text-align:center;line-height:1.3}
   .btn-1{background:var(--indigo);color:#fff}
   .btn-1:hover{background:var(--indigo-hover);border-color:var(--indigo-hover)}
   .btn-2{background:var(--card);color:var(--indigo)}
@@ -73,69 +79,59 @@
   .vazio{text-align:center;color:var(--texto-suave);padding:28px 18px}
   .vazio svg{width:40px;height:40px;color:var(--neutro-medio);display:block;margin:0 auto 10px}
   .vazio b{display:block;color:var(--texto);font-size:17px;margin-bottom:4px}
+  .contagem{display:flex;align-items:flex-start;gap:10px;background:var(--fundo);border-radius:12px;padding:12px 14px;font-size:16px;line-height:1.5;color:var(--texto)}
+  .contagem svg{width:20px;height:20px;flex:none;color:var(--indigo);margin-top:2px}
+  .sala{display:contents}
+  .sucesso{display:flex;align-items:flex-start;gap:8px;margin-top:12px;background:var(--verde-suave);color:var(--verde-texto);border-radius:12px;padding:12px 14px;font-weight:600;font-size:16px;line-height:1.5}
+  .sucesso svg{width:20px;height:20px;flex:none;margin-top:2px}
+  .confirma{margin-top:14px;background:var(--indigo-suave);border-radius:12px;padding:14px;font-size:16px;line-height:1.5}
+  .confirma b{display:block;color:var(--indigo);margin-bottom:4px}
+  .confirma .acoes{margin-top:12px}
+  .progresso{display:flex;align-items:flex-start;gap:12px;margin-top:14px;background:var(--fundo);border-radius:12px;padding:14px;font-size:16px}
+  .progresso b{display:block;color:var(--indigo)}
+  .gira{width:22px;height:22px;flex:none;border-radius:50%;border:3px solid var(--superficie);border-top-color:var(--indigo);animation:gira .8s linear infinite;margin-top:1px}
+  @keyframes gira{to{transform:rotate(360deg)}}
+  @media (prefers-reduced-motion:reduce){.gira{animation-duration:2.4s}}
+  .carregando{display:flex;align-items:center;justify-content:center;gap:12px;color:var(--texto-suave)}
 
   /* formulário */
   form{margin-top:16px;border-top:1px solid var(--superficie);padding-top:16px}
   fieldset{border:0;margin:0 0 16px;padding:0;min-width:0}
   legend{font-weight:800;font-size:17px;margin-bottom:4px;color:var(--indigo)}
   .dica{color:var(--texto-suave);font-size:15px;margin:0 0 12px;line-height:1.5}
-  .opc{display:block;border:1.5px solid var(--superficie);border-radius:14px;margin-bottom:8px;background:#fff;transition:border-color .15s}
-  .opc>label{display:flex;gap:12px;align-items:flex-start;padding:14px;cursor:pointer;min-height:48px}
-  .opc input[type=radio]{margin-top:4px;width:20px;height:20px;flex:none;accent-color:var(--indigo)}
-  .opc b{display:block;line-height:1.35}
-  .opc .desc{display:block;color:var(--texto-suave);font-size:15px;line-height:1.5;margin-top:3px}
-  .opc.sel{border-color:var(--indigo);background:#FBFAFD}
-  .opc.separada{margin-top:18px;border-style:dashed}
-  .opc input[disabled]+span{opacity:.5}
-  .extra{padding:0 14px 16px 46px}
+  .opcoes{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .opc-b{position:relative;display:block}
+  .opc-b input{position:absolute;opacity:0;width:1px;height:1px}
+  .opc-b span{display:flex;align-items:center;justify-content:center;text-align:center;min-height:56px;padding:8px 10px;border:1.5px solid var(--superficie);border-radius:12px;background:#fff;font-weight:700;font-size:16px;line-height:1.25;cursor:pointer;color:var(--texto)}
+  .opc-b input:checked+span{border-color:var(--indigo);background:var(--indigo);color:#fff}
+  .opc-b input:focus-visible+span,.acomp input:focus-visible+span{outline:3px solid var(--indigo);outline-offset:2px}
+  .acomp{display:flex;justify-content:center;margin-top:8px;position:relative}
+  .acomp input{position:absolute;opacity:0;width:1px;height:1px}
+  .acomp span{display:inline-flex;align-items:center;min-height:44px;padding:0 8px;font-size:15px;color:var(--texto-suave);text-decoration:underline;cursor:pointer}
+  .acomp input:checked+span{color:var(--indigo);font-weight:700}
+  .extra .desc{color:var(--texto-suave);font-size:15px;margin:0 0 4px;line-height:1.5}
   .campo{margin-top:12px}
   .campo>label,.campo>.rot{display:block;font-weight:700;margin-bottom:6px;line-height:1.4}
   .opcional{font-weight:500;color:var(--texto-suave)}
   input[type=text],input[type=url],textarea{width:100%;margin-top:6px;border:1.5px solid var(--neutro-medio);border-radius:12px;padding:12px 14px;font-family:var(--fonte);font-size:16px;line-height:1.5;color:var(--texto);background:#fff}
   textarea{min-height:92px;resize:vertical}
+  .invalido{border-color:var(--indigo) !important;box-shadow:0 0 0 3px rgb(68 52 104 / .2)}
   .chips{display:flex;flex-wrap:wrap;gap:8px}
   .chip{position:relative}
   .chip input{position:absolute;opacity:0;width:1px;height:1px}
   .chip span{display:inline-flex;align-items:center;min-height:44px;padding:6px 16px;border:1.5px solid var(--neutro-medio);border-radius:999px;font-size:15px;cursor:pointer;background:#fff}
   .chip input:checked+span{background:var(--indigo);border-color:var(--indigo);color:#fff}
   .chip input:focus-visible+span{outline:3px solid var(--indigo);outline-offset:2px}
-  .caixa{background:var(--superficie);border-radius:12px;padding:12px 14px;margin-top:10px;font-size:15px;line-height:1.6}
-  .caixa ul{margin:6px 0 0;padding-left:20px}
-  .aceite{display:flex;gap:12px;align-items:flex-start;margin:16px 0;background:var(--superficie);border-radius:12px;padding:14px;cursor:pointer;font-size:15px;line-height:1.55}
-  .aceite input{margin-top:3px;width:20px;height:20px;flex:none;accent-color:var(--indigo)}
-  .erro{background:var(--erro-suave);color:var(--erro);border-radius:12px;padding:12px 14px;margin-top:12px;font-weight:500}
-
-  .opcoes{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-  .opc-b{position:relative;display:block}
-  .opc-b input{position:absolute;opacity:0;width:1px;height:1px}
-  .opc-b span{display:flex;align-items:center;justify-content:center;text-align:center;min-height:56px;padding:8px 10px;border:1.5px solid var(--superficie);border-radius:12px;background:#fff;font-weight:700;font-size:15px;line-height:1.25;cursor:pointer;color:var(--texto)}
-  .opc-b.sel span,.opc-b input:checked+span{border-color:var(--indigo);background:var(--indigo);color:#fff}
-  .opc-b input:focus-visible+span,.acomp input:focus-visible+span{outline:3px solid var(--indigo);outline-offset:2px}
-  .opc-b input[disabled]+span{opacity:.45;cursor:default}
-  .acomp{display:block;margin-top:12px;text-align:center}
-  .acomp input{position:absolute;opacity:0;width:1px;height:1px}
-  .acomp span{font-size:14px;color:var(--texto-suave);text-decoration:underline;cursor:pointer}
-  .acomp.sel span{color:var(--indigo);font-weight:700}
-  .extra{padding:0}
-  .extra .desc{color:var(--texto-suave);font-size:15px;margin:0 0 4px;line-height:1.5}
   details.mais{background:none;box-shadow:none;margin:12px 0 0;border-radius:0}
   details.mais summary{padding:6px 0;min-height:44px;font-weight:700;color:var(--indigo);justify-content:flex-start}
   details.mais summary::after{display:none}
-  details.mais>.campo:first-of-type{margin-top:4px}
-  @media (min-width:700px){.opcoes{grid-template-columns:repeat(4,1fr)}}
-
-  .lista{display:grid;gap:12px}
-  .lista>.card{margin-bottom:0}
-  .sala{display:contents}
-  .contagem{display:flex;align-items:flex-start;gap:8px;background:var(--fundo);border-radius:12px;padding:12px 14px;font-size:15px;line-height:1.5;color:var(--texto)}
-  .contagem svg{width:20px;height:20px;flex:none;color:var(--indigo);margin-top:1px}
-  .sucesso{display:flex;align-items:flex-start;gap:8px;margin-top:12px;background:var(--verde-suave);color:#1C6445;border-radius:12px;padding:12px 14px;font-weight:600;font-size:15px;line-height:1.5}
-  .sucesso svg{width:20px;height:20px;flex:none;margin-top:1px}
-  .progresso{display:flex;align-items:flex-start;gap:12px;margin-top:14px;background:var(--fundo);border-radius:12px;padding:14px}
-  .progresso b{display:block;color:var(--indigo)}
-  .gira{width:22px;height:22px;flex:none;border-radius:50%;border:3px solid var(--superficie);border-top-color:var(--indigo);animation:gira .8s linear infinite;margin-top:1px}
-  @keyframes gira{to{transform:rotate(360deg)}}
-  @media (prefers-reduced-motion:reduce){.gira{animation-duration:2.4s}}
+  .caixa{background:var(--superficie);border-radius:12px;padding:12px 14px;margin-top:10px;font-size:16px;line-height:1.6}
+  .aceite{display:flex;gap:12px;align-items:flex-start;margin:16px 0;background:var(--superficie);border-radius:12px;padding:14px;cursor:pointer;font-size:16px;line-height:1.55}
+  .aceite input{margin-top:3px;width:20px;height:20px;flex:none;accent-color:var(--indigo)}
+  /* Falta algo no formulário: índigo. O vermelho da marca é só para falha de sistema. */
+  .aviso{background:var(--indigo-suave);color:var(--indigo);border-radius:12px;padding:12px 14px;margin-top:12px;font-weight:600;font-size:16px}
+  .erro{background:var(--erro-suave);color:var(--erro);border-radius:12px;padding:12px 14px;margin-top:12px;font-weight:500;font-size:16px}
+  .erro .btn{margin-top:10px}
 
   /* gravações */
   .thumb{position:relative;display:block;width:100%;aspect-ratio:16/9;border:0;padding:0;border-radius:12px;overflow:hidden;background:var(--indigo-profundo);cursor:pointer;margin-top:12px}
@@ -147,25 +143,33 @@
 
   /* regras */
   .resumo{background:var(--card);border-radius:16px;padding:18px;margin-bottom:12px;box-shadow:var(--sombra);border-left:6px solid var(--coral)}
-  details{background:var(--card);border-radius:14px;margin-bottom:8px;box-shadow:var(--sombra)}
-  summary{cursor:pointer;padding:14px 18px;font-weight:700;min-height:48px;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .resumo p{margin:0}
+  #sec-regras details{background:var(--card);border-radius:14px;margin-bottom:8px;box-shadow:var(--sombra)}
+  #sec-regras summary{cursor:pointer;padding:14px 18px;font-weight:700;min-height:48px;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px}
   summary::-webkit-details-marker{display:none}
-  summary::after{content:"";width:9px;height:9px;border-right:2.5px solid var(--indigo);border-bottom:2.5px solid var(--indigo);transform:rotate(45deg);transition:transform .15s;flex:none;margin-top:-4px}
-  details[open] summary::after{transform:rotate(-135deg);margin-top:4px}
-  details>div{padding:0 18px 14px}
+  #sec-regras summary::after{content:"";width:9px;height:9px;border-right:2.5px solid var(--indigo);border-bottom:2.5px solid var(--indigo);transform:rotate(45deg);transition:transform .15s;flex:none;margin-top:-4px}
+  #sec-regras details[open] summary::after{transform:rotate(-135deg);margin-top:4px}
+  #sec-regras details>div{padding:0 18px 14px}
 
   @media (min-width:700px){
     .pg{padding:24px 24px 56px}
-    .hero{padding:30px 32px 28px}
+    .hero{padding:28px 32px 26px 36px}
     .hero h1{font-size:34px}
-    .acoes{flex-direction:row;flex-wrap:wrap}
-    .btn{width:auto}
     .card{padding:22px}
-  }
-  @media (min-width:900px){
-    .grade{grid-template-columns:1fr 1fr}
-    .grade>.com-form{grid-column:1/-1}
+    .opcoes{grid-template-columns:repeat(4,1fr)}
     .aba{font-size:16px}
+    form .acoes,.confirma .acoes{flex-direction:row;flex-wrap:wrap}
+    form .btn,.confirma .btn{width:auto}
+  }
+  /* Computador: informações à esquerda, ações à direita. */
+  @media (min-width:800px){
+    .plantao{display:grid;grid-template-columns:minmax(0,1fr) 300px;column-gap:28px;align-items:start}
+    .plantao>.corpo{grid-column:1}
+    .plantao>.lado{grid-column:2}
+    .plantao>.lado>.acoes:first-child,.plantao>.lado>.sucesso:first-child,.plantao>.lado>.confirma:first-child,.plantao>.lado>.progresso:first-child{margin-top:0}
+    .plantao>form,.plantao>.erro{grid-column:1 / -1}
+    .plantao:has(>.lado:empty)>.corpo{grid-column:1 / -1}
+    .grade{grid-template-columns:1fr 1fr}
   }
   [hidden]{display:none !important}
 </style>
@@ -174,11 +178,11 @@
 <main class="pg">
   <header class="hero">
     <h1>Plantões ao vivo</h1>
-    <p>Tire as suas dúvidas tocando, ao vivo com o professor.</p>
+    <p>Tire as suas dúvidas tocando, ao vivo com o professor, pelo Google Meet.</p>
     <ul class="fatos">
       <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Terça, 19h30</li>
       <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Quinta, 10h</li>
-      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 10l5-3v10l-5-3z"/><rect x="3" y="6" width="12" height="12" rx="2"/></svg>Google Meet</li>
+      <li class="fuso">Horário de Brasília</li>
     </ul>
   </header>
   <div class="abas" role="tablist" aria-label="Seções">
@@ -187,20 +191,20 @@
     <button class="aba" role="tab" id="aba-regras" aria-controls="sec-regras" data-aba="regras">Como funciona</button>
   </div>
 
-  <div id="carregando" class="card vazio">Carregando os plantões…</div>
+  <div id="carregando" class="card carregando" role="status"><span class="gira" aria-hidden="true"></span>Carregando os plantões…</div>
   <div id="bloqueado" class="card" hidden>
     <p><b>Os plantões ao vivo fazem parte do Plano Ouro.</b></p>
     <p class="sub">Se você acha que já deveria ter acesso, fale com a equipe.</p>
     <div class="acoes"><a class="btn btn-2" href="https://wa.me/553198585286" target="_blank" rel="noopener">Falar com a equipe no WhatsApp</a></div>
   </div>
-  <div id="falha" class="erro" hidden></div>
+  <div id="falha" class="erro" role="alert" hidden><span data-texto></span><button class="btn btn-2" type="button" data-tentar>Tentar de novo</button></div>
 
   <section id="sec-plantoes" role="tabpanel" aria-labelledby="aba-plantoes" hidden></section>
   <section id="sec-gravacoes" role="tabpanel" aria-labelledby="aba-gravacoes" hidden></section>
 
   <section id="sec-regras" role="tabpanel" aria-labelledby="aba-regras" hidden>
     <div class="resumo">
-      <p><b>Terça às 19h30 e quinta às 10h, pelo Google Meet.</b> A agenda da semana abre no domingo às 10h, e cada plantão fecha às 23h59 da véspera. A chamada segue a ordem de confirmação, com cerca de 10 minutos por pessoa.</p>
+      <p><b>Terça às 19h30 e quinta às 10h (horário de Brasília), pelo Google Meet.</b> A agenda da semana abre no domingo às 10h, e cada plantão fecha às 23h59 da véspera. A chamada segue a ordem de confirmação, com cerca de 10 minutos por pessoa.</p>
     </div>
     <details><summary>Como marcar</summary><div>
       <p>Na hora de confirmar, você conta sobre o que é a sua pergunta. Essas respostas ajudam o professor a entender o que você precisa quando chegar a sua vez.</p>
@@ -214,7 +218,7 @@
       <p>Quem marcou "só acompanhar" e quiser perguntar alguma coisa na hora é chamado no fim, depois de quem enviou pergunta.</p>
     </div></details>
     <details><summary>Na sala</summary><div>
-      <p>Deixe o microfone desligado até a sua vez. A câmera fica a seu critério.</p>
+      <p>A sala abre 15 minutos antes do horário. Deixe o microfone desligado até a sua vez. A câmera fica a seu critério.</p>
       <p>Na sua vez, ligue a câmera e o microfone e deixe o ukulele aparecendo, porque é vendo as suas mãos que o professor consegue corrigir. Se não der para ligar a câmera, avise: o professor ajuda do melhor jeito possível.</p>
       <p>O plantão termina quando as perguntas acabam. Para conversar sobre música com a turma, a Confraria acontece toda quinta, às 19h40.</p>
     </div></details>
@@ -223,7 +227,7 @@
     </div></details>
     <details><summary>Avisos e gravação</summary><div>
       <p>Ao confirmar, você recebe um convite no Google Agenda com o link da sala. Um dia antes e duas horas antes do plantão chegam lembretes por e-mail.</p>
-      <p>O plantão é gravado. A gravação fica aqui, em "Minhas gravações", para quem participou.</p>
+      <p>O plantão é gravado. A gravação fica aqui, na aba Gravações, para quem participou.</p>
     </div></details>
   </section>
 </main>
@@ -237,10 +241,11 @@
   var dados = null;        // resposta do listar
   var aberto = '';         // id do plantão com formulário aberto
   var modo = '';           // 'confirmar' | 'editar'
-  var recente = '';        // plantão recém-confirmado: mostra o aviso verde uma vez
+  var cancelando = '';     // id do plantão com a pergunta "cancelar?" aberta
+  var recente = null;      // {id, tipo: 'confirmado'|'editado'|'cancelado'}: aviso verde uma vez
   var relogio = null;
+  var ultimaCarga = 0;
 
-  // Descrições do quiz (QUIZ-MARCACAO.md). O servidor manda os ids, os rótulos e o que é obrigatório.
   // Quiz compacto (QUIZ-MARCACAO.md): grade de botões curtos; a descrição e os campos aparecem só na opção escolhida.
   var DESC = {
     musica: 'Você toca um trecho e o professor ajuda no que estiver travando.',
@@ -263,15 +268,36 @@
     acompanhar: 'Combinado! Sei que o plantão acontece quando alguém traz pergunta. Se ninguém trouxer, ele pode ser cancelado, e eu recebo um aviso.'
   };
 
-  var DIAS = ['domingo', 'segunda-feira', 'terça-feira', 'quarta-feira', 'quinta-feira', 'sexta-feira', 'sábado'];
-  function hora(d) { return d.getHours() + 'h' + (d.getMinutes() ? String(d.getMinutes()).padStart(2, '0') : ''); }
-  function data(d) { return String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0'); }
-  function quando(iso) { var d = new Date(iso), dia = DIAS[d.getDay()]; return dia.charAt(0).toUpperCase() + dia.slice(1) + ', ' + data(d) + ', às ' + hora(d); }
+  // ── datas: sempre no horário de Brasília ──
+  var FMT = new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', weekday: 'long', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
+  var MESES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+  function sp(t) {
+    var o = {};
+    FMT.formatToParts(new Date(t)).forEach(function (p) { o[p.type] = p.value; });
+    var dia = o.weekday.toLowerCase();
+    return {
+      dia: dia, Dia: dia.charAt(0).toUpperCase() + dia.slice(1), ds: dia.slice(0, 3),
+      dn: Number(o.day), data: o.day + '/' + o.month, mes: MESES[Number(o.month) - 1],
+      hora: Number(o.hour) + 'h' + (o.minute !== '00' ? o.minute : '')
+    };
+  }
+  function quando(t) { var s = sp(t); return s.dia + ', ' + s.data + ', às ' + s.hora; }
+  // Véspera às 23h59: o fechaEm do servidor é a meia-noite do dia do plantão.
+  function prazo(p) { var s = sp(new Date(p.fechaEm).getTime() - 60000); return s.dia + ', ' + s.data + ', às 23h59'; }
+
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function $(s, r) { return (r || document).querySelector(s); }
   function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+  var calmo = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function rolar(el) { if (el) el.scrollIntoView({ behavior: calmo ? 'auto' : 'smooth', block: 'start' }); }
 
-  function falhar(msg) { $('#carregando').hidden = true; var f = $('#falha'); f.textContent = msg; f.hidden = false; }
+  function falhar(msg) {
+    $('#carregando').hidden = true;
+    var f = $('#falha');
+    $('[data-texto]', f).textContent = msg;
+    f.hidden = false;
+  }
+  $('[data-tentar]').onclick = function () { $('#falha').hidden = true; $('#carregando').hidden = false; carregar(); };
 
   function chamar(action, extra) {
     var corpo = Object.assign({ action: action, cuser_id: idAluno }, extra || {});
@@ -281,14 +307,26 @@
   }
 
   // ── abas (hash: #plantoes, #gravacoes, #regras) ──
-  function abaAtual() { var h = location.hash.replace('#', ''); return ['plantoes', 'gravacoes', 'regras'].indexOf(h) >= 0 ? h : 'plantoes'; }
+  var ABAS = ['plantoes', 'gravacoes', 'regras'];
+  function abaAtual() { var h = location.hash.replace('#', ''); return ABAS.indexOf(h) >= 0 ? h : 'plantoes'; }
   function mostrarAba() {
     var a = abaAtual();
-    $$('.aba').forEach(function (b) { b.setAttribute('aria-selected', String(b.getAttribute('data-aba') === a)); });
-    ['plantoes', 'gravacoes', 'regras'].forEach(function (s) { $('#sec-' + s).hidden = !dados || s !== a; });
-    if (a === 'regras') $('#sec-regras').hidden = false;
+    $$('.aba').forEach(function (b) {
+      var sel = b.getAttribute('data-aba') === a;
+      b.setAttribute('aria-selected', String(sel));
+      b.tabIndex = sel ? 0 : -1;
+    });
+    ABAS.forEach(function (s) { $('#sec-' + s).hidden = s !== a || (!dados && s !== 'regras'); });
   }
-  $$('.aba').forEach(function (b) { b.onclick = function () { location.hash = b.getAttribute('data-aba'); }; });
+  $$('.aba').forEach(function (b, i, todas) {
+    b.onclick = function () { location.hash = b.getAttribute('data-aba'); };
+    b.onkeydown = function (ev) {
+      var d = ev.key === 'ArrowRight' ? 1 : ev.key === 'ArrowLeft' ? -1 : 0;
+      if (!d) return;
+      var alvo = todas[(i + d + todas.length) % todas.length];
+      alvo.focus(); location.hash = alvo.getAttribute('data-aba');
+    };
+  });
   window.addEventListener('hashchange', mostrarAba);
 
   function carregar() {
@@ -298,8 +336,8 @@
     chamar('listar').then(function (d) {
       $('#carregando').hidden = true;
       if (d.bloqueado) { $('#bloqueado').hidden = false; $('.abas').hidden = true; return; }
-      if (!d.ok) { falhar('Não consegui carregar os plantões agora. Tente de novo em alguns minutos. (' + (d.erro || 'erro') + ')'); mostrarAba(); return; }
-      dados = d; $('#falha').hidden = true;
+      if (!d.ok) { falhar('Não consegui carregar os plantões agora. Tente de novo em alguns minutos.'); mostrarAba(); return; }
+      dados = d; ultimaCarga = Date.now(); $('#falha').hidden = true;
       desenharPlantoes(); desenharGravacoes(); mostrarAba();
     }).catch(function () { falhar('Não consegui carregar os plantões agora. Confira a sua internet e tente de novo.'); mostrarAba(); });
   }
@@ -307,8 +345,7 @@
   // ── próximos plantões ──
   var ICONE_CAL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>';
   var ICONE_OK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>';
-  var MESES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
-  var DS = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'];
+  var ICONE_RELOGIO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
 
   function vazio(titulo, texto) {
     return '<div class="card vazio">' + ICONE_CAL + '<b>' + esc(titulo) + '</b>' + esc(texto) + '</div>';
@@ -318,11 +355,11 @@
     var h = '';
     if (!dados.proximas.length) {
       h += dados.proximaAbertura
-        ? vazio('A agenda abre ' + quando(dados.proximaAbertura).toLowerCase(), 'Volte nesse horário para confirmar a sua presença.')
+        ? vazio('A agenda abre ' + quando(dados.proximaAbertura), 'Volte nesse horário para confirmar a sua presença.')
         : vazio('Nenhum plantão marcado por enquanto', 'Assim que houver, ele aparece aqui.');
     } else {
       h += '<div class="lista">' + dados.proximas.map(cartao).join('') + '</div>';
-      if (dados.proximaAbertura) h += '<p class="nota" style="margin-top:14px">A agenda da semana seguinte abre ' + quando(dados.proximaAbertura).toLowerCase() + '.</p>';
+      if (dados.proximaAbertura) h += '<p class="nota" style="margin-top:14px">A agenda da semana seguinte abre ' + esc(quando(dados.proximaAbertura)) + '.</p>';
     }
     $('#sec-plantoes').innerHTML = h;
     ligarPlantoes();
@@ -331,37 +368,51 @@
     relogio = setInterval(atualizarSalas, 30000);
   }
 
-  // Véspera às 23h59: o fechaEm do servidor é a meia-noite do dia do plantão.
-  function prazo(p) {
-    var f = new Date(new Date(p.fechaEm).getTime() - 60000), dia = DIAS[f.getDay()];
-    return dia + ', ' + data(f) + ', às 23h59';
+  function avisoRecente(id) {
+    if (!recente || recente.id !== id) return '';
+    var txt = { confirmado: 'Presença confirmada! O convite com o link da sala chega no seu e-mail.', editado: 'Pergunta atualizada.', cancelado: 'Presença cancelada. Obrigado por avisar!' }[recente.tipo];
+    return '<div class="sucesso" role="status">' + ICONE_OK + '<span>' + txt + '</span></div>';
   }
 
   function cartao(p) {
-    var d = new Date(p.inicio), dia = DIAS[d.getDay()];
+    var s = sp(p.inicio), agora = Date.now(), ini = new Date(p.inicio).getTime();
     var comForm = aberto === p.id;
-    var h = '<article class="card plantao' + (p.confirmado ? ' ok' : '') + (comForm ? ' com-form' : '') + '" id="p-' + esc(p.id) + '">' +
-      '<div class="linha-topo"><div class="data" aria-hidden="true"><span class="ds">' + DS[d.getDay()] + '</span><span class="dn">' + d.getDate() + '</span><span class="dm">' + MESES[d.getMonth()] + '</span></div>' +
-      '<div class="info"><div class="quando">' + esc(dia.charAt(0).toUpperCase() + dia.slice(1)) + ', ' + hora(d) + '</div>';
+    var corpo = '<div class="linha-topo"><div class="data" aria-hidden="true"><span class="ds">' + s.ds + '</span><span class="dn">' + s.dn + '</span><span class="dm">' + s.mes + '</span></div>' +
+      '<div class="info"><div class="quando">' + esc(s.Dia) + ', ' + esc(s.hora) + '</div>';
+    var lado = '';
     if (p.confirmado) {
-      h += '<div class="estado">' + ICONE_OK + 'Presença confirmada</div></div></div>' +
+      corpo += '<div class="estado">' + ICONE_OK + 'Presença confirmada</div>' + (agora >= ini ? '<div><span class="agora">Acontecendo agora</span></div>' : '') + '</div></div>' +
         (p.escolha === 'acompanhar'
           ? '<div class="pergunta"><b>Você vai</b>Só acompanhar</div>'
-          : '<div class="pergunta"><b>Sua pergunta</b>' + esc(p.resumo) + '</div>');
-      if (comForm && modo === 'editar') h += formulario(p);
-      else h += (recente === p.id ? '<div class="sucesso" role="status">' + ICONE_OK + '<span>Presença confirmada! O convite com o link da sala chega no seu e-mail.</span></div>' : '') +
-        '<div class="acoes"><span class="sala" data-sala="' + esc(p.inicio) + '" data-link="' + esc(p.meetLink) + '"></span>' +
-        (p.aberta ? '<button class="btn btn-2" data-editar="' + esc(p.id) + '">Editar minha pergunta</button><button class="btn btn-txt" data-cancelar="' + esc(p.id) + '">Não vou conseguir ir</button>' : '') + '</div>' +
-        (p.aberta ? '<div class="nota">Dá para editar ou cancelar até ' + esc(prazo(p)) + '.</div>' : '<div class="nota">A confirmação fechou às 23h59 da véspera.</div>');
+          : '<div class="pergunta"><b>Sua pergunta</b>' + esc(p.resumo) + '</div>') +
+        (p.aberta ? '<div class="nota">Dá para editar ou cancelar até ' + esc(prazo(p)) + '.</div>' : '<div class="nota">Tudo certo. É só entrar na sala no horário.</div>');
+      if (!comForm) {
+        lado = avisoRecente(p.id);
+        if (cancelando === p.id) {
+          lado += '<div class="confirma" role="group" aria-label="Cancelar presença"><b>Cancelar a sua presença?</b>' +
+            'Se mudar de ideia até ' + esc(prazo(p)) + ', dá para confirmar de novo, mas você entra no fim da fila.' +
+            '<div class="acoes"><button class="btn btn-1" data-cancelar-sim="' + esc(p.id) + '">Sim, cancelar</button><button class="btn btn-2" data-cancelar-nao>Manter presença</button></div></div>';
+        } else {
+          lado += '<div class="acoes"><span class="sala" data-sala="' + esc(p.inicio) + '" data-link="' + esc(p.meetLink) + '"></span>' +
+            (p.aberta ? '<button class="btn btn-2" data-editar="' + esc(p.id) + '">Editar minha pergunta</button><button class="btn btn-txt" data-cancelar="' + esc(p.id) + '">Não vou conseguir ir</button>' : '') + '</div>';
+        }
+      }
     } else if (p.aberta) {
-      h += '<div class="nota">Confirme até ' + esc(prazo(p)) + '.</div></div></div>';
-      h += comForm && modo === 'confirmar'
-        ? formulario(p)
-        : '<div class="acoes"><button class="btn btn-1" data-abrir="' + esc(p.id) + '">Confirmar presença</button></div>';
+      corpo += (p.bloqueioPergunta
+        ? '<div class="nota">' + esc(p.bloqueioPergunta) + '</div>'
+        : '<div class="nota">Confirme até ' + esc(prazo(p)) + '.</div>') + '</div></div>';
+      if (!comForm) {
+        lado = avisoRecente(p.id) + (p.bloqueioPergunta
+          ? '<div class="acoes"><button class="btn btn-txt" data-abrir="' + esc(p.id) + '">Quero só acompanhar este</button></div>'
+          : '<div class="acoes"><button class="btn btn-1" data-abrir="' + esc(p.id) + '">Confirmar presença</button></div>');
+      }
     } else {
-      h += '<div class="nota">A confirmação deste plantão já fechou.</div></div></div>';
+      corpo += '<div class="nota">A confirmação deste plantão já fechou.</div></div></div>';
     }
-    return h + '<div class="erro" data-erro-card hidden></div></article>';
+    return '<article class="card plantao' + (p.confirmado ? ' ok' : '') + '" id="p-' + esc(p.id) + '">' +
+      '<div class="corpo">' + corpo + '</div><div class="lado">' + lado + '</div>' +
+      (comForm ? formulario(p) : '') +
+      '<div class="erro" data-erro-card role="alert" hidden></div></article>';
   }
 
   function chips(nome, lista, tipo, marcados) {
@@ -371,7 +422,7 @@
   }
 
   function mais(conteudo, aberto) {
-    return '<details class="mais"' + (aberto ? ' open' : '') + '><summary>+ Adicionar detalhes <span class="opcional">(opcional)</span></summary>' + conteudo + '</details>';
+    return '<details class="mais"' + (aberto ? ' open' : '') + '><summary>+ Adicionar detalhes <span class="opcional">&nbsp;(opcional)</span></summary>' + conteudo + '</details>';
   }
 
   // Cada tipo: o obrigatório à vista; o opcional atrás de "Adicionar detalhes".
@@ -404,28 +455,33 @@
   }
 
   function formulario(p) {
-    var r = modo === 'editar' ? (p.respostas || {}) : {};
-    var escolhida = modo === 'editar' ? p.escolha : '';
+    var editando = modo === 'editar';
+    var r = editando ? (p.respostas || {}) : {};
+    // Com pergunta já marcada em outro plantão, este só aceita "acompanhar".
+    var travada = !!p.bloqueioPergunta && !editando;
+    var escolhida = editando ? p.escolha : (travada ? 'acompanhar' : '');
     var ex = extras(p.id, r);
-    var travada = !!p.bloqueioPergunta && modo === 'confirmar';
     var nome = 'esc-' + esc(p.id);
     var botoes = dados.escolhas.filter(function (e) { return e.id !== 'acompanhar'; }).map(function (e) {
-      return '<label class="opc-b"><input type="radio" name="' + nome + '" value="' + esc(e.id) + '"' + (e.id === escolhida ? ' checked' : '') + (travada ? ' disabled' : '') + '><span>' + esc(e.rotulo) + '</span></label>';
+      return '<label class="opc-b"><input type="radio" name="' + nome + '" value="' + esc(e.id) + '"' + (e.id === escolhida ? ' checked' : '') + '><span>' + esc(e.rotulo) + '</span></label>';
     }).join('');
     var paineis = dados.escolhas.map(function (e) {
       return '<div class="extra" data-extra="' + esc(e.id) + '"' + (e.id === escolhida ? '' : ' hidden') + '>' +
         (DESC[e.id] ? '<p class="desc">' + esc(DESC[e.id]) + '</p>' : '') + ex[e.id] + '</div>';
     }).join('');
     return '<form data-form="' + esc(p.id) + '" novalidate>' +
-      (travada ? '<div class="caixa">' + esc(p.bloqueioPergunta) + ' Por enquanto, você pode confirmar para acompanhar.</div>' : '') +
-      '<fieldset><legend>Sobre o que é a sua pergunta?</legend>' +
-      '<p class="dica">Escolha a opção mais próxima.</p>' +
-      '<div class="opcoes">' + botoes + '</div>' +
-      '<label class="acomp"><input type="radio" name="' + nome + '" value="acompanhar"' + (escolhida === 'acompanhar' ? ' checked' : '') + '><span>Sem pergunta desta vez? Dá para só acompanhar.</span></label>' +
-      '</fieldset>' + paineis +
-      '<label class="aceite" data-aceite hidden><input type="checkbox"> <span data-aceite-texto></span></label>' +
-      '<div class="acoes"><button class="btn btn-1" type="submit">' + (modo === 'editar' ? 'Salvar alterações' : 'Confirmar presença') + '</button>' +
+      (travada
+        ? '<fieldset hidden><input type="radio" name="' + nome + '" value="acompanhar" checked></fieldset>'
+        : '<fieldset><legend>Sobre o que é a sua pergunta?</legend>' +
+          '<p class="dica">Escolha a opção mais próxima.</p>' +
+          '<div class="opcoes">' + botoes + '</div>' +
+          '<label class="acomp"><input type="radio" name="' + nome + '" value="acompanhar"' + (escolhida === 'acompanhar' ? ' checked' : '') + '><span>Sem pergunta desta vez? Dá para só acompanhar.</span></label>' +
+          '</fieldset>') +
+      paineis +
+      '<label class="aceite" data-aceite hidden><input type="checkbox"' + (editando ? ' checked' : '') + '> <span data-aceite-texto></span></label>' +
+      '<div class="acoes"><button class="btn btn-1" type="submit">' + (editando ? 'Salvar alterações' : 'Confirmar presença') + '</button>' +
       '<button class="btn btn-2" type="button" data-fechar>Voltar</button></div>' +
+      '<div class="aviso" data-aviso role="alert" hidden></div>' +
       '<div class="erro" data-erro role="alert" hidden></div></form>';
   }
 
@@ -433,11 +489,10 @@
 
   function atualizarForm(form) {
     var e = escolhaDo(form);
-    $$('.opc-b', form).forEach(function (o) { o.classList.toggle('sel', $('input', o).checked); });
-    $('.acomp', form).classList.toggle('sel', e === 'acompanhar');
     $$('.extra', form).forEach(function (x) { x.hidden = x.getAttribute('data-extra') !== e; });
     $('[data-aceite]', form).hidden = !e;
     $('[data-aceite-texto]', form).textContent = e === 'acompanhar' ? ACEITE.acompanhar : ACEITE.pergunta;
+    $('[data-aviso]', form).hidden = true;
   }
 
   function coletar(form) {
@@ -453,36 +508,46 @@
     return { escolha: e, respostas: r };
   }
 
+  function marcar(campo) {
+    campo.classList.add('invalido'); campo.setAttribute('aria-invalid', 'true');
+    var d = campo.closest('details'); if (d) d.open = true;
+    campo.focus();
+    campo.addEventListener('input', function tira() { campo.classList.remove('invalido'); campo.removeAttribute('aria-invalid'); campo.removeEventListener('input', tira); });
+  }
+
   function validar(form) {
     var e = escolhaDo(form);
     if (!e) return 'Escolha sobre o que é a sua pergunta.';
     var falta = $$('[data-extra="' + e + '"] [data-obrig]', form).filter(function (c) { return !c.value.trim(); })[0];
-    if (falta) { falta.focus(); return 'Preencha o campo destacado para continuar.'; }
-    var link = $$('input[type=url]', form).filter(function (c) { return !c.closest('[hidden]') && c.value.trim() && !/^https?:\/\/\S+$/i.test(c.value.trim()); })[0];
-    if (link) { var d = link.closest('details'); if (d) d.open = true; link.focus(); return 'O link precisa começar com http:// ou https://'; }
+    if (falta) { marcar(falta); return 'Falta preencher o campo marcado.'; }
+    var link = $$('[data-extra="' + e + '"] input[type=url]', form).filter(function (c) { return c.value.trim() && !/^https?:\/\/\S+$/i.test(c.value.trim()); })[0];
+    if (link) { marcar(link); return 'O link precisa começar com http:// ou https://'; }
     if (!$('[data-aceite] input', form).checked) return 'Marque o "Combinado" para confirmar.';
     return '';
   }
-
 
   // A sala abre 15 minutos antes; antes disso, quanto falta.
   var ABRE_ANTES = 15 * 60000;
   function falta(ms) {
     var min = Math.ceil(ms / 60000), d = Math.floor(min / 1440), h = Math.floor((min % 1440) / 60), m = min % 60;
     if (d >= 1) return d + (d === 1 ? ' dia' : ' dias') + (h ? ' e ' + h + ' h' : '');
-    if (h >= 1) return h + ' h' + (m ? ' ' + m + ' min' : '');
+    if (h >= 1) return h + ' h' + (m ? ' e ' + m + ' min' : '');
     return m + ' min';
   }
   function atualizarSalas() {
     $$('[data-sala]').forEach(function (el) {
       var ini = new Date(el.getAttribute('data-sala')).getTime(), agora = Date.now();
-      if (agora >= ini - ABRE_ANTES) {
-        el.innerHTML = '<a class="btn btn-1" href="' + esc(el.getAttribute('data-link')) + '" target="_blank" rel="noopener">Entrar na sala</a>';
-      } else {
-        el.innerHTML = '<span class="contagem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Começa em <b>' + esc(falta(ini - agora)) + '</b>. A sala abre 15 minutos antes.</span></span>';
-      }
+      el.innerHTML = agora >= ini - ABRE_ANTES
+        ? '<a class="btn btn-1" href="' + esc(el.getAttribute('data-link')) + '" target="_blank" rel="noopener">Entrar na sala</a>'
+        : '<span class="contagem">' + ICONE_RELOGIO + '<span>Começa em <b>' + esc(falta(ini - agora)) + '</b>. A sala abre 15 minutos antes.</span></span>';
     });
+    // Passou a hora de abrir a próxima semana: busca de novo, sem precisar recarregar.
+    if (dados && dados.proximaAbertura && Date.now() >= new Date(dados.proximaAbertura).getTime() && !aberto) carregar();
   }
+  // Voltou para a aba depois de um tempo: dados frescos.
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'visible' && dados && !aberto && !cancelando && Date.now() - ultimaCarga > 5 * 60000) carregar();
+  });
 
   // Retorno na hora: o salvamento passa pelo Apps Script, que às vezes demora.
   function progresso(alvo, texto) {
@@ -495,45 +560,53 @@
   }
 
   function ligarPlantoes() {
-    $$('[data-abrir]').forEach(function (b) { b.onclick = function () { aberto = b.getAttribute('data-abrir'); modo = 'confirmar'; desenharPlantoes(); focarForm(); }; });
-    $$('[data-editar]').forEach(function (b) { b.onclick = function () { aberto = b.getAttribute('data-editar'); modo = 'editar'; desenharPlantoes(); focarForm(); }; });
+    $$('[data-abrir]').forEach(function (b) { b.onclick = function () { aberto = b.getAttribute('data-abrir'); modo = 'confirmar'; recente = null; desenharPlantoes(); focarForm(); }; });
+    $$('[data-editar]').forEach(function (b) { b.onclick = function () { aberto = b.getAttribute('data-editar'); modo = 'editar'; recente = null; desenharPlantoes(); focarForm(); }; });
     $$('[data-fechar]').forEach(function (b) { b.onclick = function () { aberto = ''; modo = ''; desenharPlantoes(); }; });
+    $$('[data-cancelar]').forEach(function (b) { b.onclick = function () { cancelando = b.getAttribute('data-cancelar'); recente = null; desenharPlantoes(); var s = $('[data-cancelar-nao]'); if (s) s.focus(); }; });
+    $$('[data-cancelar-nao]').forEach(function (b) { b.onclick = function () { cancelando = ''; desenharPlantoes(); }; });
+    $$('[data-cancelar-sim]').forEach(function (b) {
+      b.onclick = function () {
+        var id = b.getAttribute('data-cancelar-sim'), box = b.closest('.confirma'), lado = box.parentNode;
+        box.hidden = true;
+        var fim = progresso(lado, 'Cancelando a sua presença…');
+        var volta = function (texto) { fim(); box.hidden = false; var e = $('#p-' + id + ' [data-erro-card]'); e.textContent = texto; e.hidden = false; };
+        chamar('cancelar', { aulaId: id }).then(function (d) {
+          if (!d.ok) { volta('Não deu para cancelar: ' + (d.erro || 'erro') + '.'); return; }
+          cancelando = ''; recente = { id: id, tipo: 'cancelado' }; carregar();
+        }).catch(function () { volta('Não deu para cancelar agora. Confira a sua internet e tente de novo.'); });
+      };
+    });
     $$('form[data-form]').forEach(function (f) {
       atualizarForm(f);
       $$('input[type=radio][name^="esc-"]', f).forEach(function (r) { r.onchange = function () { atualizarForm(f); }; });
       f.onsubmit = function (ev) {
         ev.preventDefault();
-        var erro = $('[data-erro]', f), msg = validar(f);
-        if (msg) { erro.textContent = msg; erro.hidden = false; return; }
+        var aviso = $('[data-aviso]', f), erro = $('[data-erro]', f), msg = validar(f);
         erro.hidden = true;
+        if (msg) { aviso.textContent = msg; aviso.hidden = false; return; }
+        aviso.hidden = true;
         var c = coletar(f), id = f.getAttribute('data-form'), editando = modo === 'editar';
         f.hidden = true;
         var fim = progresso(f.parentNode, editando ? 'Salvando a sua pergunta…' : 'Confirmando a sua presença…');
-        f.closest('.card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        rolar(f.closest('.card'));
         var volta = function (texto) { fim(); f.hidden = false; erro.textContent = texto; erro.hidden = false; };
         chamar(editando ? 'editar' : 'confirmar', { aulaId: id, escolha: c.escolha, respostas: c.respostas, aceite: true })
           .then(function (d) {
             if (!d.ok) { volta('Não deu para salvar: ' + (d.erro || 'erro') + '.'); return; }
-            aberto = ''; modo = ''; recente = editando ? '' : id; carregar();
+            aberto = ''; modo = ''; recente = { id: id, tipo: editando ? 'editado' : 'confirmado' }; carregar();
           })
           .catch(function () { volta('Não deu para salvar agora. Confira a sua internet e tente de novo.'); });
       };
     });
-    $$('[data-cancelar]').forEach(function (b) {
-      b.onclick = function () {
-        var id = b.getAttribute('data-cancelar');
-        if (!confirm('Cancelar a sua presença neste plantão? Se mudar de ideia até as 23h59 da véspera, você pode confirmar de novo, mas volta para o fim da fila.')) return;
-        var acoes = b.closest('.acoes'); acoes.hidden = true;
-        var fim = progresso(acoes.parentNode, 'Cancelando a sua presença…');
-        var volta = function (texto) { fim(); acoes.hidden = false; var e = $('#p-' + id + ' [data-erro-card]'); e.textContent = texto; e.hidden = false; };
-        chamar('cancelar', { aulaId: id }).then(function (d) {
-          if (!d.ok) { volta('Não deu para cancelar: ' + (d.erro || 'erro') + '.'); return; }
-          recente = ''; carregar();
-        }).catch(function () { volta('Não deu para cancelar agora. Confira a sua internet e tente de novo.'); });
-      };
-    });
   }
-  function focarForm() { var f = $('form[data-form]'); if (f) { f.scrollIntoView({ behavior: 'smooth', block: 'start' }); var r = $('input[type=radio]:not([disabled])', f); if (r) r.focus(); } }
+  function focarForm() {
+    var f = $('form[data-form]');
+    if (!f) return;
+    rolar(f);
+    var r = $('input[type=radio]:checked', f) || $('.opc-b input', f) || $('[data-aceite] input', f);
+    if (r) r.focus({ preventScroll: true });
+  }
 
   // ── gravações ──
   function idDoYoutube(link) { var m = String(link).match(/(?:youtu\.be\/|v=)([\w-]{6,})/); return m ? m[1] : ''; }
@@ -541,10 +614,10 @@
     var g = dados.gravacoes;
     $('#sec-gravacoes').innerHTML = g.length
       ? '<div class="grade">' + g.map(function (x) {
-          var vid = idDoYoutube(x.link), d = new Date(x.inicio), dia = DIAS[d.getDay()];
-          return '<article class="card"><div class="quando">' + esc(dia.charAt(0).toUpperCase() + dia.slice(1)) + ', ' + data(d) + '</div>' +
+          var vid = idDoYoutube(x.link), s = sp(x.inicio);
+          return '<article class="card"><div class="quando">' + esc(s.Dia) + ', ' + esc(s.data) + '</div>' +
             (x.resumo ? '<div class="pergunta"><b>Sua pergunta</b>' + esc(x.resumo) + '</div>' : '') +
-            '<button class="thumb" data-assistir="' + esc(x.link) + '" aria-label="Assistir a gravação de ' + esc(data(d)) + '">' +
+            '<button class="thumb" data-assistir="' + esc(x.link) + '" aria-label="Assistir a gravação de ' + esc(s.data) + '">' +
             (vid ? '<img src="https://i.ytimg.com/vi/' + esc(vid) + '/hqdefault.jpg" alt="" loading="lazy">' : '') +
             '<span class="play"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>Assistir</span></button></article>';
         }).join('') + '</div>'
