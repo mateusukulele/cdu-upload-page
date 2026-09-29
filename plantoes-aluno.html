@@ -124,6 +124,19 @@
   details.mais>.campo:first-of-type{margin-top:4px}
   @media (min-width:700px){.opcoes{grid-template-columns:repeat(4,1fr)}}
 
+  .lista{display:grid;gap:12px}
+  .lista>.card{margin-bottom:0}
+  .sala{display:contents}
+  .contagem{display:flex;align-items:flex-start;gap:8px;background:var(--fundo);border-radius:12px;padding:12px 14px;font-size:15px;line-height:1.5;color:var(--texto)}
+  .contagem svg{width:20px;height:20px;flex:none;color:var(--indigo);margin-top:1px}
+  .sucesso{display:flex;align-items:flex-start;gap:8px;margin-top:12px;background:var(--verde-suave);color:#1C6445;border-radius:12px;padding:12px 14px;font-weight:600;font-size:15px;line-height:1.5}
+  .sucesso svg{width:20px;height:20px;flex:none;margin-top:1px}
+  .progresso{display:flex;align-items:flex-start;gap:12px;margin-top:14px;background:var(--fundo);border-radius:12px;padding:14px}
+  .progresso b{display:block;color:var(--indigo)}
+  .gira{width:22px;height:22px;flex:none;border-radius:50%;border:3px solid var(--superficie);border-top-color:var(--indigo);animation:gira .8s linear infinite;margin-top:1px}
+  @keyframes gira{to{transform:rotate(360deg)}}
+  @media (prefers-reduced-motion:reduce){.gira{animation-duration:2.4s}}
+
   /* gravações */
   .thumb{position:relative;display:block;width:100%;aspect-ratio:16/9;border:0;padding:0;border-radius:12px;overflow:hidden;background:var(--indigo-profundo);cursor:pointer;margin-top:12px}
   .thumb img{width:100%;height:100%;object-fit:cover;display:block}
@@ -224,6 +237,8 @@
   var dados = null;        // resposta do listar
   var aberto = '';         // id do plantão com formulário aberto
   var modo = '';           // 'confirmar' | 'editar'
+  var recente = '';        // plantão recém-confirmado: mostra o aviso verde uma vez
+  var relogio = null;
 
   // Descrições do quiz (QUIZ-MARCACAO.md). O servidor manda os ids, os rótulos e o que é obrigatório.
   // Quiz compacto (QUIZ-MARCACAO.md): grade de botões curtos; a descrição e os campos aparecem só na opção escolhida.
@@ -306,11 +321,14 @@
         ? vazio('A agenda abre ' + quando(dados.proximaAbertura).toLowerCase(), 'Volte nesse horário para confirmar a sua presença.')
         : vazio('Nenhum plantão marcado por enquanto', 'Assim que houver, ele aparece aqui.');
     } else {
-      h += '<div class="grade">' + dados.proximas.map(cartao).join('') + '</div>';
+      h += '<div class="lista">' + dados.proximas.map(cartao).join('') + '</div>';
       if (dados.proximaAbertura) h += '<p class="nota" style="margin-top:14px">A agenda da semana seguinte abre ' + quando(dados.proximaAbertura).toLowerCase() + '.</p>';
     }
     $('#sec-plantoes').innerHTML = h;
     ligarPlantoes();
+    atualizarSalas();
+    if (relogio) clearInterval(relogio);
+    relogio = setInterval(atualizarSalas, 30000);
   }
 
   // Véspera às 23h59: o fechaEm do servidor é a meia-noite do dia do plantão.
@@ -331,7 +349,8 @@
           ? '<div class="pergunta"><b>Você vai</b>Só acompanhar</div>'
           : '<div class="pergunta"><b>Sua pergunta</b>' + esc(p.resumo) + '</div>');
       if (comForm && modo === 'editar') h += formulario(p);
-      else h += '<div class="acoes"><a class="btn btn-1" href="' + esc(p.meetLink) + '" target="_blank" rel="noopener">Entrar na sala</a>' +
+      else h += (recente === p.id ? '<div class="sucesso" role="status">' + ICONE_OK + '<span>Presença confirmada! O convite com o link da sala chega no seu e-mail.</span></div>' : '') +
+        '<div class="acoes"><span class="sala" data-sala="' + esc(p.inicio) + '" data-link="' + esc(p.meetLink) + '"></span>' +
         (p.aberta ? '<button class="btn btn-2" data-editar="' + esc(p.id) + '">Editar minha pergunta</button><button class="btn btn-txt" data-cancelar="' + esc(p.id) + '">Não vou conseguir ir</button>' : '') + '</div>' +
         (p.aberta ? '<div class="nota">Dá para editar ou cancelar até ' + esc(prazo(p)) + '.</div>' : '<div class="nota">A confirmação fechou às 23h59 da véspera.</div>');
     } else if (p.aberta) {
@@ -445,6 +464,36 @@
     return '';
   }
 
+
+  // A sala abre 15 minutos antes; antes disso, quanto falta.
+  var ABRE_ANTES = 15 * 60000;
+  function falta(ms) {
+    var min = Math.ceil(ms / 60000), d = Math.floor(min / 1440), h = Math.floor((min % 1440) / 60), m = min % 60;
+    if (d >= 1) return d + (d === 1 ? ' dia' : ' dias') + (h ? ' e ' + h + ' h' : '');
+    if (h >= 1) return h + ' h' + (m ? ' ' + m + ' min' : '');
+    return m + ' min';
+  }
+  function atualizarSalas() {
+    $$('[data-sala]').forEach(function (el) {
+      var ini = new Date(el.getAttribute('data-sala')).getTime(), agora = Date.now();
+      if (agora >= ini - ABRE_ANTES) {
+        el.innerHTML = '<a class="btn btn-1" href="' + esc(el.getAttribute('data-link')) + '" target="_blank" rel="noopener">Entrar na sala</a>';
+      } else {
+        el.innerHTML = '<span class="contagem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Começa em <b>' + esc(falta(ini - agora)) + '</b>. A sala abre 15 minutos antes.</span></span>';
+      }
+    });
+  }
+
+  // Retorno na hora: o salvamento passa pelo Apps Script, que às vezes demora.
+  function progresso(alvo, texto) {
+    var box = document.createElement('div');
+    box.className = 'progresso'; box.setAttribute('role', 'status');
+    box.innerHTML = '<span class="gira" aria-hidden="true"></span><span><b>' + esc(texto) + '</b><span class="nota" data-lento>Pode levar alguns segundos. Não precisa recarregar a página.</span></span>';
+    alvo.appendChild(box);
+    var t = setTimeout(function () { var l = $('[data-lento]', box); if (l) l.textContent = 'Ainda salvando. O sistema está mais lento agora, mas está tudo a caminho: pode deixar esta tela aberta.'; }, 10000);
+    return function () { clearTimeout(t); box.remove(); };
+  }
+
   function ligarPlantoes() {
     $$('[data-abrir]').forEach(function (b) { b.onclick = function () { aberto = b.getAttribute('data-abrir'); modo = 'confirmar'; desenharPlantoes(); focarForm(); }; });
     $$('[data-editar]').forEach(function (b) { b.onclick = function () { aberto = b.getAttribute('data-editar'); modo = 'editar'; desenharPlantoes(); focarForm(); }; });
@@ -457,25 +506,30 @@
         var erro = $('[data-erro]', f), msg = validar(f);
         if (msg) { erro.textContent = msg; erro.hidden = false; return; }
         erro.hidden = true;
-        var botao = $('button[type=submit]', f); botao.disabled = true;
-        var c = coletar(f);
-        chamar(modo === 'editar' ? 'editar' : 'confirmar', { aulaId: f.getAttribute('data-form'), escolha: c.escolha, respostas: c.respostas, aceite: true })
+        var c = coletar(f), id = f.getAttribute('data-form'), editando = modo === 'editar';
+        f.hidden = true;
+        var fim = progresso(f.parentNode, editando ? 'Salvando a sua pergunta…' : 'Confirmando a sua presença…');
+        f.closest('.card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        var volta = function (texto) { fim(); f.hidden = false; erro.textContent = texto; erro.hidden = false; };
+        chamar(editando ? 'editar' : 'confirmar', { aulaId: id, escolha: c.escolha, respostas: c.respostas, aceite: true })
           .then(function (d) {
-            if (!d.ok) { erro.textContent = 'Não deu para salvar: ' + (d.erro || 'erro') + '.'; erro.hidden = false; botao.disabled = false; return; }
-            aberto = ''; modo = ''; carregar();
+            if (!d.ok) { volta('Não deu para salvar: ' + (d.erro || 'erro') + '.'); return; }
+            aberto = ''; modo = ''; recente = editando ? '' : id; carregar();
           })
-          .catch(function () { erro.textContent = 'Não deu para salvar agora. Confira a sua internet e tente de novo.'; erro.hidden = false; botao.disabled = false; });
+          .catch(function () { volta('Não deu para salvar agora. Confira a sua internet e tente de novo.'); });
       };
     });
     $$('[data-cancelar]').forEach(function (b) {
       b.onclick = function () {
         var id = b.getAttribute('data-cancelar');
         if (!confirm('Cancelar a sua presença neste plantão? Se mudar de ideia até as 23h59 da véspera, você pode confirmar de novo, mas volta para o fim da fila.')) return;
-        b.disabled = true;
+        var acoes = b.closest('.acoes'); acoes.hidden = true;
+        var fim = progresso(acoes.parentNode, 'Cancelando a sua presença…');
+        var volta = function (texto) { fim(); acoes.hidden = false; var e = $('#p-' + id + ' [data-erro-card]'); e.textContent = texto; e.hidden = false; };
         chamar('cancelar', { aulaId: id }).then(function (d) {
-          if (!d.ok) { var e = $('#p-' + id + ' [data-erro-card]'); e.textContent = 'Não deu para cancelar: ' + (d.erro || 'erro') + '.'; e.hidden = false; b.disabled = false; return; }
-          carregar();
-        }).catch(function () { b.disabled = false; });
+          if (!d.ok) { volta('Não deu para cancelar: ' + (d.erro || 'erro') + '.'); return; }
+          recente = ''; carregar();
+        }).catch(function () { volta('Não deu para cancelar agora. Confira a sua internet e tente de novo.'); });
       };
     });
   }
