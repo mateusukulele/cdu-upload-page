@@ -5,8 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Plantões ao vivo · Clube do Ukulele</title>
 <meta name="robots" content="noindex">
-<!-- Obrigatório em Página Dinâmica da Cademí: é o que ajusta a altura do quadro (sem ele, altura 0). -->
-<script src="https://core.cademi.com.br/assets/js/remote.js"></script>
+<!-- Página Dinâmica da Cademí: a aula usa iFrameResize (v4.2.11) no quadro #conteudoIntegrado.
+     Sem a parte "filha" abaixo, o quadro fica com altura 0. O remote.js da documentação antiga não existe mais. -->
+<script src="https://core.cademi.com.br/assets/js/vendor/iframeResizer.contentWindow.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&display=swap" rel="stylesheet">
 <style>
@@ -192,6 +193,8 @@
 
   function carregar() {
     if (!idAluno) { falhar('Não consegui identificar o seu acesso. Abra esta página pela área de membros.'); mostrarAba(); return; }
+    // Admin da Cademí chega com id negativo: não é aluno, e o validador não o reconhece.
+    if (/^-/.test(idAluno)) { falhar('Você está vendo como administrador. Para testar, use "Acessar como aluno" com uma conta de aluno do Plano Ouro.'); mostrarAba(); return; }
     chamar('listar').then(function (d) {
       $('#carregando').hidden = true;
       if (d.bloqueado) { $('#bloqueado').hidden = false; $('.abas').hidden = true; return; }
