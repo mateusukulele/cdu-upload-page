@@ -366,11 +366,11 @@
     var h = '';
     if (!dados.proximas.length) {
       h += dados.proximaAbertura
-        ? vazio('A agenda abre ' + quando(dados.proximaAbertura), 'Volte nesse horário para confirmar a sua presença.')
+        ? vazio('A agenda abre ' + quando(dados.proximaAbertura) + ' (horário de Brasília)', 'Volte nesse horário para confirmar a sua presença.')
         : vazio('Nenhum plantão marcado por enquanto', 'Assim que houver, ele aparece aqui.');
     } else {
       h += '<div class="lista">' + dados.proximas.map(cartao).join('') + '</div>';
-      if (dados.proximaAbertura) h += '<p class="nota" style="margin-top:14px">A agenda da semana seguinte abre ' + esc(quando(dados.proximaAbertura)) + '.</p>';
+      if (dados.proximaAbertura) h += '<p class="nota" style="margin-top:14px">A agenda da semana seguinte abre ' + esc(quando(dados.proximaAbertura)) + ' (horário de Brasília).</p>';
     }
     $('#sec-plantoes').innerHTML = h;
     ligarPlantoes();
@@ -456,9 +456,11 @@
     e.acompanhar = '<div class="caixa">Pode vir! Você assiste e aprende com as perguntas dos outros alunos. Se surgir uma dúvida na hora, pode perguntar: você entra no fim da fila, depois de quem enviou pergunta.</div>';
     return e;
   }
+  // Mesmos limites que o servidor corta (plantoes-regras.js): o aluno vê o limite em vez de perder texto calado.
+  var MAX_CAMPO = { musica: 120, aulaNome: 200 };
   function campoTexto(nome, rotulo, valor, exemplo, obrig, tipo) {
     return '<div class="campo"><label>' + esc(rotulo) + (obrig ? '' : ' <span class="opcional">(opcional)</span>') +
-      '<input type="' + (tipo || 'text') + '" data-campo="' + nome + '" value="' + esc(valor || '') + '" placeholder="' + esc(exemplo || '') + '" maxlength="500"' + (obrig ? ' data-obrig' : '') + '></label></div>';
+      '<input type="' + (tipo || 'text') + '" data-campo="' + nome + '" value="' + esc(valor || '') + '" placeholder="' + esc(exemplo || '') + '" maxlength="' + (MAX_CAMPO[nome] || 500) + '"' + (obrig ? ' data-obrig' : '') + '></label></div>';
   }
   function campoArea(nome, rotulo, valor, exemplo, obrig) {
     return '<div class="campo"><label>' + esc(rotulo) + (obrig ? '' : ' <span class="opcional">(opcional)</span>') +
@@ -560,7 +562,7 @@
     if (document.visibilityState === 'visible' && dados && !aberto && !cancelando && Date.now() - ultimaCarga > 5 * 60000) carregar();
   });
 
-  // Retorno na hora: o salvamento passa pelo Apps Script, que às vezes demora.
+  // Retorno na hora, enquanto o servidor salva (normalmente 1 a 2 segundos).
   function progresso(alvo, texto) {
     var box = document.createElement('div');
     box.className = 'progresso'; box.setAttribute('role', 'status');
@@ -620,14 +622,15 @@
   }
 
   // ── gravações ──
-  function idDoYoutube(link) { var m = String(link).match(/(?:youtu\.be\/|v=)([\w-]{6,})/); return m ? m[1] : ''; }
+  // youtu.be/ID, watch?v=ID, /live/ID e /shorts/ID (o painel aceita os quatro).
+  function idDoYoutube(link) { var m = String(link).match(/(?:youtu\.be\/|[?&]v=|\/live\/|\/shorts\/|\/embed\/)([\w-]{6,})/); return m ? m[1] : ''; }
   function desenharGravacoes() {
     var g = dados.gravacoes;
     $('#sec-gravacoes').innerHTML = g.length
       ? '<div class="grade">' + g.map(function (x) {
           var vid = idDoYoutube(x.link), s = sp(x.inicio);
           return '<article class="card"><div class="quando">' + esc(s.Dia) + ', ' + esc(s.data) + '</div>' +
-            (x.resumo ? '<div class="pergunta"><b>Sua pergunta</b>' + esc(x.resumo) + '</div>' : '') +
+            (x.resumo && x.resumo !== 'Só acompanhando' ? '<div class="pergunta"><b>Sua pergunta</b>' + esc(x.resumo) + '</div>' : '') +
             '<button class="thumb" data-assistir="' + esc(x.link) + '" aria-label="Assistir a gravação de ' + esc(s.data) + '">' +
             (vid ? '<img src="https://i.ytimg.com/vi/' + esc(vid) + '/hqdefault.jpg" alt="" loading="lazy">' : '') +
             '<span class="play"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>Assistir</span></button></article>';
