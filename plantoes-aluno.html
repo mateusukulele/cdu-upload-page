@@ -88,6 +88,16 @@
   .confirma{margin-top:14px;background:var(--indigo-suave);border-radius:12px;padding:14px;font-size:16px;line-height:1.5}
   .confirma b{display:block;color:var(--indigo);margin-bottom:4px}
   .confirma .acoes{margin-top:12px}
+  .agenda{font-size:15px;color:var(--texto-suave);margin-top:10px;line-height:1.5}
+  .agenda a{color:var(--indigo);font-weight:600}
+  .estado.avisou{color:var(--texto-suave)}
+  .nps .escala{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:6px;margin:12px 0 4px}
+  .nps .escala button{min-height:44px;border:2px solid var(--indigo);background:var(--card);color:var(--indigo);border-radius:10px;font:700 16px var(--fonte);cursor:pointer}
+  .nps .escala button[aria-pressed=true]{background:var(--indigo);color:#fff}
+  .nps .escala button:focus-visible{outline:3px solid var(--indigo);outline-offset:3px}
+  .nps .pontas{display:flex;justify-content:space-between;font-size:14px;color:var(--texto-suave)}
+  .nps textarea{width:100%;min-height:80px}
+  .nps form{margin-top:0;border-top:0;padding-top:0}
   .progresso{display:flex;align-items:flex-start;gap:12px;margin-top:14px;background:var(--fundo);border-radius:12px;padding:14px;font-size:16px}
   .progresso b{display:block;color:var(--indigo)}
   .gira{width:22px;height:22px;flex:none;border-radius:50%;border:3px solid var(--superficie);border-top-color:var(--indigo);animation:gira .8s linear infinite;margin-top:1px}
@@ -243,6 +253,8 @@
   var aberto = '';         // id do plantão com formulário aberto
   var modo = '';           // 'confirmar' | 'editar'
   var cancelando = '';     // id do plantão com a pergunta "cancelar?" aberta
+  var avisando = '';       // id do plantão com a pergunta "avisar que não vai?" aberta
+  var notaAberta = '';     // id do plantão com a nota sendo trocada
   var recente = null;      // {id, tipo: 'confirmado'|'editado'|'cancelado'}: aviso verde uma vez
   var relogio = null;
   var ultimaCarga = 0;
@@ -362,8 +374,37 @@
     return '<div class="card vazio">' + ICONE_CAL + '<b>' + esc(titulo) + '</b>' + esc(texto) + '</div>';
   }
 
+  // Adicionar à agenda: Google Agenda direto; outras agendas pelo arquivo .ics que o servidor monta.
+  function agendaLinks(p) {
+    var ini = new Date(p.inicio).getTime(), z = function (ms) { return new Date(ms).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, ''); };
+    var google = 'https://calendar.google.com/calendar/render?action=TEMPLATE' +
+      '&text=' + encodeURIComponent('Plantão ao vivo do Clube do Ukulele') + '&dates=' + z(ini) + '/' + z(ini + 3600000) +
+      '&details=' + encodeURIComponent('Sala do Google Meet: ' + p.meetLink) + '&location=' + encodeURIComponent(p.meetLink);
+    var ics = API + '?ics=' + encodeURIComponent(p.id) + '&cuser_id=' + encodeURIComponent(idAluno);
+    return '<div class="agenda">Adicionar à sua agenda: <a href="' + esc(google) + '" target="_blank" rel="noopener">Google Agenda</a> · <a href="' + esc(ics) + '" target="_blank" rel="noopener">outra agenda (iPhone, Outlook)</a></div>';
+  }
+
+  // Nota de 0 a 10 dos plantões em que o aluno esteve (até 14 dias depois).
+  function cartaoNota(x) {
+    var s = sp(x.inicio), aviso = recente && recente.id === x.id && recente.tipo === 'avaliado' ? avisoRecente(x.id) : '';
+    if (x.nps !== '' && notaAberta !== x.id) {
+      return '<article class="card nps" id="n-' + esc(x.id) + '"><div class="nota" style="margin-top:0">Plantão de ' + esc(s.dia) + ', ' + esc(s.data) + ': você deu nota <b>' + esc(x.nps) + '</b>.</div>' +
+        aviso + '<div class="acoes"><button class="btn btn-txt" data-nota-mudar="' + esc(x.id) + '">Mudar a nota</button></div></article>';
+    }
+    var botoes = '';
+    for (var i = 0; i <= 10; i++) botoes += '<button type="button" data-nota="' + i + '" aria-pressed="' + (x.nps === i) + '">' + i + '</button>';
+    return '<article class="card nps" id="n-' + esc(x.id) + '"><form data-form-nota="' + esc(x.id) + '" novalidate>' +
+      '<div class="quando">Como foi o plantão de ' + esc(s.dia) + ', ' + esc(s.data) + '?</div>' +
+      '<p style="margin:8px 0 0">De 0 a 10, o quanto você indicaria o plantão para um amigo que também está aprendendo ukulele?</p>' +
+      '<div class="escala" role="group" aria-label="Nota de 0 a 10">' + botoes + '</div>' +
+      '<div class="pontas"><span>0 = de jeito nenhum</span><span>10 = com certeza</span></div>' +
+      '<div class="campo"><label>Quer contar o que funcionou ou o que faltou? <span class="opcional">(opcional)</span><textarea data-comentario maxlength="1000">' + esc(x.comentario || '') + '</textarea></label></div>' +
+      '<div class="acoes"><button class="btn btn-1" type="submit">Enviar nota</button>' + (x.nps !== '' ? '<button class="btn btn-2" type="button" data-nota-fechar>Voltar</button>' : '') + '</div>' +
+      '<div class="aviso" data-aviso role="alert" hidden></div><div class="erro" data-erro role="alert" hidden></div></form></article>';
+  }
+
   function desenharPlantoes() {
-    var h = '';
+    var h = (dados.avaliar || []).map(cartaoNota).join('');
     if (!dados.proximas.length) {
       h += dados.proximaAbertura
         ? vazio('A agenda abre ' + quando(dados.proximaAbertura) + ' (horário de Brasília)', 'Volte nesse horário para confirmar a sua presença.')
@@ -381,7 +422,7 @@
 
   function avisoRecente(id) {
     if (!recente || recente.id !== id) return '';
-    var txt = { confirmado: 'Presença confirmada! O convite com o link da sala chega no seu e-mail.', editado: 'Pergunta atualizada.', cancelado: 'Presença cancelada. Obrigado por avisar!' }[recente.tipo];
+    var txt = { confirmado: 'Presença confirmada! O convite com o link da sala chega no seu e-mail.', editado: 'Pergunta atualizada.', cancelado: 'Presença cancelada. Obrigado por avisar!', avisou: 'Aviso enviado. Obrigado por avisar!', voltou: 'Combinado, a sua presença continua confirmada.', avaliado: 'Obrigado! A sua nota ajuda a melhorar os plantões.' }[recente.tipo];
     return '<div class="sucesso" role="status">' + ICONE_OK + '<span>' + txt + '</span></div>';
   }
 
@@ -392,20 +433,33 @@
       '<div class="info"><div class="quando">' + esc(s.Dia) + ', ' + esc(s.hora) + '</div><div class="fuso-card">' + esc(fusoDoAluno(p.inicio)) + '</div>';
     var lado = '';
     if (p.confirmado) {
-      corpo += '<div class="estado">' + ICONE_OK + 'Presença confirmada</div>' + (agora >= ini ? '<div><span class="agora">Acontecendo agora</span></div>' : '') + '</div></div>' +
+      corpo += (p.avisouFalta
+          ? '<div class="estado avisou">Você avisou que não vai</div>'
+          : '<div class="estado">' + ICONE_OK + 'Presença confirmada</div>') +
+        (agora >= ini ? '<div><span class="agora">Acontecendo agora</span></div>' : '') + '</div></div>' +
         (p.escolha === 'acompanhar'
           ? '<div class="pergunta"><b>Você vai</b>Só acompanhar</div>'
           : '<div class="pergunta"><b>Sua pergunta</b>' + esc(p.resumo) + '</div>') +
-        (p.aberta ? '<div class="nota">Dá para editar ou cancelar até ' + esc(prazo(p)) + '.</div>' : '<div class="nota">Tudo certo. É só entrar na sala no horário.</div>');
+        (p.aberta ? '<div class="nota">Dá para editar ou cancelar até ' + esc(prazo(p)) + '.</div>'
+          : p.avisouFalta ? '<div class="nota">Obrigado por avisar. Se der para ir, é só desfazer o aviso.</div>'
+          : '<div class="nota">Tudo certo. É só entrar na sala no horário.</div>');
       if (!comForm) {
         lado = avisoRecente(p.id);
         if (cancelando === p.id) {
           lado += '<div class="confirma" role="group" aria-label="Cancelar presença"><b>Cancelar a sua presença?</b>' +
             'Se mudar de ideia até ' + esc(prazo(p)) + ', dá para confirmar de novo, mas você entra no fim da fila.' +
             '<div class="acoes"><button class="btn btn-1" data-cancelar-sim="' + esc(p.id) + '">Sim, cancelar</button><button class="btn btn-2" data-cancelar-nao>Manter presença</button></div></div>';
+        } else if (avisando === p.id) {
+          lado += '<div class="confirma" role="group" aria-label="Avisar que não vai"><b>Avisar o professor que você não vai?</b>' +
+            'Sem problema nenhum. O aviso só ajuda a organizar a chamada.' +
+            '<div class="acoes"><button class="btn btn-1" data-avisar-sim="' + esc(p.id) + '">Avisar que não vou</button><button class="btn btn-2" data-avisar-nao>Voltar</button></div></div>';
+        } else if (p.avisouFalta) {
+          lado += '<div class="acoes"><button class="btn btn-2" data-avisar-voltar="' + esc(p.id) + '">Vou conseguir ir, sim</button></div>';
         } else {
           lado += '<div class="acoes"><span class="sala" data-sala="' + esc(p.inicio) + '" data-link="' + esc(p.meetLink) + '"></span>' +
-            (p.aberta ? '<button class="btn btn-2" data-editar="' + esc(p.id) + '">Editar minha pergunta</button><button class="btn btn-txt" data-cancelar="' + esc(p.id) + '">Não vou conseguir ir</button>' : '') + '</div>';
+            (p.aberta ? '<button class="btn btn-2" data-editar="' + esc(p.id) + '">Editar minha pergunta</button><button class="btn btn-txt" data-cancelar="' + esc(p.id) + '">Não vou conseguir ir</button>'
+              : p.podeAvisar ? '<button class="btn btn-txt" data-avisar="' + esc(p.id) + '">Não vou conseguir ir</button>' : '') + '</div>' +
+            (agora < ini ? agendaLinks(p) : '');
         }
       }
     } else if (p.aberta) {
@@ -440,7 +494,7 @@
   function extras(id, r) {
     r = r || {};
     var comum = campoArea('detalhe', 'Quer explicar melhor?', r.detalhe, '', false) +
-      campoTexto('video', 'Link de um vídeo seu tocando (YouTube ou Google Drive)', r.video, 'https://', false, 'url');
+      campoTexto('video', 'Link do vídeo da versão que você está aprendendo (YouTube, por exemplo)', r.video, 'https://', false, 'url');
     var temComum = !!(r.detalhe || r.video);
     var e = {};
     e.musica = campoTexto('musica', 'Qual música?', r.musica, 'Por exemplo: Asa Branca', true) +
@@ -559,7 +613,7 @@
   }
   // Voltou para a aba depois de um tempo: dados frescos.
   document.addEventListener('visibilitychange', function () {
-    if (document.visibilityState === 'visible' && dados && !aberto && !cancelando && Date.now() - ultimaCarga > 5 * 60000) carregar();
+    if (document.visibilityState === 'visible' && dados && !aberto && !cancelando && !avisando && !notaAberta && Date.now() - ultimaCarga > 5 * 60000) carregar();
   });
 
   // Retorno na hora, enquanto o servidor salva (normalmente 1 a 2 segundos).
@@ -588,6 +642,38 @@
           if (!d.ok) { volta('Não deu para cancelar: ' + (d.erro || 'erro') + '.'); return; }
           cancelando = ''; recente = { id: id, tipo: 'cancelado' }; carregar();
         }).catch(function () { volta('Não deu para cancelar agora. Confira a sua internet e tente de novo.'); });
+      };
+    });
+    $$('[data-avisar]').forEach(function (b) { b.onclick = function () { avisando = b.getAttribute('data-avisar'); recente = null; desenharPlantoes(); var s = $('[data-avisar-nao]'); if (s) s.focus(); }; });
+    $$('[data-avisar-nao]').forEach(function (b) { b.onclick = function () { avisando = ''; desenharPlantoes(); }; });
+    function mandarAviso(b, id, voltar) {
+      var alvo = b.parentNode.parentNode, fim = progresso(alvo, voltar ? 'Desfazendo o aviso…' : 'Avisando o professor…');
+      b.disabled = true;
+      chamar('avisar_falta', { aulaId: id, voltar: voltar }).then(function (d) {
+        fim();
+        if (!d.ok) { b.disabled = false; var e = $('#p-' + id + ' [data-erro-card]'); e.textContent = 'Não deu certo: ' + (d.erro || 'erro') + '.'; e.hidden = false; return; }
+        avisando = ''; recente = { id: id, tipo: voltar ? 'voltou' : 'avisou' }; carregar();
+      }).catch(function () { fim(); b.disabled = false; var e = $('#p-' + id + ' [data-erro-card]'); e.textContent = 'Não deu certo agora. Confira a sua internet e tente de novo.'; e.hidden = false; });
+    }
+    $$('[data-avisar-sim]').forEach(function (b) { b.onclick = function () { mandarAviso(b, b.getAttribute('data-avisar-sim'), false); }; });
+    $$('[data-avisar-voltar]').forEach(function (b) { b.onclick = function () { mandarAviso(b, b.getAttribute('data-avisar-voltar'), true); }; });
+    $$('[data-nota-mudar]').forEach(function (b) { b.onclick = function () { notaAberta = b.getAttribute('data-nota-mudar'); recente = null; desenharPlantoes(); }; });
+    $$('[data-nota-fechar]').forEach(function (b) { b.onclick = function () { notaAberta = ''; desenharPlantoes(); }; });
+    $$('form[data-form-nota]').forEach(function (f) {
+      $$('[data-nota]', f).forEach(function (b) {
+        b.onclick = function () { $$('[data-nota]', f).forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); }); $('[data-aviso]', f).hidden = true; };
+      });
+      f.onsubmit = function (ev) {
+        ev.preventDefault();
+        var id = f.getAttribute('data-form-nota'), escolhida = $('[data-nota][aria-pressed=true]', f), aviso = $('[data-aviso]', f), erro = $('[data-erro]', f);
+        erro.hidden = true;
+        if (!escolhida) { aviso.textContent = 'Escolha uma nota de 0 a 10.'; aviso.hidden = false; return; }
+        f.hidden = true;
+        var fim = progresso(f.parentNode, 'Enviando a sua nota…');
+        chamar('avaliar', { aulaId: id, nota: Number(escolhida.getAttribute('data-nota')), comentario: $('[data-comentario]', f).value.trim() }).then(function (d) {
+          if (!d.ok) { fim(); f.hidden = false; erro.textContent = 'Não deu para enviar: ' + (d.erro || 'erro') + '.'; erro.hidden = false; return; }
+          notaAberta = ''; recente = { id: id, tipo: 'avaliado' }; carregar();
+        }).catch(function () { fim(); f.hidden = false; erro.textContent = 'Não deu para enviar agora. Confira a sua internet e tente de novo.'; erro.hidden = false; });
       };
     });
     $$('form[data-form]').forEach(function (f) {
