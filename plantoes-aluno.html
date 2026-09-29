@@ -453,6 +453,9 @@
             (agora < ini ? agendaLinks(p) : '');
         }
       }
+    } else if (p.canceladoPeloProfessor) {
+      corpo += '<div class="nota">O professor cancelou a sua presença neste plantão. Se você acha que foi engano, fale com a equipe pelo WhatsApp.</div></div></div>';
+      lado = '<div class="acoes"><a class="btn btn-2" href="https://wa.me/553198585286" target="_blank" rel="noopener">Falar com a equipe no WhatsApp</a></div>';
     } else if (p.aberta) {
       corpo += (p.bloqueioPergunta
         ? '<div class="nota">' + esc(p.bloqueioPergunta) + '</div>'
