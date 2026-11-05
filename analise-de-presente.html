@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang='pt-BR'>
+<head>
+<meta charset='UTF-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+<title>Análise de presente</title>
+<script src='/js/iframeResizer.contentWindow.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/tus-js-client@2.3.0/dist/tus.min.js'></script>
+<link rel='preconnect' href='https://fonts.googleapis.com'>
+<link rel='preconnect' href='https://fonts.gstatic.com' crossorigin>
+<link href='https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;700&display=swap' rel='stylesheet'>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Montserrat',system-ui,-apple-system,sans-serif;background:transparent;}
+.atv-wrap{--indigo:#443468;--indigo-profundo:#2D124E;--indigo-hover:#3F3060;--coral:#E87A85;--coral-forte:#B4404F;--coral-suave:#FBEAEC;--texto:#1F1A2B;--texto-suave:#5C5A70;--superficie:#ECEAF1;--card:#fff;--verde:#25845A;--desativado:#E1DEE8;max-width:760px;margin:0 auto;padding:12px;color:var(--texto);font-size:16px;line-height:1.65;}
+.atv-hero{position:relative;background:var(--indigo-profundo);border-radius:16px;padding:22px 20px;color:#fff;margin-bottom:14px;overflow:hidden;}
+.atv-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--coral);}
+.atv-hero .eyebrow{display:inline-block;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--coral);font-weight:700;margin-bottom:8px;}
+.atv-hero h1{font-family:Anton,'Montserrat',sans-serif;font-weight:400;font-size:clamp(24px,5.4vw,34px);line-height:1.18;color:#fff;letter-spacing:.01em;}
+.atv-card{background:var(--card);border:1px solid rgba(68,52,104,.12);border-radius:16px;padding:20px 18px;margin-bottom:14px;box-shadow:0 20px 44px -30px rgb(31 26 43 / .45);}
+.atv-pill{display:inline-block;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:4px 12px;border-radius:999px;background:var(--coral-suave);color:var(--coral-forte);margin-bottom:12px;}
+.atv-card h2{font-size:19px;font-weight:700;color:var(--indigo);line-height:1.3;margin:0 0 10px;}
+.atv-card p{margin:0 0 10px;max-width:700px;}
+.atv-card p:last-child{margin-bottom:0;}
+.atv-video{position:relative;width:100%;padding-top:56.25%;border-radius:12px;overflow:hidden;background:var(--indigo-profundo);}
+.atv-video iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0;}
+.atv-btn{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;min-height:48px;background:var(--indigo);color:#fff;border:0;border-radius:12px;padding:14px;font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;transition:background .15s,transform .1s;}
+.atv-btn:hover{background:var(--indigo-hover);}
+.atv-btn:active{transform:scale(.99);}
+.atv-btn:focus-visible{outline:3px solid var(--indigo);outline-offset:3px;}
+.atv-btn--ghost{background:transparent;color:var(--indigo);border:1.5px solid rgba(68,52,104,.35);}
+.atv-btn--ghost:hover{background:var(--superficie);}
+.atv-prog{height:8px;border-radius:99px;background:var(--superficie);overflow:hidden;margin-top:8px;}
+.atv-prog__bar{height:100%;width:0;background:var(--coral);transition:width .2s;}
+.atv-muted{font-size:15px;color:var(--texto-suave);}
+.atv-center{text-align:center;}
+.atv-center p{margin-left:auto;margin-right:auto;}
+.atv-hide{display:none !important;}
+.atv-spin{display:inline-block;width:22px;height:22px;border:3px solid var(--superficie);border-top-color:var(--indigo);border-radius:50%;animation:atvgira .8s linear infinite;}
+@keyframes atvgira{to{transform:rotate(360deg);}}
+.atv-dicas{background:var(--superficie);border-radius:12px;padding:14px 16px;margin:0 0 16px;}
+.atv-dicas-titulo{font-weight:700;color:var(--indigo);margin:0 0 6px !important;}
+.atv-dicas ul{margin:0;padding-left:20px;}
+.atv-dicas li{color:var(--texto-suave);margin-bottom:6px;}
+.atv-dicas li:last-child{margin-bottom:0;}
+.atv-confirma{border:1.5px solid var(--indigo);background:#F3F1F8;border-radius:12px;padding:16px;}
+.atv-confirma h3{margin:0 0 6px;font-size:17px;font-weight:700;color:var(--indigo);}
+.atv-confirma p{margin:0;color:var(--texto);}
+.atv-confirma__acoes{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;}
+.atv-confirma__acoes .atv-btn{flex:1 1 170px;}
+.atv-det{font-size:13px;color:var(--texto-suave);margin:10px auto 0 !important;}
+.atv-res{animation:atvsobe .35s ease-out;}
+@keyframes atvsobe{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:none;}}
+.atv-res__disc{width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;}
+.atv-sub{margin-top:16px;padding-top:16px;border-top:1px solid var(--superficie);}
+.atv-res--ok h2{color:var(--verde);}
+.atv-res--ok .atv-res__disc{background:rgba(37,132,90,.12);color:var(--verde);}
+.atv-res--aviso .atv-res__disc{background:var(--superficie);color:var(--indigo);}
+.atv-res .atv-btn{max-width:300px;margin:12px auto 0;}
+@media (prefers-reduced-motion:reduce){.atv-res{animation:none;}}
+</style>
+</head>
+<body>
+<div class='atv-wrap'>
+<header class='atv-hero'>
+<span class='eyebrow'>Análise de presente</span>
+<h1>Me mande um vídeo seu tocando e eu gravo uma análise só para você</h1>
+</header>
+
+<section id='atv-carregando' class='atv-card atv-center'>
+<div class='atv-spin'></div>
+<p class='atv-muted' style='margin-top:12px;'>Verificando o seu acesso...</p>
+</section>
+
+<section id='atv-erro-val' class='atv-card atv-hide atv-center'>
+<h2>Não consegui confirmar o seu acesso</h2>
+<p class='atv-muted'>Recarregue a página. Se continuar assim, abra esta aula de novo pela área de membros, já logado na sua conta.</p>
+<button class='atv-btn' style='max-width:240px;margin:10px auto 0;' onclick='location.reload()'>Recarregar</button>
+</section>
+
+<section id='atv-jaenviou' class='atv-card atv-hide atv-center atv-res atv-res--aviso'>
+<div class='atv-res__disc'><svg width='30' height='30' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'></polyline></svg></div>
+<h2>O seu vídeo já está comigo</h2>
+<p id='atv-jaenviou-txt' class='atv-muted'></p>
+<p class='atv-muted'>A análise de presente é uma por aluno, então não dá para mandar outro vídeo por aqui. Agora é só esperar a sua análise chegar.</p>
+</section>
+
+<div id='atv-liberado' class='atv-hide'>
+<section class='atv-card'>
+<span class='atv-pill'>Como funciona</span>
+<h2>Você grava, eu assisto e te respondo em vídeo</h2>
+<p>Você me manda um vídeo curto tocando ukulele. Eu assisto e gravo um vídeo de volta mostrando o que já está bom e o que eu ajustaria primeiro.</p>
+<p>É o mesmo tipo de análise que eu faço para os alunos do Premium nas atividades do curso. Aqui ela é de presente, e cada aluno pode mandar um vídeo, uma vez só.</p>
+</section>
+
+<section id='atv-video-card' class='atv-card atv-hide'>
+<span class='atv-pill'>Assista antes de gravar</span>
+<div class='atv-video'><iframe id='atv-video' title='Como gravar o seu vídeo' allow='autoplay; fullscreen; picture-in-picture' allowfullscreen></iframe></div>
+</section>
+
+<section class='atv-card'>
+<span class='atv-pill'>O que gravar</span>
+<h2>Uns 30 segundos do que você já consegue tocar</h2>
+<p>Pode ser uma música inteira, um pedaço dela, a primeira batida que você aprendeu ou um acorde só. Não precisa estar pronto nem bonito.</p>
+<p>Ainda não começou as aulas? Também vale. Grave você segurando o ukulele, tocando as cordas soltas com a mão da batida e, se conseguir, montando um acorde com a mão dos acordes. Com isso eu já consigo ver a postura, a posição das mãos e se o ukulele está afinado, e te digo o que acertar logo no começo, antes de virar costume.</p>
+</section>
+
+<section class='atv-card'>
+<span class='atv-pill'>Envie o seu vídeo</span>
+<h2>Mandar o meu vídeo</h2>
+<div class='atv-dicas'>
+<p class='atv-dicas-titulo'>Na hora de gravar:</p>
+<ul>
+<li>Fique num lugar claro, de preferência com a luz vindo da frente.</li>
+<li>Deixe o celular deitado, de um jeito que apareçam o ukulele e as duas mãos.</li>
+<li>Escolha bem o vídeo antes de mandar, porque é um envio só.</li>
+</ul>
+</div>
+<input id='atv-file' type='file' accept='video/*' style='display:none;'>
+<button id='atv-pick' class='atv-btn'>
+<svg width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='flex:0 0 auto;'><path d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4'></path><polyline points='17 8 12 3 7 8'></polyline><line x1='12' y1='3' x2='12' y2='15'></line></svg>
+<span>Escolher o vídeo</span>
+</button>
+<div id='atv-confirma' class='atv-confirma atv-hide'>
+<h3>Confirma o envio?</h3>
+<p id='atv-confirma-txt'></p>
+<div class='atv-confirma__acoes'>
+<button id='atv-conf-sim' class='atv-btn'>Sim, enviar este vídeo</button>
+<button id='atv-conf-nao' class='atv-btn atv-btn--ghost'>Escolher outro</button>
+</div>
+</div>
+<div id='atv-progarea' class='atv-hide' style='margin-top:14px;'>
+<div class='atv-muted'><span id='atv-pct'>0</span>% enviado</div>
+<div class='atv-prog'><div id='atv-bar' class='atv-prog__bar'></div></div>
+<p class='atv-muted' style='margin-top:8px;font-size:13px;'>Deixe esta página aberta até a barra chegar no fim.</p>
+</div>
+<div id='atv-sucesso' class='atv-center atv-res atv-res--ok atv-hide atv-sub'>
+<div class='atv-res__disc'><svg width='30' height='30' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'></polyline></svg></div>
+<h2>Recebi o seu vídeo!</h2>
+<p class='atv-muted'>Deu tudo certo com o envio. Agora é comigo: vou assistir e gravar a sua análise.</p>
+<p id='atv-sucesso-det' class='atv-det'></p>
+</div>
+<div id='atv-erro-env' class='atv-center atv-res atv-res--aviso atv-hide atv-sub'>
+<div class='atv-res__disc'><svg width='30' height='30' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10'></circle><line x1='12' y1='8' x2='12' y2='13'></line><line x1='12' y1='16.5' x2='12.01' y2='16.5'></line></svg></div>
+<h2>O envio não chegou até o fim</h2>
+<p class='atv-muted'>A sua internet pode ter oscilado no meio do caminho. O vídeo não contou como enviado, então é só tentar mais uma vez.</p>
+<p id='atv-erro-det' class='atv-det'></p>
+<button id='atv-retry' class='atv-btn'>Tentar de novo</button>
+<button id='atv-trocar' class='atv-btn atv-btn--ghost'>Escolher outro vídeo</button>
+</div>
+</section>
+</div>
+</div>
+<script>(function(){
+var TRAVA='https://analise-presente.mateusaugusto91.workers.dev';
+var TUS='https://cademi-tus-server-1019908552664.southamerica-east1.run.app/files/';
+var ID_ATIVIDADE='analise-de-presente';
+var TITULO_ATIVIDADE='Análise de presente (experimental)';
+// Vídeo de instruções do Mateus no Vimeo: preencher o id (e o hash, se for não listado). Vazio = card escondido.
+var VIMEO_ID='';var VIMEO_HASH='';
+var p=new URLSearchParams(location.search);
+if(p.get('trava'))TRAVA=p.get('trava'); // só para teste: aponta a trava para outro endereço
+var aluno={id:p.get('cuser_id'),email:p.get('cuser_email'),nome:p.get('cuser_name')};
+var arquivoAtual=null;
+function el(id){return document.getElementById(id);}
+function ver(id,v){var e=el(id);if(e)e.classList[v?'remove':'add']('atv-hide');}
+function mostra(id){['atv-carregando','atv-erro-val','atv-jaenviou','atv-liberado'].forEach(function(x){ver(x,x===id);});}
+function dataBonita(iso){var d=new Date(iso);if(isNaN(d.getTime()))return '';function z(n){return (n<10?'0':'')+n;}return z(d.getDate())+'/'+z(d.getMonth()+1)+'/'+d.getFullYear()+', às '+z(d.getHours())+':'+z(d.getMinutes());}
+function atencao(alvo){if(!alvo)return;try{var y=Math.max(0,alvo.getBoundingClientRect().top+(window.pageYOffset||0)-24);if(window.parentIFrame&&window.parentIFrame.scrollToOffset){window.parentIFrame.scrollToOffset(0,y);}else{alvo.scrollIntoView({behavior:'smooth',block:'center'});}}catch(e){}try{if(navigator.vibrate)navigator.vibrate([60,40,60]);}catch(e){}}
+function jaEnviou(data){el('atv-jaenviou-txt').innerText=data?('Você mandou o seu vídeo em '+dataBonita(data)+'.'):'';mostra('atv-jaenviou');}
+function trava(){var q='email='+encodeURIComponent(aluno.email||'')+'&id='+encodeURIComponent(aluno.id||'');return fetch(TRAVA+'/checar?'+q,{cache:'no-store'}).then(function(r){return r.json();});}
+function iniciar(){
+  if(!aluno.id&&!aluno.email){mostra('atv-erro-val');return;}
+  if(VIMEO_ID){el('atv-video').src='https://player.vimeo.com/video/'+VIMEO_ID+(VIMEO_HASH?('?h='+VIMEO_HASH):'');ver('atv-video-card',true);}
+  trava().then(function(d){if(!d||!d.ok){mostra('atv-erro-val');return;}if(d.jaEnviou){jaEnviou(d.data);return;}mostra('atv-liberado');}).catch(function(){mostra('atv-erro-val');});
+}
+function escolher(){el('atv-file').click();}
+function pedir(f){arquivoAtual=f;el('atv-confirma-txt').innerText='Você vai enviar o arquivo '+(f.name||'escolhido')+'. Como a análise de presente é um vídeo só, confira se é esse mesmo.';ver('atv-pick',false);ver('atv-erro-env',false);ver('atv-confirma',true);atencao(el('atv-confirma'));}
+function marcar(f,tentativa){fetch(TRAVA+'/marcar',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:aluno.email||'',id:aluno.id||'',arquivo:(f&&f.name)||''})}).then(function(r){if(!r.ok)throw 0;}).catch(function(){if((tentativa||0)<3)setTimeout(function(){marcar(f,(tentativa||0)+1);},2000);});}
+function enviar(f){
+  if(!f)return;arquivoAtual=f;ver('atv-pick',false);ver('atv-confirma',false);ver('atv-erro-env',false);
+  el('atv-pct').innerText='0';el('atv-bar').style.width='0%';ver('atv-progarea',true);
+  // Confere de novo na hora de enviar: outra aba ou outro aparelho pode ter mandado antes.
+  trava().then(function(d){if(d&&d.ok&&d.jaEnviou){jaEnviou(d.data);return;}subir(f);}).catch(function(){subir(f);});
+}
+function subir(f){
+  var up=new tus.Upload(f,{endpoint:TUS,chunkSize:10485760,metadata:{filename:f.name,filetype:f.type,student_name:(aluno.nome||''),student_email:(aluno.email||''),student_id:(aluno.id||''),lesson:TITULO_ATIVIDADE,atividade_id:ID_ATIVIDADE,upload_date:new Date().toISOString()},
+    onError:function(){ver('atv-progarea',false);el('atv-erro-det').innerText=f.name?('Arquivo escolhido: '+f.name):'';ver('atv-erro-env',true);atencao(el('atv-erro-env'));},
+    onProgress:function(u,t){var pc=((u/t)*100).toFixed(0);el('atv-pct').innerText=pc;el('atv-bar').style.width=pc+'%';},
+    onSuccess:function(){marcar(f,0);ver('atv-progarea',false);el('atv-sucesso-det').innerText='Enviado em '+dataBonita(new Date().toISOString())+(f.name?(' · '+f.name):'');ver('atv-sucesso',true);atencao(el('atv-sucesso'));}});
+  up.start();
+}
+el('atv-pick').onclick=escolher;
+el('atv-file').onchange=function(e){var f=e.target.files[0];e.target.value='';if(f)pedir(f);};
+el('atv-conf-sim').onclick=function(){enviar(arquivoAtual);};
+el('atv-conf-nao').onclick=function(){ver('atv-confirma',false);arquivoAtual=null;ver('atv-pick',true);escolher();};
+el('atv-retry').onclick=function(){enviar(arquivoAtual);};
+el('atv-trocar').onclick=function(){arquivoAtual=null;ver('atv-erro-env',false);ver('atv-pick',true);escolher();};
+iniciar();
+})();</script>
+</body>
+</html>
