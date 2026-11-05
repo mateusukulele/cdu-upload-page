@@ -89,8 +89,8 @@ body{font-family:'Montserrat',system-ui,-apple-system,sans-serif;background:tran
 <section class='atv-card'>
 <span class='atv-pill'>Como funciona</span>
 <h2>Você grava, eu assisto e te respondo em vídeo</h2>
-<p>Você me manda um vídeo curto tocando ukulele. Eu assisto e gravo um vídeo de volta mostrando o que já está bom e o que eu ajustaria primeiro.</p>
-<p>É o mesmo tipo de análise que eu faço para os alunos do Premium nas atividades do curso. Aqui ela é de presente, e cada aluno pode mandar um vídeo, uma vez só.</p>
+<p>Você me manda um vídeo curto tocando ukulele. Eu assisto e gravo um vídeo de volta, só para você, com o que já está bom, o que eu ajustaria primeiro e como fazer esse ajuste.</p>
+<p>É a mesma análise que eu faço para os alunos do Premium nas atividades do curso, só que essa é de presente.</p>
 </section>
 
 <section id='atv-video-card' class='atv-card atv-hide'>
@@ -101,8 +101,14 @@ body{font-family:'Montserrat',system-ui,-apple-system,sans-serif;background:tran
 <section class='atv-card'>
 <span class='atv-pill'>O que gravar</span>
 <h2>Uns 30 segundos do que você já consegue tocar</h2>
-<p>Pode ser uma música inteira, um pedaço dela, a primeira batida que você aprendeu ou um acorde só. Não precisa estar pronto nem bonito.</p>
-<p>Ainda não começou as aulas? Também vale. Grave você segurando o ukulele, tocando as cordas soltas com a mão da batida e, se conseguir, montando um acorde com a mão dos acordes. Com isso eu já consigo ver a postura, a posição das mãos e se o ukulele está afinado, e te digo o que acertar logo no começo, antes de virar costume.</p>
+<p>Não precisa saber muita coisa, nem estar bonito. Alguns exemplos:</p>
+<div class='atv-dicas'><ul>
+<li>Já toca uma música? Grave o pedaço de que você mais gosta.</li>
+<li>Aprendeu uma batida? Faça ela em cima de um acorde, várias vezes seguidas.</li>
+<li>Sabe um acorde só? Toque ele corda por corda e depois com a batida.</li>
+<li>Ainda não começou as aulas? Grave você pegando o ukulele do jeito que segura e tocando as cordas soltas com a mão da batida. Com isso eu já vejo a postura, as mãos e a afinação, e te digo o que acertar desde o começo, antes de virar costume.</li>
+</ul></div>
+<p>Errou no meio? Mande assim mesmo, porque é vendo onde você erra que eu consigo te mostrar o que ajustar.</p>
 </section>
 
 <section class='atv-card'>
@@ -113,7 +119,6 @@ body{font-family:'Montserrat',system-ui,-apple-system,sans-serif;background:tran
 <ul>
 <li>Fique num lugar claro, de preferência com a luz vindo da frente.</li>
 <li>Deixe o celular deitado, de um jeito que apareçam o ukulele e as duas mãos.</li>
-<li>Escolha bem o vídeo antes de mandar, porque é um envio só.</li>
 </ul>
 </div>
 <input id='atv-file' type='file' accept='video/*' style='display:none;'>
@@ -122,10 +127,10 @@ body{font-family:'Montserrat',system-ui,-apple-system,sans-serif;background:tran
 <span>Escolher o vídeo</span>
 </button>
 <div id='atv-confirma' class='atv-confirma atv-hide'>
-<h3>Confirma o envio?</h3>
+<h3>É este o vídeo?</h3>
 <p id='atv-confirma-txt'></p>
 <div class='atv-confirma__acoes'>
-<button id='atv-conf-sim' class='atv-btn'>Sim, enviar este vídeo</button>
+<button id='atv-conf-sim' class='atv-btn'>Enviar este vídeo</button>
 <button id='atv-conf-nao' class='atv-btn atv-btn--ghost'>Escolher outro</button>
 </div>
 </div>
@@ -175,7 +180,7 @@ function iniciar(){
   trava().then(function(d){if(!d||!d.ok){mostra('atv-erro-val');return;}if(d.jaEnviou){jaEnviou(d.data);return;}mostra('atv-liberado');}).catch(function(){mostra('atv-erro-val');});
 }
 function escolher(){el('atv-file').click();}
-function pedir(f){arquivoAtual=f;el('atv-confirma-txt').innerText='Você vai enviar o arquivo '+(f.name||'escolhido')+'. Como a análise de presente é um vídeo só, confira se é esse mesmo.';ver('atv-pick',false);ver('atv-erro-env',false);ver('atv-confirma',true);atencao(el('atv-confirma'));}
+function pedir(f){arquivoAtual=f;el('atv-confirma-txt').innerText='Você escolheu o arquivo '+(f.name||'de vídeo')+'. Se for esse mesmo, é só enviar.';ver('atv-pick',false);ver('atv-erro-env',false);ver('atv-confirma',true);atencao(el('atv-confirma'));}
 function marcar(f,tentativa){fetch(TRAVA+'/marcar',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:aluno.email||'',id:aluno.id||'',arquivo:(f&&f.name)||''})}).then(function(r){if(!r.ok)throw 0;}).catch(function(){if((tentativa||0)<3)setTimeout(function(){marcar(f,(tentativa||0)+1);},2000);});}
 function enviar(f){
   if(!f)return;arquivoAtual=f;ver('atv-pick',false);ver('atv-confirma',false);ver('atv-erro-env',false);
