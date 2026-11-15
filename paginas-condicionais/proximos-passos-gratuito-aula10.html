@@ -11,7 +11,8 @@
   o botao monta a mensagem do WhatsApp com esses dados para a equipe saber quem e.
   Nao manda lead para o codigo pai de proposito: quem esta aqui ja e lead do gratuito, e um
   submit_cadastro novo contaria cadastro em dobro no anuncio.
-  Funciona sem video. Quando o video novo existir, ele entra no topo do .hero (ver ROTEIRO no MAPA).
+  Fatos e imagens vem da pagina academy-mv1 (cursos.comotocarukulele.com/clube-do-ukulele/academy-mv1/).
+  Sem nome de plano (Premium, Essencial) de proposito: decisao do Mateus em 15/11/2026.
 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -32,20 +33,24 @@ h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;line-height:1.15;letter-
 p{margin:0}
 .eyebrow{font-weight:800;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--coral-claro)}
 .dark .eyebrow{color:var(--coral-dark)}
+b{font-weight:700}
 
 /* blocos */
 .bloco{border-radius:var(--r);padding:clamp(22px,5vw,36px);display:flex;flex-direction:column;gap:16px}
 .dark{background:linear-gradient(135deg,var(--indigo),var(--indigo-grad));color:#fff}
-.dark p{color:#E4DEEF}
+.dark p,.dark li{color:#E4DEEF}
+.dark b{color:#fff}
 .bloco.dark h2{color:#fff}
 .claro{background:#fff;border:1px solid var(--linha);box-shadow:0 10px 30px -20px rgba(66,48,102,.35)}
 .creme{background:var(--creme);border:1px solid var(--linha)}
 .bloco h2{font-size:clamp(26px,5.4vw,34px);color:var(--indigo)}
+.bloco h3{font-size:20px;color:var(--indigo)}
+.dark h3{color:#fff}
 .bloco.dark h2 span{color:var(--coral-dark)}
 .claro h2 span,.creme h2 span{color:var(--coral-claro)}
 
 /* hero */
-.hero h1{font-size:clamp(30px,6.4vw,44px)}
+.hero h1{font-size:clamp(32px,6.8vw,46px)}
 .hero h1 span{color:var(--coral-dark)}
 
 /* botao */
@@ -57,14 +62,40 @@ p{margin:0}
 .nota{font-size:14px;text-align:center;color:var(--muted)}
 .dark .nota{color:#CFC6E0}
 
-/* entregas */
-.itens{display:grid;grid-template-columns:1fr;gap:12px}
-@media (min-width:620px){.itens{grid-template-columns:1fr 1fr}.itens .largo{grid-column:1 / -1}}
-.item{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:start;background:var(--creme);border:1px solid var(--linha);border-radius:14px;padding:14px}
-.item .ic{width:44px;height:44px;border-radius:12px;background:var(--teal);display:grid;place-items:center}
-.item .ic svg{width:22px;height:22px;stroke:var(--texto);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.item h3{font-size:19px;color:var(--indigo);margin-bottom:2px}
-.item p{font-size:15px;line-height:1.55}
+/* numeros */
+.nums{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.num{background:var(--creme);border:1px solid var(--linha);border-radius:14px;padding:14px 12px;text-align:center}
+.num strong{display:block;font-family:'Anton',sans-serif;font-weight:400;font-size:clamp(24px,6vw,32px);color:var(--indigo);line-height:1.1}
+.num span{font-size:13px;line-height:1.35;color:var(--muted);display:block;margin-top:4px}
+
+/* capas da jornada e biblioteca: rolam de lado no celular */
+.fila{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px;-webkit-overflow-scrolling:touch}
+.fila img{flex:none;scroll-snap-align:start;border-radius:12px;height:auto;box-shadow:0 10px 24px -16px rgba(45,18,78,.6)}
+.fila.capas img{width:120px}
+.fila.bibs img{width:190px}
+@media (min-width:620px){.fila{overflow:visible}.fila.capas img{width:calc((100% - 40px)/5)}.fila.bibs img{width:calc((100% - 40px)/5)}}
+
+.sub{background:var(--creme);border:1px solid var(--linha);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:6px}
+.sub h3{font-size:19px}
+
+/* analise */
+.foto{border-radius:14px;width:100%;height:auto;box-shadow:0 14px 30px -18px rgba(0,0,0,.6)}
+.passos{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px;counter-reset:p}
+.passos li{counter-increment:p;display:grid;grid-template-columns:40px 1fr;gap:12px;align-items:center}
+.passos li::before{content:counter(p);width:40px;height:40px;border-radius:50%;background:var(--teal);color:var(--texto);font-family:'Anton',sans-serif;font-size:20px;display:grid;place-items:center}
+.dark .passos li span{color:#fff;font-weight:600}
+
+/* bonus */
+.bonus{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bonus figure{margin:0;display:flex;flex-direction:column;gap:6px}
+.bonus img{border-radius:10px;width:100%;height:auto}
+.bonus figcaption{font-size:14px;line-height:1.4;font-weight:600;color:var(--indigo)}
+
+/* resumo */
+.check{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr;gap:10px}
+@media (min-width:620px){.check{grid-template-columns:1fr 1fr}}
+.check li{display:grid;grid-template-columns:26px 1fr;gap:10px;align-items:start;font-weight:600;line-height:1.45}
+.check li::before{content:"";width:26px;height:26px;border-radius:50%;background:var(--teal) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232D124E' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12 5 5 9-10'/%3E%3C/svg%3E") center/16px no-repeat}
 
 /* provas */
 blockquote{margin:0;border-left:4px solid var(--coral);background:rgba(255,255,255,.08);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:8px}
@@ -82,12 +113,12 @@ blockquote cite{font-style:normal;font-size:14px;color:var(--coral-dark);font-we
 .prints{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .prints img{width:100%;height:auto;border-radius:12px;box-shadow:0 12px 28px -18px rgba(0,0,0,.6)}
 
-/* passos */
-.passos{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px;counter-reset:p}
-.passos li{counter-increment:p;display:grid;grid-template-columns:40px 1fr;gap:12px;align-items:center}
-.passos li::before{content:counter(p);width:40px;height:40px;border-radius:50%;background:var(--indigo);color:#fff;font-family:'Anton',sans-serif;font-size:20px;display:grid;place-items:center}
-.dark .passos li::before{background:var(--teal);color:var(--texto)}
-.dark .passos li span{color:#fff;font-weight:600}
+/* garantia */
+.garantia{display:grid;grid-template-columns:1fr;gap:12px}
+@media (min-width:620px){.garantia{grid-template-columns:1fr 1fr}}
+.gcard{background:var(--creme);border:1px solid var(--linha);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:6px}
+.gcard .prazo{font-family:'Anton',sans-serif;font-size:28px;color:var(--coral-claro);line-height:1}
+.selo{width:110px;height:auto;align-self:center}
 
 .redes{text-align:center;font-size:15px;color:var(--muted)}
 .link{color:var(--indigo);font-weight:700;text-decoration:underline;text-underline-offset:3px;display:inline-block;padding:10px 4px;min-height:44px}
@@ -100,61 +131,73 @@ blockquote cite{font-style:normal;font-size:14px;color:var(--coral-dark);font-we
   <section class="bloco dark hero">
     <span class="eyebrow">Última aula do curso</span>
     <h1>Parabéns por chegar <span>até aqui</span>!</h1>
-    <p>Se a sua primeira música já está saindo, que alegria! Se ainda tem uma parte travando, é normal: ela sai com um pouco de treino todo dia.</p>
-    <p>E eu quero continuar te ajudando daqui para frente, de perto, no Clube do Ukulele Premium.</p>
+    <p>Se você já tocou a sua primeira música, que alegria! Se ainda não pegou o ukulele ou tem uma parte travando, volta às aulas com o instrumento na mão: com um pouco de treino todo dia, ela sai.</p>
+    <p>E eu quero continuar com você daqui para frente, no Clube do Ukulele, vendo você tocar e te dizendo o que ajustar.</p>
     <a class="btn js-wa" href="https://wa.me/553198585286" target="_blank" rel="noopener">
       <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.4.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.7.3-.2.3-.9.9-.9 2.2s.9 2.5 1 2.7c.1.2 1.8 2.8 4.4 3.9 1.6.7 2.3.8 3.1.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/></svg>
-      Falar com a equipe no WhatsApp
+      Quero entrar no Clube
     </a>
     <p class="nota">O WhatsApp abre com a mensagem pronta. É só enviar.</p>
   </section>
 
-  <!-- O QUE E O CLUBE -->
+  <!-- O CLUBE -->
   <section class="bloco claro">
-    <span class="eyebrow">Clube do Ukulele Premium</span>
-    <h2>O que é <span>o Clube</span></h2>
-    <p>O Clube é onde os meus alunos continuam depois do primeiro passo. Você segue as aulas gravadas na ordem certa, começando pelo Ukulele Fundamental, escolhe as músicas que quer tocar na Biblioteca e, toda quinta às 19h, me encontra ao vivo.</p>
-    <p>E, no Premium, eu acompanho o que você está tocando.</p>
+    <span class="eyebrow">O Clube do Ukulele</span>
+    <h2>Você já deu os primeiros passos. <span>No Clube, você sabe qual é o próximo.</span></h2>
+    <p>Depois da primeira música vem a dúvida: o que estudar agora? No Clube do Ukulele as aulas já estão na ordem, do zero ao intermediário. Você termina uma aula e já sabe qual é a próxima.</p>
+    <p>E você tem 1 ano de acompanhamento individual comigo, sem hora marcada, para eu ver você tocar e te dizer o que ajustar.</p>
+    <div class="nums">
+      <div class="num"><strong>+6.000</strong><span>alunos desde 2017</span></div>
+      <div class="num"><strong>209</strong><span>aulas na jornada</span></div>
+      <div class="num"><strong>157</strong><span>músicas na biblioteca</span></div>
+    </div>
   </section>
 
-  <!-- SUPORTE INDIVIDUAL -->
+  <!-- JORNADA -->
+  <section class="bloco creme">
+    <span class="eyebrow">Jornada do Clube</span>
+    <h2>5 cursos gravados, <span>na ordem certa</span></h2>
+    <p>Iniciante 0, 1 e 2 e Intermediário 1 e 2: são 25 módulos e 209 aulas. Cada música é estudada em partes pequenas: você treina a parte difícil separada e só depois junta com o resto.</p>
+    <div class="fila capas" role="img" aria-label="Capas dos cinco cursos da jornada, do Iniciante 0 ao Intermediário 2">
+      <img src="https://cursos.comotocarukulele.com/academy/img/jornada-capa-i0.webp" alt="" width="320" height="320" loading="lazy">
+      <img src="https://cursos.comotocarukulele.com/academy/img/trilha-ini1.webp" alt="" width="320" height="320" loading="lazy">
+      <img src="https://cursos.comotocarukulele.com/academy/img/trilha-ini2.webp" alt="" width="320" height="320" loading="lazy">
+      <img src="https://cursos.comotocarukulele.com/academy/img/trilha-int1.webp" alt="" width="320" height="320" loading="lazy">
+      <img src="https://cursos.comotocarukulele.com/academy/img/trilha-int2.webp" alt="" width="320" height="320" loading="lazy">
+    </div>
+    <div class="sub">
+      <h3>Nivelamento e rotina sugerida</h3>
+      <p>Logo na entrada você responde um questionário rápido e recebe por qual curso começar e uma rotina de estudo para a sua semana. Se já toca alguma coisa, pode mandar um vídeo, e a gente te diz por onde seguir.</p>
+    </div>
+  </section>
+
+  <!-- ACOMPANHAMENTO INDIVIDUAL -->
   <section class="bloco dark">
-    <span class="eyebrow">Suporte individual</span>
+    <span class="eyebrow">Acompanhamento individual</span>
     <h2>Eu assisto você tocar e <span>te digo o que ajustar</span></h2>
-    <p>Aprendendo sozinho, fica sempre a dúvida se o dedo está no lugar certo e se a batida está no tempo. No Clube, você grava as atividades e me manda. Eu assisto e gravo um vídeo de volta só para você, olhando o seu dedo e a sua batida, dizendo o que já está bom e o que precisa ajustar.</p>
+    <p>Aprendendo sozinho, fica sempre a dúvida se o dedo está no lugar certo e se a batida está no tempo. Ao longo da jornada são <b>49 atividades com análise em vídeo</b>: você grava tocando, me manda, e eu gravo um vídeo de volta só para você, mostrando no ukulele o que já está bom e o que precisa ajustar.</p>
+    <img class="foto" src="https://cursos.comotocarukulele.com/academy/img/analise-frame-aluna.webp" alt="Trecho de uma análise em vídeo: o vídeo da aluna e o Mateus mostrando no ukulele o que ajustar" width="960" height="540" loading="lazy">
     <ol class="passos">
       <li><span>Você grava a atividade no celular.</span></li>
       <li><span>Envia pela plataforma do Clube.</span></li>
-      <li><span>Recebe a minha análise em vídeo, feita para o seu caso.</span></li>
+      <li><span>Em até 3 dias úteis chega o aviso no seu WhatsApp: a sua análise está pronta.</span></li>
     </ol>
-    <p>Travou numa aula? Deixa a dúvida embaixo dela. E toda quinta, no Ukulele Na Mão, você pode me perguntar ao vivo.</p>
+    <p>Cada análise fica guardada em <b>Minhas Análises</b>, para você rever quando quiser. E travou numa aula? Deixa a dúvida embaixo dela que eu respondo.</p>
+    <p>Toda quinta, às 19h, tem o <b>Ukulele na Mão</b> ao vivo comigo: uma aula e depois perguntas e respostas. Se não der para assistir na hora, a gravação fica guardada.</p>
   </section>
 
-  <!-- O QUE TEM -->
+  <!-- BIBLIOTECA -->
   <section class="bloco claro">
-    <span class="eyebrow">Tudo o que você tem</span>
-    <h2>O que você recebe <span>no Clube</span></h2>
-    <div class="itens">
-      <div class="item largo">
-        <span class="ic"><svg viewBox="0 0 24 24"><rect x="2.5" y="6" width="13" height="12" rx="2"/><path d="m15.5 10 6-3v10l-6-3"/></svg></span>
-        <div><h3>Análise em vídeo</h3><p>Você grava as atividades e recebe de volta um vídeo meu dizendo o que já está bom e o que ajustar.</p></div>
-      </div>
-      <div class="item">
-        <span class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/></svg></span>
-        <div><h3>Ao vivo toda quinta</h3><p>Às 19h tem o Ukulele Na Mão comigo: aula nova e espaço para as suas perguntas.</p></div>
-      </div>
-      <div class="item">
-        <span class="ic"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H4z"/><path d="m10 8.5 4 2.5-4 2.5z"/><path d="M8 20h8"/></svg></span>
-        <div><h3>Todas as aulas gravadas</h3><p>Começando pelo Ukulele Fundamental, na ordem certa para estudar.</p></div>
-      </div>
-      <div class="item">
-        <span class="ic"><svg viewBox="0 0 24 24"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg></span>
-        <div><h3>Biblioteca de Músicas</h3><p>Para você escolher a próxima música que vai tocar.</p></div>
-      </div>
-      <div class="item">
-        <span class="ic"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.5 3.4-5.5 6.5-5.5s5.7 2 6.5 5.5"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.8c1.8.7 3 2.5 3.5 5.2"/></svg></span>
-        <div><h3>Comunidade</h3><p>Onde você posta os seus vídeos e acompanha quem está aprendendo junto.</p></div>
-      </div>
+    <span class="eyebrow">Biblioteca de Músicas</span>
+    <h2><span>157 músicas</span> ensinadas em vídeo</h2>
+    <p>Marisa Monte, Legião Urbana, Beatles, Natiruts, Djavan, Melim, Bob Marley, Tim Maia, Anavitória, Skank e muito mais. As músicas estão separadas por nível, com filtro por batida, quantidade de acordes e gênero.</p>
+    <p>Terminou uma aula da jornada? Você escolhe uma música que gosta, do seu nível, e já usa o que aprendeu.</p>
+    <div class="fila bibs" role="img" aria-label="Capas da Biblioteca de Músicas por nível, do Iniciante 0 ao Intermediário 2">
+      <img src="https://cursos.comotocarukulele.com/academy/img/bib-ini0.webp" alt="" width="192" height="108" loading="lazy">
+      <img src="https://cursos.comotocarukulele.com/academy/img/bib-ini1.webp" alt="" width="192" height="108" loading="lazy">
+      <img src="https://cursos.comotocarukulele.com/academy/img/bib-ini2.webp" alt="" width="192" height="108" loading="lazy">
+      <img src="https://cursos.comotocarukulele.com/academy/img/bib-int1.webp" alt="" width="192" height="108" loading="lazy">
+      <img src="https://cursos.comotocarukulele.com/academy/img/bib-int2.webp" alt="" width="192" height="108" loading="lazy">
     </div>
   </section>
 
@@ -188,22 +231,65 @@ blockquote cite{font-style:normal;font-size:14px;color:var(--coral-dark);font-we
     </div>
   </section>
 
-  <!-- FECHO -->
+  <!-- COMUNIDADE E BONUS -->
+  <section class="bloco creme">
+    <span class="eyebrow">Comunidade e bônus</span>
+    <h2>Tem para quem <span>mostrar o que aprendeu</span></h2>
+    <p>Na comunidade dos alunos tem o Desafio do Mês: uma música com data para postar o seu vídeo e ver os vídeos de quem está aprendendo junto.</p>
+    <p>E você ainda recebe estes cursos e materiais extras:</p>
+    <div class="bonus">
+      <figure><img src="https://cursos.comotocarukulele.com/academy/img/capa-workshop-canto.webp" alt="" width="640" height="360" loading="lazy"><figcaption>Workshop de Canto com Ukulele, para cantar enquanto toca</figcaption></figure>
+      <figure><img src="https://cursos.comotocarukulele.com/academy/img/capa-destrava-dedos.webp" alt="" width="640" height="360" loading="lazy"><figcaption>Destrava Dedos, para soltar a mão dos acordes</figcaption></figure>
+      <figure><img src="https://cursos.comotocarukulele.com/academy/img/capa-dicionario.webp" alt="" width="640" height="360" loading="lazy"><figcaption>Dicionário de Acordes, para achar qualquer acorde</figcaption></figure>
+    </div>
+  </section>
+
+  <!-- RESUMO -->
   <section class="bloco claro">
+    <span class="eyebrow">Tudo o que você tem</span>
+    <h2>Você entra no Clube do Ukulele e <span>ganha acesso a tudo isso</span></h2>
+    <ul class="check">
+      <li>1 ano de acesso e de acompanhamento individual</li>
+      <li>Jornada em 5 cursos, com 209 aulas</li>
+      <li>49 atividades com análise em vídeo</li>
+      <li>Nivelamento e rotina sugerida</li>
+      <li>Ukulele na Mão ao vivo toda quinta, com as gravações</li>
+      <li>157 músicas ensinadas em vídeo</li>
+      <li>Comunidade com Desafio do Mês</li>
+      <li>Workshop de Canto, Destrava Dedos e Dicionário de Acordes</li>
+    </ul>
+  </section>
+
+  <!-- GARANTIA -->
+  <section class="bloco creme">
+    <span class="eyebrow">Dupla garantia</span>
+    <h2>Duas garantias para você <span>testar com calma</span></h2>
+    <img class="selo" src="https://cursos.comotocarukulele.com/academy/img/selo-garantia.webp" alt="Selo de garantia" width="600" height="600" loading="lazy">
+    <div class="garantia">
+      <div class="gcard">
+        <span class="prazo">30 dias</span>
+        <h3>Garantia de satisfação</h3>
+        <p>Você tem 30 dias para assistir às aulas e mandar os seus vídeos. Se sentir que não é para você, pede o dinheiro de volta, por qualquer motivo.</p>
+      </div>
+      <div class="gcard">
+        <span class="prazo">1 ano</span>
+        <h3>Garantia de evolução</h3>
+        <p>Seguiu os cursos Iniciante 0, 1 e 2, enviou as atividades deles e, ao fim de um ano, ainda não toca 10 músicas do começo ao fim? Devolvemos o seu dinheiro.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FECHO -->
+  <section class="bloco dark">
     <span class="eyebrow">O próximo passo</span>
     <h2>Quer continuar <span>com a gente</span>?</h2>
-    <p>No Clube você tem o caminho inteiro de aulas, do Ukulele Fundamental em diante, e eu acompanhando de perto o que você toca. Chama a nossa equipe no WhatsApp que a gente te explica como funciona e te ajuda a escolher o plano.</p>
+    <p>No Clube você tem a jornada inteira de aulas, as 157 músicas da biblioteca e eu acompanhando o seu ukulele durante 1 ano. Chama a nossa equipe no WhatsApp que a gente te mostra como entrar.</p>
     <a class="btn js-wa" href="https://wa.me/553198585286" target="_blank" rel="noopener">
       <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.4.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.7.3-.2.3-.9.9-.9 2.2s.9 2.5 1 2.7c.1.2 1.8 2.8 4.4 3.9 1.6.7 2.3.8 3.1.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/></svg>
       Quero entrar no Clube
     </a>
+    <p class="nota">O WhatsApp abre com a mensagem pronta. É só enviar.</p>
   </section>
-
-  <p class="redes">Enquanto isso, me acompanha também no
-    <a class="link" href="https://www.youtube.com/comotocarukulele?sub_confirmation=1" target="_blank" rel="noopener">YouTube</a>
-    e no
-    <a class="link" href="https://www.instagram.com/mateusukulele/" target="_blank" rel="noopener">Instagram</a>.
-  </p>
 
 </main>
 
