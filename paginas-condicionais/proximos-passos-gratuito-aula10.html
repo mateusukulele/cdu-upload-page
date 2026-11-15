@@ -224,10 +224,10 @@ blockquote cite{font-style:normal;font-size:14px;color:var(--coral-dark);font-we
       </div>
     </div>
     <div class="prints">
-      <img src="https://cursos.comotocarukulele.com/img/Depoimento%20Aline%20(b).webp" alt="Mensagem da aluna Aline sobre o curso" loading="lazy">
-      <img src="https://cursos.comotocarukulele.com/img/Depoimento%20Leila.webp" alt="Mensagem da aluna Leila sobre o curso" loading="lazy">
-      <img src="https://cursos.comotocarukulele.com/img/Depoimento%20Marcelo.webp" alt="Mensagem do aluno Marcelo sobre o curso" loading="lazy">
-      <img src="https://cursos.comotocarukulele.com/img/Depoimento%20Maria.webp" alt="Mensagem da aluna Maria sobre o curso" loading="lazy">
+      <img src="https://cursos.comotocarukulele.com/img/Depoimento%20Aline%20(b).webp" alt="Mensagem da aluna Aline sobre o curso" width="1080" height="1080" loading="lazy">
+      <img src="https://cursos.comotocarukulele.com/img/Depoimento%20Leila.webp" alt="Mensagem da aluna Leila sobre o curso" width="1080" height="1080" loading="lazy">
+      <img src="https://cursos.comotocarukulele.com/img/Depoimento%20Marcelo.webp" alt="Mensagem do aluno Marcelo sobre o curso" width="1080" height="1080" loading="lazy">
+      <img src="https://cursos.comotocarukulele.com/img/Depoimento%20Maria.webp" alt="Mensagem da aluna Maria sobre o curso" width="1080" height="1080" loading="lazy">
     </div>
   </section>
 
@@ -315,5 +315,14 @@ blockquote cite{font-style:normal;font-size:14px;color:var(--coral-dark);font-we
 })();
 </script>
 <script src="/js/iframeResizer.contentWindow.min.js"></script>
+<script>
+// a Cademi so recalcula a altura do iframe quando a pagina avisa; imagem que carrega depois nao avisa sozinha
+(function(){
+  function s(){ if (window.parentIFrame) window.parentIFrame.size(); }
+  document.querySelectorAll("img").forEach(function(i){ if (!i.complete) i.addEventListener("load", s); });
+  window.addEventListener("load", s);
+  setTimeout(s, 1500); setTimeout(s, 4000);
+})();
+</script>
 </body>
 </html>
