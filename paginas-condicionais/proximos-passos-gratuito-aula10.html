@@ -11,6 +11,7 @@
   o botao monta a mensagem do WhatsApp com esses dados para a equipe saber quem e.
   Nao manda lead para o codigo pai de proposito: quem esta aqui ja e lead do gratuito, e um
   submit_cadastro novo contaria cadastro em dobro no anuncio.
+  Funciona sem video. Quando o video novo existir, ele entra no topo do .hero (ver ROTEIRO no MAPA).
 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,36 +19,78 @@
 <style>
 :root{
   --indigo:#443468; --indigo-fundo:#2D124E; --indigo-grad:#2D2249;
-  --coral:#E87A85; --coral-claro:#B4404F;
+  --coral:#E87A85; --coral-claro:#B4404F; --coral-dark:#F6A9B4;
   --teal:#12A18A; --texto:#2D124E; --muted:#5B5270;
-  --linha:#ECEAF1; --card:#fff; --r:18px;
+  --linha:#ECEAF1; --creme:#FBF7FA; --r:18px;
 }
 *,*::before,*::after{box-sizing:border-box}
 html,body{margin:0;padding:0}
 body{background:transparent;color:var(--texto);font-family:'Montserrat',sans-serif;font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased}
-a{color:inherit}
-.wrap{max-width:720px;margin:0 auto;padding:4px 0 24px;display:flex;flex-direction:column;gap:16px}
-h1,h2{font-family:'Anton',sans-serif;font-weight:400;line-height:1.15;letter-spacing:.01em;margin:0}
+img{max-width:100%;display:block}
+.wrap{max-width:760px;margin:0 auto;padding:4px 0 24px;display:flex;flex-direction:column;gap:18px}
+h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;line-height:1.15;letter-spacing:.01em;margin:0}
 p{margin:0}
-.hero{background:linear-gradient(135deg,var(--indigo),var(--indigo-grad));color:#fff;border-radius:var(--r);padding:clamp(22px,5vw,36px);display:flex;flex-direction:column;gap:14px}
-.eyebrow{color:#F6A9B4;font-weight:800;font-size:13px;letter-spacing:.12em;text-transform:uppercase}
-.hero h1{font-size:clamp(28px,6vw,40px)}
-.hero p{color:#E4DEEF}
-.btn{display:flex;align-items:center;justify-content:center;gap:10px;min-height:52px;padding:14px 22px;border-radius:14px;background:var(--teal);color:var(--texto);font-weight:800;font-size:17px;text-decoration:none;text-align:center;box-shadow:0 10px 24px -14px rgba(18,161,138,.9);transition:transform .15s ease}
-.btn:hover{transform:translateY(-1px)}
-.btn:focus-visible,.link:focus-visible{outline:3px solid var(--indigo);outline-offset:3px}
-.hero .btn:focus-visible{outline-color:#fff}
+.eyebrow{font-weight:800;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--coral-claro)}
+.dark .eyebrow{color:var(--coral-dark)}
+
+/* blocos */
+.bloco{border-radius:var(--r);padding:clamp(22px,5vw,36px);display:flex;flex-direction:column;gap:16px}
+.dark{background:linear-gradient(135deg,var(--indigo),var(--indigo-grad));color:#fff}
+.dark p{color:#E4DEEF}
+.bloco.dark h2{color:#fff}
+.claro{background:#fff;border:1px solid var(--linha);box-shadow:0 10px 30px -20px rgba(66,48,102,.35)}
+.creme{background:var(--creme);border:1px solid var(--linha)}
+.bloco h2{font-size:clamp(26px,5.4vw,34px);color:var(--indigo)}
+.bloco.dark h2 span{color:var(--coral-dark)}
+.claro h2 span,.creme h2 span{color:var(--coral-claro)}
+
+/* hero */
+.hero h1{font-size:clamp(30px,6.4vw,44px)}
+.hero h1 span{color:var(--coral-dark)}
+.prof{display:flex;align-items:center;gap:14px}
+.prof img{width:64px;height:64px;border-radius:50%;object-fit:cover;border:3px solid var(--coral);flex:none}
+.prof p{font-size:14px;color:#CFC6E0;line-height:1.45}
+.prof b{color:#fff;display:block;font-size:15px}
+
+/* botao */
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;min-height:56px;padding:15px 22px;border-radius:14px;background:var(--teal);color:var(--texto);font-weight:800;font-size:17px;text-decoration:none;text-align:center;box-shadow:0 12px 26px -14px rgba(18,161,138,.95);transition:transform .15s ease}
+.btn:hover{transform:translateY(-2px)}
+.btn:focus-visible,.link:focus-visible,.vid:focus-visible{outline:3px solid var(--indigo);outline-offset:3px}
+.dark .btn:focus-visible{outline-color:#fff}
 .btn svg{width:22px;height:22px;flex:none}
-.nota{font-size:14px;color:#CFC6E0;text-align:center}
-.card{background:var(--card);border:1px solid var(--linha);border-radius:var(--r);padding:clamp(20px,4.5vw,30px);box-shadow:0 10px 30px -20px rgba(66,48,102,.35);display:flex;flex-direction:column;gap:14px}
-.card h2{font-size:clamp(24px,5vw,30px);color:var(--indigo)}
-.lista{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
-.lista li{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start}
-.lista li::before{content:"";width:22px;height:22px;margin-top:2px;border-radius:50%;background:var(--teal) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232D124E' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center/14px no-repeat}
-.lista b{color:var(--indigo)}
-blockquote{margin:0;border-left:4px solid var(--coral);background:#FBF7FA;border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:8px}
-blockquote p{font-weight:600}
-blockquote cite{font-style:normal;font-size:14px;color:var(--coral-claro);font-weight:700}
+.nota{font-size:14px;text-align:center;color:var(--muted)}
+.dark .nota{color:#CFC6E0}
+
+/* entregas */
+.itens{display:grid;grid-template-columns:1fr;gap:12px}
+@media (min-width:620px){.itens{grid-template-columns:1fr 1fr}.itens .largo{grid-column:1 / -1}}
+.item{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:start;background:var(--creme);border:1px solid var(--linha);border-radius:14px;padding:14px}
+.item .ic{width:44px;height:44px;border-radius:12px;background:var(--teal);display:grid;place-items:center}
+.item .ic svg{width:22px;height:22px;stroke:var(--texto);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.item h3{font-size:19px;color:var(--indigo);margin-bottom:2px}
+.item p{font-size:15px;line-height:1.55}
+
+/* provas */
+blockquote{margin:0;border-left:4px solid var(--coral);background:rgba(255,255,255,.08);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:8px}
+blockquote p{font-weight:600;color:#fff !important}
+blockquote cite{font-style:normal;font-size:14px;color:var(--coral-dark);font-weight:700}
+.vids{display:grid;grid-template-columns:1fr;gap:14px}
+@media (min-width:620px){.vids{grid-template-columns:1fr 1fr 1fr}}
+.vcard{display:flex;flex-direction:column;gap:8px}
+.vid{position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;cursor:pointer;background:#000}
+.vid img{width:100%;height:100%;object-fit:cover}
+.vid iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.vid .play{position:absolute;inset:0;margin:auto;width:58px;height:40px;background:#EA3C3C;border-radius:10px;display:grid;place-items:center;box-shadow:0 8px 20px rgba(0,0,0,.35)}
+.vid .play svg{width:20px;height:20px;fill:#fff;margin-left:3px}
+.vcard p{font-size:14px;line-height:1.5;font-style:italic}
+.prints{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.prints img{width:100%;height:auto;border-radius:12px;box-shadow:0 12px 28px -18px rgba(0,0,0,.6)}
+
+/* passos */
+.passos{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px;counter-reset:p}
+.passos li{counter-increment:p;display:grid;grid-template-columns:40px 1fr;gap:12px;align-items:center}
+.passos li::before{content:counter(p);width:40px;height:40px;border-radius:50%;background:var(--indigo);color:#fff;font-family:'Anton',sans-serif;font-size:20px;display:grid;place-items:center}
+
 .redes{text-align:center;font-size:15px;color:var(--muted)}
 .link{color:var(--indigo);font-weight:700;text-decoration:underline;text-underline-offset:3px;display:inline-block;padding:10px 4px;min-height:44px}
 </style>
@@ -55,36 +98,90 @@ blockquote cite{font-style:normal;font-size:14px;color:var(--coral-claro);font-w
 <body>
 <main class="wrap">
 
-  <section class="hero">
+  <!-- HERO -->
+  <section class="bloco dark hero">
     <span class="eyebrow">O próximo passo</span>
-    <h1>Parabéns! Você já toca a sua primeira música no ukulele</h1>
+    <h1>Parabéns! Você já toca a sua <span>primeira música</span> no ukulele</h1>
     <p>Eu quero te ajudar a continuar daqui. Chama a nossa equipe no WhatsApp: a gente te explica como funciona o Clube do Ukulele Premium e te ajuda a escolher o plano.</p>
     <a class="btn js-wa" href="https://wa.me/553198585286" target="_blank" rel="noopener">
       <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.4.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.7.3-.2.3-.9.9-.9 2.2s.9 2.5 1 2.7c.1.2 1.8 2.8 4.4 3.9 1.6.7 2.3.8 3.1.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/></svg>
       Falar com a equipe no WhatsApp
     </a>
     <p class="nota">O WhatsApp abre com a mensagem pronta. É só enviar.</p>
+    <div class="prof">
+      <img src="https://cursos.comotocarukulele.com/img/mateus-perfil.webp" alt="Mateus Augusto, professor do Clube do Ukulele" width="64" height="64">
+      <p><b>Mateus Augusto</b>Professor do Clube do Ukulele, com mais de 6 mil alunos no Brasil</p>
+    </div>
   </section>
 
-  <section class="card">
-    <h2>O que tem no Clube do Ukulele Premium</h2>
+  <!-- O QUE TEM -->
+  <section class="bloco claro">
+    <span class="eyebrow">Clube do Ukulele Premium</span>
+    <h2>O que você recebe <span>no Clube</span></h2>
     <p>Você continua com as aulas gravadas, na ordem para estudar, e passa a me mandar vídeos seus tocando para eu analisar.</p>
-    <ul class="lista">
-      <li><span><b>Todas as aulas gravadas</b>, começando pelo Ukulele Fundamental, na ordem certa para estudar.</span></li>
-      <li><span><b>Análise em vídeo:</b> você grava as atividades e recebe de volta um vídeo meu dizendo o que já está bom e o que ajustar.</span></li>
-      <li><span><b>Encontros ao vivo toda semana.</b> Quinta, às 19h, tem o Ukulele Na Mão, com aula nova e espaço para as suas perguntas, e ainda tem os plantões para tirar dúvida.</span></li>
-      <li><span><b>A Biblioteca de Músicas</b> do Clube, para você escolher a próxima música que vai tocar.</span></li>
-      <li><span><b>A comunidade</b> dos alunos, onde você posta os seus vídeos e acompanha quem está aprendendo junto.</span></li>
-    </ul>
+    <div class="itens">
+      <div class="item largo">
+        <span class="ic"><svg viewBox="0 0 24 24"><rect x="2.5" y="6" width="13" height="12" rx="2"/><path d="m15.5 10 6-3v10l-6-3"/></svg></span>
+        <div><h3>Análise em vídeo</h3><p>Você grava as atividades e recebe de volta um vídeo meu dizendo o que já está bom e o que ajustar.</p></div>
+      </div>
+      <div class="item">
+        <span class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/></svg></span>
+        <div><h3>Ao vivo toda quinta</h3><p>Às 19h tem o Ukulele Na Mão comigo: aula nova e espaço para as suas perguntas.</p></div>
+      </div>
+      <div class="item">
+        <span class="ic"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H4z"/><path d="m10 8.5 4 2.5-4 2.5z"/><path d="M8 20h8"/></svg></span>
+        <div><h3>Todas as aulas gravadas</h3><p>Começando pelo Ukulele Fundamental, na ordem certa para estudar.</p></div>
+      </div>
+      <div class="item">
+        <span class="ic"><svg viewBox="0 0 24 24"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg></span>
+        <div><h3>Biblioteca de Músicas</h3><p>Para você escolher a próxima música que vai tocar.</p></div>
+      </div>
+      <div class="item">
+        <span class="ic"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.5 3.4-5.5 6.5-5.5s5.7 2 6.5 5.5"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.8c1.8.7 3 2.5 3.5 5.2"/></svg></span>
+        <div><h3>Comunidade</h3><p>Onde você posta os seus vídeos e acompanha quem está aprendendo junto.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROVAS -->
+  <section class="bloco dark">
+    <span class="eyebrow">Quem já está tocando</span>
+    <h2>O que os alunos <span>contam</span></h2>
     <blockquote>
       <p>"E com um mês, exatamente um mês, eu gravei um vídeo meu tocando essa música. E se alguém tivesse me falado que isso ia acontecer, eu nunca teria acreditado."</p>
       <cite>Fabiano, aluno do Clube do Ukulele</cite>
     </blockquote>
+    <div class="vids">
+      <div class="vcard">
+        <div class="vid" data-v="Wey4EfhXWtc" role="button" tabindex="0" aria-label="Assistir depoimento em vídeo"><img src="https://i.ytimg.com/vi/Wey4EfhXWtc/hqdefault.jpg" alt="" loading="lazy"><span class="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span></div>
+        <p>"Eu não acreditava que poderia tocar as músicas que gosto. É o que faço agora, uma diversão aqui em casa."</p>
+      </div>
+      <div class="vcard">
+        <div class="vid" data-v="gMjxSJMxPSc" role="button" tabindex="0" aria-label="Assistir depoimento em vídeo"><img src="https://i.ytimg.com/vi/gMjxSJMxPSc/hqdefault.jpg" alt="" loading="lazy"><span class="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span></div>
+        <p>"Já aprendi a tocar algumas músicas que gosto e posso tocar com meus amigos."</p>
+      </div>
+      <div class="vcard">
+        <div class="vid" data-v="_Uo3NvXyH4A" role="button" tabindex="0" aria-label="Assistir depoimento em vídeo"><img src="https://i.ytimg.com/vi/_Uo3NvXyH4A/hqdefault.jpg" alt="" loading="lazy"><span class="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span></div>
+        <p>"A música tem me ajudado bastante a ser mais paciente comigo mesma."</p>
+      </div>
+    </div>
+    <div class="prints">
+      <img src="https://cursos.comotocarukulele.com/img/Depoimento%20Aline%20(b).webp" alt="Mensagem da aluna Aline sobre o curso" loading="lazy">
+      <img src="https://cursos.comotocarukulele.com/img/Depoimento%20Leila.webp" alt="Mensagem da aluna Leila sobre o curso" loading="lazy">
+      <img src="https://cursos.comotocarukulele.com/img/Depoimento%20Marcelo.webp" alt="Mensagem do aluno Marcelo sobre o curso" loading="lazy">
+      <img src="https://cursos.comotocarukulele.com/img/Depoimento%20Maria.webp" alt="Mensagem da aluna Maria sobre o curso" loading="lazy">
+    </div>
   </section>
 
-  <section class="card">
-    <h2>Quer saber como entrar?</h2>
-    <p>Manda uma mensagem para a equipe que a gente te passa as condições para entrar no Clube.</p>
+  <!-- COMO ENTRAR -->
+  <section class="bloco claro">
+    <span class="eyebrow">Como entrar</span>
+    <h2>Do WhatsApp para <span>o Clube</span></h2>
+    <ol class="passos">
+      <li><span>Você manda a mensagem pelo botão abaixo.</span></li>
+      <li><span>A equipe responde no WhatsApp, tira as suas dúvidas e te passa as condições.</span></li>
+      <li><span>Você entra no Clube e já começa pelo Ukulele Fundamental.</span></li>
+    </ol>
     <a class="btn js-wa" href="https://wa.me/553198585286" target="_blank" rel="noopener">
       <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.4.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.7.3-.2.3-.9.9-.9 2.2s.9 2.5 1 2.7c.1.2 1.8 2.8 4.4 3.9 1.6.7 2.3.8 3.1.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/></svg>
       Quero entrar no Clube
@@ -111,6 +208,13 @@ blockquote cite{font-style:normal;font-size:14px;color:var(--coral-claro);font-w
   }
   var href = 'https://wa.me/' + WA + '?text=' + encodeURIComponent(msg);
   document.querySelectorAll('.js-wa').forEach(function(a){ a.href = href; });
+
+  // video do YouTube so carrega quando o aluno clica
+  document.querySelectorAll('.vid').forEach(function(el){
+    function go(){ el.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/' + el.dataset.v + '?autoplay=1&rel=0" title="Depoimento de aluno" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>'; }
+    el.addEventListener('click', go);
+    el.addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+  });
 })();
 </script>
 <script src="/js/iframeResizer.contentWindow.min.js"></script>
